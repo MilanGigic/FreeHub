@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Efficio",
   description:
     "Efficio — Run your freelance work and finances without the chaos.",
+  icons: {
+    icon: "/efficio-logo.png",
+  },
 };
 
 export default function RootLayout({
