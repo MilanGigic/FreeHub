@@ -1,38 +1,32 @@
-"use client";
-
-import { insertFinance } from "@/actions/finance/insertFinance";
+import { insertExpense } from "@/actions/finance/insertExpense";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuth } from "@/lib/useAuth";
 import { Category } from "@/types/types";
 import { FormEvent, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
-export default function IncomeForm({
-  setShowIncomeForm,
-}: {
-  setShowIncomeForm: (show: boolean) => void;
-}) {
+export default function ExpensesForm() {
   const { user } = useAuth();
 
-  const [incomeFormTitle, setIncomeFormTitle] = useState<string | null>(null);
-  const [incomeFormDescription, setIncomeFormDescription] = useState<
+  const [expenseFormTitle, setExpenseFormTitle] = useState<string | null>(null);
+  const [expenseFormDescription, setExpenseFormDescription] = useState<
     string | null
   >(null);
-
-  const [incomeFormAmount, setIncomeFormAmount] = useState<number | null>(null);
-
+  const [expenseFormAmount, setExpenseFormAmount] = useState<number | null>(
+    null,
+  );
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
 
-  const debouncedFormTitle = useDebounce(incomeFormTitle, 300);
+  const debouncedFormTitle = useDebounce(expenseFormTitle, 300);
 
   useEffect(() => {
     (async () => {
       if (!user) return;
       const data = await fetch(
-        `/api/query-income?q=${debouncedFormTitle}&userId=${user.id}`,
+        `/api/query-expense?q=${debouncedFormTitle}&userId=${user.id}`,
       ).then((res) => res.json());
 
       if (data.length === 0) return;
@@ -41,32 +35,32 @@ export default function IncomeForm({
     })();
   }, [debouncedFormTitle, user]);
 
-  const handleAddIncome = async (e: FormEvent<HTMLFormElement>) => {
+  const handleAddExpense = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) return;
 
-    if (!selectedCategory || !incomeFormAmount) return;
+    if (!selectedCategory || !expenseFormAmount) return;
 
-    const income = {
+    const expense = {
       userId: user.id,
       title: selectedCategory.name,
-      amount: incomeFormAmount,
-      description: incomeFormDescription,
-      type: "income" as "income" | "expense",
+      amount: expenseFormAmount,
+      description: expenseFormDescription,
+      type: "expense" as "income" | "expense",
       categoryId: selectedCategory?.id || null,
     };
 
-    console.log("Income:", income);
+    console.log("Expense:", expense);
 
-    const result = await insertFinance({ ...income });
+    const result = await insertExpense({ ...expense });
     if (result.data) {
       if (result.success) {
-        setIncomeFormTitle(null);
-        setIncomeFormDescription(null);
-        setIncomeFormAmount(null);
+        setExpenseFormTitle(null);
+        setExpenseFormDescription(null);
+        setExpenseFormAmount(null);
         setSelectedCategory(null);
-        toast.success("Income added successfully");
+        toast.success("Expense added successfully");
       } else {
         toast.error(result.error);
       }
@@ -74,24 +68,22 @@ export default function IncomeForm({
   };
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={(e) => handleAddIncome(e)}>
+    <form className="flex flex-col gap-2" onSubmit={(e) => handleAddExpense(e)}>
       <div className="flex flex-col gap-2">
         <div className="relative">
           <input
             type="text"
-            placeholder="Enter Income Title"
+            placeholder="Enter Expense Title"
             className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none focus:border-[#14b8a6] transition-all w-full"
             value={
               selectedCategory
                 ? selectedCategory.name
-                : incomeFormTitle
-                  ? incomeFormTitle
+                : expenseFormTitle
+                  ? expenseFormTitle
                   : ""
             }
-            onChange={(e) => setIncomeFormTitle(e.target.value)}
+            onChange={(e) => setExpenseFormTitle(e.target.value)}
           />
-
-          {/* NEXT WORK ON EXPENSES FORM */}
 
           {debouncedFormTitle && debouncedFormTitle.length > 2 && (
             <div>
@@ -103,7 +95,7 @@ export default function IncomeForm({
                       className="flex items-center justify-center gap-2 cursor-pointer hover:bg-[#1f2937] rounded-lg p-2"
                       onClick={() => {
                         setSelectedCategory(category);
-                        setIncomeFormTitle(null);
+                        setExpenseFormTitle(null);
                       }}
                     >
                       <div
@@ -129,32 +121,28 @@ export default function IncomeForm({
           )}
         </div>
         <textarea
-          placeholder="Enter Income Description"
+          placeholder="Enter Expense Description"
           className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none resize-none text-xs focus:border-[#14b8a6] transition-all"
-          value={incomeFormDescription ? incomeFormDescription : ""}
-          onChange={(e) => setIncomeFormDescription(e.target.value)}
+          value={expenseFormDescription ? expenseFormDescription : ""}
+          onChange={(e) => setExpenseFormDescription(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Enter Income Amount"
+          placeholder="Enter Expense Amount"
           className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none font-mono focus:border-[#14b8a6] transition-all"
-          value={incomeFormAmount ? incomeFormAmount : ""}
-          onChange={(e) => setIncomeFormAmount(Number(e.target.value))}
+          value={expenseFormAmount ? expenseFormAmount : ""}
+          onChange={(e) => setExpenseFormAmount(Number(e.target.value))}
         />
       </div>
       <div className="flex justify-between">
-        <div>
-          <button
-            type="submit"
-            className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
-          >
-            Add Income
-          </button>
-          <ToastContainer />
-        </div>
+        <button
+          type="submit"
+          className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
+        >
+          Add Expense
+        </button>
         <button
           type="button"
-          onClick={() => setShowIncomeForm(false)}
           className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#ef4444] transition-all cursor-pointer text-white  font-semibold hover:bg-[#ef4444]/40"
         >
           Cancel

@@ -1,5 +1,6 @@
 "use client";
 
+import ExpensesForm from "@/components/Finances/Expense/ExpensesForm";
 import IncomeForm from "@/components/Finances/Income/IncomeForm";
 import { useAuth } from "@/lib/useAuth";
 import Link from "next/link";
@@ -13,6 +14,7 @@ export default function FinancesPage() {
   const { user, loading } = useAuth();
 
   const [showIncomeForm, setShowIncomeForm] = useState<boolean>(false);
+  const [showExpenseForm, setShowExpenseForm] = useState<boolean>(false);
 
   if (loading)
     return (
@@ -42,22 +44,30 @@ export default function FinancesPage() {
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      <div className="flex flex-col gap-2 items-center border-b-2 border-[#1f2937] pb-2 w-full">
+      <div className="flex flex-col gap-2 items-center w-full">
         <h1
           onClick={() => setShowIncomeForm(!showIncomeForm)}
           className={`text-sm font-semibold uppercase transition-all duration-300 cursor-pointer ${showIncomeForm ? "text-[#14b8a6]" : "text-white hover:text-[#14b8a6]"}`}
         >
           Add Income
         </h1>
-        <div className="w-full">
+        <div className="w-full border-b-2 border-[#1f2937] pb-2">
           {showIncomeForm ? (
             <IncomeForm setShowIncomeForm={setShowIncomeForm} />
           ) : null}
         </div>
       </div>
-      <section>
-        <h1>Expenses</h1>
-      </section>
+      <div className="flex flex-col gap-2 items-center w-full">
+        <h1
+          onClick={() => setShowExpenseForm(!showExpenseForm)}
+          className={`text-sm font-semibold uppercase transition-all duration-300 cursor-pointer ${showExpenseForm ? "text-[#14b8a6]" : "text-white hover:text-[#14b8a6]"}`}
+        >
+          Add Expense
+        </h1>
+        <div className="w-full border-b-2 border-[#1f2937] pb-2">
+          {showExpenseForm ? <ExpensesForm /> : null}
+        </div>
+      </div>
       <section>
         <h1>Taxes</h1>
       </section>
