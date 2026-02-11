@@ -10,7 +10,7 @@ import {
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const tabs = [
   "Dashboard",
@@ -42,7 +42,7 @@ function renderTab(tab: string) {
 }
 
 export default function Sidebar() {
-  const [activeTab, setActiveTab] = useState<Tab>("Dashboard");
+  const pathname = usePathname();
 
   return (
     <div className="w-24 h-full bg-[#11151c] border-r border-t border-[#1f2937] flex flex-col gap-2 rounded-t-lg pt-2">
@@ -50,9 +50,8 @@ export default function Sidebar() {
         <Link
           key={tab}
           href={`/${tab.toLowerCase().replace(" ", "-")}`}
-          onClick={() => setActiveTab(tab as Tab)}
           className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
-            ${activeTab === tab ? "text-[#2dd4bf]" : "hover:text-[#2dd4bf]"} transition-all`}
+            ${pathname === `/${tab.toLowerCase().replace(" ", "-")}` ? "text-[#2dd4bf]" : "hover:text-[#2dd4bf]"} transition-all`}
         >
           {renderTab(tab)}
           <h1 className="text-xs uppercase font-semibold">{tab}</h1>

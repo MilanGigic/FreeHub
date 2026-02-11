@@ -25,7 +25,7 @@ export default function FinancesPage() {
   };
 
   return (
-    <div>
+    <div className="grid grid-cols-3 gap-4">
       <div className="flex flex-col items-center border-b-2 border-[#1f2937] pb-2">
         <h1
           onClick={() => setShowIncomeForm(!showIncomeForm)}
