@@ -1,0 +1,10 @@
+TAXES
+
+Revenue
+– Business expenses
+= Taxable profit
+→ Apply income tax rates
+Important concepts:
+- Progressive brackets (most countries)
+- Marginal tax rate
+- Personal allowance / tax-free threshold

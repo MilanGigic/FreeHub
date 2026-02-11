@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "encrypted_dek" text NOT NULL;
