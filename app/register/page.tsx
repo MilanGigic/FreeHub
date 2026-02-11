@@ -43,9 +43,14 @@ export default function RegisterPage() {
       const encryptedDEKWithSalt = JSON.stringify({ encryptedDEK, salt });
 
       // Step 4: Register user with encrypted DEK (single call)
-      const result = await register(email, userName, password, encryptedDEKWithSalt);
+      const result = await register(
+        email,
+        userName,
+        password,
+        encryptedDEKWithSalt,
+      );
 
-      if (result.success) {
+      if (result.success && result.userId) {
         // Store DEK in sessionStorage for this session
         // In production, use more secure storage (IndexedDB with encryption)
         const dekString = await exportKey(dek);
@@ -73,7 +78,7 @@ export default function RegisterPage() {
           Register
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
           <div>
             <label
               htmlFor="email"

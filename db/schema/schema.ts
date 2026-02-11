@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, uuid, decimal, boolean, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  decimal,
+  boolean,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
@@ -12,7 +20,10 @@ export const users = pgTable("users", {
 });
 
 // Transaction type enum
-export const transactionTypeEnum = pgEnum("transaction_type", ["income", "expense"]);
+export const transactionTypeEnum = pgEnum("transaction_type", [
+  "income",
+  "expense",
+]);
 
 // Transactions table - tracks both income and expenses
 export const transactions = pgTable("transactions", {
@@ -23,7 +34,9 @@ export const transactions = pgTable("transactions", {
   type: transactionTypeEnum("type").notNull(), // "income" or "expense"
   title: text("title").notNull(),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
-  categoryId: uuid("category_id").references(() => categories.id, { onDelete: "set null" }),
+  categoryId: uuid("category_id").references(() => categories.id, {
+    onDelete: "set null",
+  }),
   description: text("description"),
   date: timestamp("date").notNull().defaultNow(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -51,11 +64,23 @@ export const taxSettings = pgTable("tax_settings", {
     .notNull()
     .unique()
     .references(() => users.id, { onDelete: "cascade" }),
-  federalTaxRate: decimal("federal_tax_rate", { precision: 5, scale: 2 }).default("0"), // e.g., 22.00 for 22%
-  stateTaxRate: decimal("state_tax_rate", { precision: 5, scale: 2 }).default("0"),
-  localTaxRate: decimal("local_tax_rate", { precision: 5, scale: 2 }).default("0"),
-  socialSecurityRate: decimal("social_security_rate", { precision: 5, scale: 2 }).default("6.2"), // Default 6.2%
-  medicareRate: decimal("medicare_rate", { precision: 5, scale: 2 }).default("1.45"), // Default 1.45%
+  federalTaxRate: decimal("federal_tax_rate", {
+    precision: 5,
+    scale: 2,
+  }).default("0"), // e.g., 22.00 for 22%
+  stateTaxRate: decimal("state_tax_rate", { precision: 5, scale: 2 }).default(
+    "0",
+  ),
+  localTaxRate: decimal("local_tax_rate", { precision: 5, scale: 2 }).default(
+    "0",
+  ),
+  socialSecurityRate: decimal("social_security_rate", {
+    precision: 5,
+    scale: 2,
+  }).default("6.2"), // Default 6.2%
+  medicareRate: decimal("medicare_rate", { precision: 5, scale: 2 }).default(
+    "1.45",
+  ), // Default 1.45%
   taxYear: text("tax_year").notNull().default("2026"), // For tracking different tax years
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -67,7 +92,9 @@ export const budgets = pgTable("budgets", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  categoryId: uuid("category_id").references(() => categories.id, { onDelete: "cascade" }),
+  categoryId: uuid("category_id").references(() => categories.id, {
+    onDelete: "cascade",
+  }),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
   period: text("period").notNull().default("monthly"), // "monthly", "yearly", etc.
   startDate: timestamp("start_date").notNull(),

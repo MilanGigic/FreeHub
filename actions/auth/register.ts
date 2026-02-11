@@ -4,7 +4,8 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
-import { setSession } from "@/lib/session";
+import { createSession } from "@/lib/session";
+import { cookies } from "next/headers";
 
 export interface RegisterResult {
   success: boolean;
@@ -62,18 +63,23 @@ export async function register(
       })
       .returning();
 
-    // Create session after successful registration
-    try {
-      await setSession({
-        userId: newUser.id,
-        email: newUser.email,
-        userName: newUser.userName,
-      });
-    } catch (sessionError) {
-      console.error("Session creation error:", sessionError);
-      // Don't fail registration if session creation fails
-      // User can log in again
-    }
+    // Create session token directly here instead of calling setSession
+    // This avoids nested cookie() calls which can cause issues
+    const token = await createSession({
+      userId: newUser.id,
+      email: newUser.email,
+      userName: newUser.userName,
+    });
+    
+    // Set cookie directly in this server action
+    const cookieStore = await cookies();
+    cookieStore.set("session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
 
     return {
       success: true,
@@ -81,6 +87,10 @@ export async function register(
     };
   } catch (error) {
     console.error("Registration error:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     const errorMessage = error instanceof Error ? error.message : "An error occurred during registration";
     return {
       success: false,

@@ -1,4 +1,4 @@
-type Tab =
+export type Tab =
   | "Dashboard"
   | "Finances"
   | "Clients"
@@ -6,3 +6,14 @@ type Tab =
   | "Tasks"
   | "Reports"
   | "Messages";
+
+export interface Category {
+  id: string;
+  userId: string;
+  name: string;
+  type: "income" | "expense";
+  color: string | null;
+  icon: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
