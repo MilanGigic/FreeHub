@@ -18,6 +18,78 @@
     --foreground: #ededed;
   }
 }
+@layer components {
+  /* BACKGROUNDS */
+
+  .background {
+    @apply bg-[#0a0e14];
+  }
+  .background-elevated {
+    @apply bg-gradient-to-r from-[#161b22] to-[#0a0e14];
+  }
+  .background-border {
+    @apply border-[#21262d];
+  }
+  .background-sidebar {
+    @apply bg-[#0d1117];
+  }
+  .border-interactive {
+    @apply border-[#30363d];
+  }
+
+  /* TEXT-HIGHLIGHTS */
+
+  .primary-green {
+    @apply text-[#34d399];
+  }
+  .primary-red {
+    @apply text-[#f85149];
+  }
+  .primary-cyan {
+    @apply text-[#2dd4bf];
+  }
+  .primary-amber {
+    @apply text-[#d29922];
+  }
+  .primary-indigo {
+    @apply text-[#6366f1];
+  }
+  .primary-slate {
+    @apply text-[#64748b];
+  }
+
+  /* TEXT */
+
+  .text-primary {
+    @apply text-[#e6edf3];
+  }
+  .text-secondary {
+    @apply text-[#8b949e];
+  }
+  .text-tertiary {
+    @apply text-[#6e7681];
+  }
+  .text-disabled {
+    @apply text-[#484f58];
+  }
+
+  /* GRAPHS */
+
+  .tag-income {
+    @apply bg-[#2ea043] text-[#3fb950] text-xs font-medium px-2 py-1 rounded;
+  }
+  .tag-expense {
+    @apply bg-[#a40e26] text-[#f85149] text-xs font-medium px-2 py-1 rounded;
+  }
+  .tag-recurring {
+    @apply bg-[#7d4e00] text-[#d29922] text-xs font-medium px-2 py-1 rounded;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
 
 @layer base {
   body {
@@ -33,9 +105,4 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
 }

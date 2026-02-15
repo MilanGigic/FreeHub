@@ -29,15 +29,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="min-h-screen">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased `}
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased w-full min-h-screen`}
       >
-        <div className="w-full h-screen flex flex-col bg-[#0f131a]">
+        <div className="w-full min-h-screen flex flex-col background">
           <Header />
-          <div className="w-full h-full flex">
-            <Sidebar />
-            <main className="w-full h-full p-4">{children}</main>
+          <div className="w-full flex items-stretch">
+            <div className="sticky top-16 h-full">
+              <Sidebar />
+            </div>
+            <main className="w-full p-4">{children}</main>
           </div>
         </div>
       </body>

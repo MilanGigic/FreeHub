@@ -11,7 +11,7 @@ export default function Header() {
   const spaces = ["Space 1", "Space 2", "Space 3"];
 
   return (
-    <div className="w-full flex px-4 py-2 gap-2">
+    <div className="w-full flex px-4 py-2 gap-2 border-b border-[#21262d] sticky top-0 z-10 bg-black/50 backdrop-blur-sm">
       <div className="relative">
         <button
           type="button"
@@ -46,7 +46,7 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search"
-            className="w-64 h-10 rounded-md bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+            className="w-64 md:w-md h-8 rounded-md bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none text-sm focus:border-[#2dd4bf] transition-all"
           />
         </div>
         <div className="flex items-center gap-2">

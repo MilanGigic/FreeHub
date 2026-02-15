@@ -17,3 +17,16 @@ export interface Category {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Transaction {
+  id: string;
+  userId: string;
+  type: "income" | "expense";
+  title: string;
+  amount: string;
+  categoryId: string | null;
+  description: string | null;
+  date: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -1,4 +1,4 @@
-import { insertExpense } from "@/actions/finance/insertExpense";
+import { insertFinance } from "@/actions/finance/insertFinance";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuth } from "@/lib/useAuth";
 import { Category } from "@/types/types";
@@ -53,7 +53,7 @@ export default function ExpensesForm() {
 
     console.log("Expense:", expense);
 
-    const result = await insertExpense({ ...expense });
+    const result = await insertFinance({ ...expense });
     if (result.data) {
       if (result.success) {
         setExpenseFormTitle(null);

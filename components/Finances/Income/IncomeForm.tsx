@@ -7,11 +7,7 @@ import { Category } from "@/types/types";
 import { FormEvent, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function IncomeForm({
-  setShowIncomeForm,
-}: {
-  setShowIncomeForm: (show: boolean) => void;
-}) {
+export default function IncomeForm() {
   const { user } = useAuth();
 
   const [incomeFormTitle, setIncomeFormTitle] = useState<string | null>(null);
@@ -91,8 +87,6 @@ export default function IncomeForm({
             onChange={(e) => setIncomeFormTitle(e.target.value)}
           />
 
-          {/* NEXT WORK ON EXPENSES FORM */}
-
           {debouncedFormTitle && debouncedFormTitle.length > 2 && (
             <div>
               {categories.length > 0 ? (
@@ -142,23 +136,14 @@ export default function IncomeForm({
           onChange={(e) => setIncomeFormAmount(Number(e.target.value))}
         />
       </div>
-      <div className="flex justify-between">
-        <div>
-          <button
-            type="submit"
-            className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
-          >
-            Add Income
-          </button>
-          <ToastContainer />
-        </div>
+      <div>
         <button
-          type="button"
-          onClick={() => setShowIncomeForm(false)}
-          className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#ef4444] transition-all cursor-pointer text-white  font-semibold hover:bg-[#ef4444]/40"
+          type="submit"
+          className="rounded-lg bg-[#11151c] border w-full px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
         >
-          Cancel
+          Add Income
         </button>
+        <ToastContainer />
       </div>
     </form>
   );

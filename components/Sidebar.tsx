@@ -45,18 +45,22 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-24 h-full bg-[#11151c] border-r border-t border-[#1f2937] flex flex-col gap-2 rounded-t-lg pt-2">
-      {tabs.map((tab) => (
-        <Link
-          key={tab}
-          href={`/${tab.toLowerCase().replace(" ", "-")}`}
-          className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
-            ${pathname === `/${tab.toLowerCase().replace(" ", "-")}` ? "text-[#2dd4bf]" : "hover:text-[#2dd4bf]"} transition-all`}
-        >
-          {renderTab(tab)}
-          <h1 className="text-xs uppercase font-semibold">{tab}</h1>
-        </Link>
-      ))}
+    <div className="w-24 md:w-48 self-stretch background-sidebar background-border border-r p-1">
+      <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] h-[92%]">
+        {tabs.map((tab) => (
+          <Link
+            key={tab}
+            href={`/${tab.toLowerCase().replace(" ", "-")}`}
+            className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
+            ${pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? "text-[#2dd4bf] bg-[#161b22]" : "hover:text-[#2dd4bf]"} transition-all`}
+          >
+            {!pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? (
+              <span>{renderTab(tab)}</span>
+            ) : null}
+            <h1 className="text-xs uppercase font-semibold">{tab}</h1>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
