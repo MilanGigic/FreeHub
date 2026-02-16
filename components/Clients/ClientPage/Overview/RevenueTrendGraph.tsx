@@ -99,12 +99,7 @@ export default function RevenueTrendGraph() {
         <h1 className="text-lg font-semibold text-secondary uppercase">
           Revenue Trend
         </h1>
-        <p
-          className={`text-sm font-semibold uppercase ${revenueTrendPercentage > 0 ? "primary-green" : revenueTrendPercentage < 0 ? "primary-red" : "primary-slate"}`}
-        >
-          {revenueTrendPercentage > 0 ? "+" : "-"}
-          {revenueTrendPercentage}% vs last period
-        </p>
+
         <div className="flex gap-2">
           <button
             onClick={() => setTimeRange("30")}
@@ -161,6 +156,12 @@ export default function RevenueTrendGraph() {
           />
         </ComposedChart>
       </ResponsiveContainer>
+      <p
+        className={`text-sm font-semibold uppercase ${revenueTrendPercentage > 0 ? "primary-green" : revenueTrendPercentage < 0 ? "primary-red" : "primary-slate"}`}
+      >
+        {revenueTrendPercentage > 0 ? "+" : "-"}
+        {revenueTrendPercentage}% vs last period
+      </p>
     </div>
   );
 }

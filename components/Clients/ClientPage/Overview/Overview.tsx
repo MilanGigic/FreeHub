@@ -11,25 +11,25 @@ import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
 
 export default function ClientPageMain() {
   return (
-    <div className="flex flex-col gap-2 md:gap-4 w-full">
+    <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
       <header className="text-sm text-secondary text-center">
         Status:{" "}
         <span className="primary-green uppercase font-semibold">Active</span>
       </header>
 
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 w-full">
-        <div className="col-span-1 md:col-span-2 flex row-span-1 w-full gap-2 md:gap-4">
+      <main className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 w-full h-full">
+        <div className="col-span-1 md:col-span-2 flex flex-col md:flex-row w-full h-full gap-2 md:gap-4">
           <TotalRevenue />
           <NetTakeHomeFromThisClient />
         </div>
         <div className="col-span-1 md:col-span-2">
           <RevenueTrendGraph />
         </div>
-        <div className="col-span-1 md:col-span-2 flex w-full gap-2 md:gap-4">
+        <div className="col-span-1 md:col-span-2 flex flex-col md:flex-row w-full gap-2 md:gap-4">
           <OutstandingInvoices />
           <PaymentReliabilityScore />
         </div>
-        <div className="col-span-1 md:col-span-2 flex w-full gap-2 md:gap-4">
+        <div className="col-span-1 md:col-span-2 flex flex-col md:flex-row w-full gap-2 md:gap-4">
           <ProfitMargin />
           <TaxReservedFromThisClient />
         </div>

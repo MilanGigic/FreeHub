@@ -1,5 +1,6 @@
 "use client";
 
+import { useUIStore } from "@/lib/store/useUIStore";
 import {
   Briefcase,
   FileText,
@@ -8,6 +9,7 @@ import {
   MessageCircle,
   Users,
   Wallet,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -44,22 +46,64 @@ function renderTab(tab: string) {
 export default function Sidebar() {
   const pathname = usePathname();
 
+  const { isSidebarOpen, sidebarClose } = useUIStore();
+
   return (
-    <div className="w-24 md:w-48 self-stretch background-sidebar background-border border-r p-1">
-      <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] h-[92%]">
-        {tabs.map((tab) => (
-          <Link
-            key={tab}
-            href={`/${tab.toLowerCase().replace(" ", "-")}`}
-            className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
-            ${pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? "text-[#2dd4bf] bg-[#161b22]" : "hover:text-[#2dd4bf]"} transition-all`}
-          >
-            {!pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? (
-              <span>{renderTab(tab)}</span>
-            ) : null}
-            <h1 className="text-xs uppercase font-semibold">{tab}</h1>
-          </Link>
-        ))}
+    <div className="h-full">
+      {/* MOBILE VIEW */}
+      {isSidebarOpen ? (
+        <div className="fixed top-14 left-0 h-full w-2/3 max-w-xs bg-black/50 backdrop-blur-sm z-100 border-r-2 border-[#21262d] sm:hidden">
+          <div className="flex flex-col h-full">
+            <button
+              onClick={() => sidebarClose()}
+              className="p-4 flex justify-end"
+            >
+              <X
+                size={40}
+                className="text-white transition-all border rounded-full p-1"
+              />
+            </button>
+            <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] h-[92%]">
+              {tabs.map((tab) => (
+                <Link
+                  key={tab}
+                  href={`/${tab.toLowerCase().replace(" ", "-")}`}
+                  onClick={() => sidebarClose()}
+                  className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
+                    ${pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? "text-[#2dd4bf] bg-[#161b22]" : "hover:text-[#2dd4bf]"} transition-all`}
+                >
+                  {!pathname.startsWith(
+                    `/${tab.toLowerCase().replace(" ", "-")}`,
+                  ) ? (
+                    <span>{renderTab(tab)}</span>
+                  ) : null}
+                  <h1 className="text-xs uppercase font-semibold">{tab}</h1>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* DESKTOP VIEW */}
+      <div className="hidden sm:block w-24 md:w-48 self-stretch background-sidebar background-border border-r p-1 z-20 relative">
+        <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] h-[92%]">
+          {tabs.map((tab) => (
+            <Link
+              key={tab}
+              href={`/${tab.toLowerCase().replace(" ", "-")}`}
+              className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
+              ${pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? "text-[#2dd4bf] bg-[#161b22]" : "hover:text-[#2dd4bf]"} transition-all`}
+            >
+              {!pathname.startsWith(
+                `/${tab.toLowerCase().replace(" ", "-")}`,
+              ) ? (
+                <span>{renderTab(tab)}</span>
+              ) : null}
+              <h1 className="text-xs uppercase font-semibold">{tab}</h1>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
