@@ -35,8 +35,8 @@ export default function RootLayout({
       >
         <div className="w-full min-h-screen flex flex-col background">
           <Header />
-          <div className="w-full flex items-stretch">
-            <div className="sticky top-16 h-full z-20">
+          <div className="w-full flex items-stretch flex-1">
+            <div className="sticky top-16 h-[calc(100vh-4rem)] z-20">
               <Sidebar />
             </div>
             <main className="flex-1 p-4">{children}</main>

@@ -9,7 +9,7 @@ import TaxReservedFromThisClient from "./TaxReservedFromThisClient";
 import ProjectBreakdown from "./ProjectBreakdown";
 import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
 
-export default function ClientPageMain() {
+export default function OverviewClient() {
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
       <header className="text-sm text-secondary text-center">

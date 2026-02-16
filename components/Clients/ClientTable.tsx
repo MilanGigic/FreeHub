@@ -221,7 +221,7 @@ export default function ClientTable() {
                     href={`/clients/${client.name
                       .toLowerCase()
                       .replace(" ", "-")
-                      .replace(".", "")}`}
+                      .replace(".", "")}/overview`}
                   >
                     {client.name}
                   </Link>

@@ -86,8 +86,8 @@ export default function Sidebar() {
       ) : null}
 
       {/* DESKTOP VIEW */}
-      <div className="hidden sm:block w-24 md:w-48 self-stretch background-sidebar background-border border-r p-1 z-20 relative">
-        <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] h-[92%]">
+      <div className="hidden w-24 md:w-48 h-full background-sidebar background-border border-r p-1 z-20 relative sm:flex sm:flex-col">
+        <div className="flex flex-col pt-2 gap-2 border-b border-[#21262d] flex-1">
           {tabs.map((tab) => (
             <Link
               key={tab}

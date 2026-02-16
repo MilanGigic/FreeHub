@@ -7,6 +7,12 @@ export type Tab =
   | "Reports"
   | "Messages";
 
+export type ClientPageTab =
+  | "overview"
+  | "jobs / projects"
+  | "invoices"
+  | "insights";
+
 export interface Category {
   id: string;
   userId: string;
@@ -29,4 +35,17 @@ export interface Transaction {
   date: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Project {
+  id: number;
+  name: string;
+  description: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  margin: number;
+  hourlyRate: number;
+  hoursWorked: number;
+  status: string;
 }
