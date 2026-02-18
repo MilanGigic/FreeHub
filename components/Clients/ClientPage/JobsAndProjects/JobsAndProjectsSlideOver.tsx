@@ -1,16 +1,15 @@
 "use client";
 
 import { useUIStore } from "@/lib/store/useUIStore";
-import { Project } from "@/types/types";
 import { X } from "lucide-react";
 
-export default function JobsAndProjectsSlideOver({
-  selectedProject,
-}: {
-  selectedProject: Project | null;
-}) {
-  const { isJobsAndProjectsSlideOverOpen, jobsAndProjectsSlideOverClose } =
-    useUIStore();
+export default function JobsAndProjectsSlideOver() {
+  const {
+    isJobsAndProjectsSlideOverOpen,
+    jobsAndProjectsSlideOverClose,
+    setSelectedProject,
+    selectedProject,
+  } = useUIStore();
 
   if (!selectedProject) return null;
   return (
@@ -24,7 +23,10 @@ export default function JobsAndProjectsSlideOver({
               {selectedProject.name}
             </h1>
             <button
-              onClick={() => jobsAndProjectsSlideOverClose()}
+              onClick={() => {
+                jobsAndProjectsSlideOverClose();
+                setSelectedProject(null);
+              }}
               className="p-4 flex justify-end"
             >
               <X
@@ -65,7 +67,7 @@ export default function JobsAndProjectsSlideOver({
             <p className="text-secondary text-sm uppercase font-semibold">
               Hours Worked:{" "}
               <span className="primary-cyan">
-                ${selectedProject.hoursWorked}
+                {selectedProject.hoursWorked}
               </span>
             </p>
             <p className="text-secondary text-sm uppercase font-semibold">

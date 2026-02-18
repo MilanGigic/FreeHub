@@ -13,6 +13,49 @@ export type ClientPageTab =
   | "invoices"
   | "insights";
 
+export type ProjectStatus =
+  | "active"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "on_hold"
+  | "not_started";
+
+export type ClientForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  currency: string;
+  status: string;
+  startDate: string;
+  endDate: string | null;
+};
+
+export type ProjectForm = {
+  name: string;
+  description: string;
+  status: ProjectStatus;
+};
+
+export interface User {
+  id: string;
+  email: string;
+  userName: string;
+}
+
+export interface Client {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  currency: "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD";
+  status: "active" | "paused" | "archived";
+  startDate: Date;
+  endDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Category {
   id: string;
   userId: string;

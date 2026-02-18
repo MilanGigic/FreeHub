@@ -14,7 +14,16 @@ export default function InvoicesPage() {
           <h1 className="text-base text-secondary uppercase font-semibold">
             Overdue Invoices
           </h1>
-          <p className="text-2xl font-bold primary-red">$600</p>
+          <p className="text-2xl font-bold primary-red flex items-center gap-2">
+            $600
+            <span className="text-sm text-secondary">- 2 invoices overdue</span>
+          </p>
+        </div>
+        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
+          <h1 className="text-base text-secondary uppercase font-semibold">
+            Total Paid
+          </h1>
+          <p className="text-2xl font-bold primary-green">$12,400</p>
         </div>
         <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
           <h1 className="text-base text-secondary uppercase font-semibold">

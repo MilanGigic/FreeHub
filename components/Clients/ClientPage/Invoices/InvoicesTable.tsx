@@ -10,7 +10,6 @@ const invoiceListHeaders = [
   "Status",
   "Issued",
   "Due",
-  "Paid",
   "Days to Pay",
 ];
 const invoiceListData = [
@@ -22,8 +21,7 @@ const invoiceListData = [
     status: "Paid",
     issued: "12/12/2025",
     due: "12/12/2025",
-    paid: "12/12/2025",
-    daysToPay: 0, // paid on time
+    daysToPay: "Paid on time", // paid on time
   },
   {
     invoiceNumber: "1234567890",
@@ -33,8 +31,7 @@ const invoiceListData = [
     status: "Pending",
     issued: "12/12/2025",
     due: "12/12/2025",
-    paid: false,
-    daysToPay: 10, // pending
+    daysToPay: "10 days late", // pending
   },
   {
     invoiceNumber: "1234567890",
@@ -44,8 +41,7 @@ const invoiceListData = [
     status: "Overdue",
     issued: "12/12/2025",
     due: "12/12/2025",
-    paid: false,
-    daysToPay: -2, // overdue
+    daysToPay: "2 days late", // overdue
   },
   {
     invoiceNumber: "1234567890",
@@ -55,8 +51,7 @@ const invoiceListData = [
     status: "Draft",
     issued: null,
     due: null,
-    paid: null,
-    daysToPay: 0, // draft
+    daysToPay: "Draft", // draft
   },
 ];
 
@@ -138,24 +133,11 @@ export default function InvoicesTable() {
               </td>
               <td className="text-sm text-primary py-2">{invoice.issued}</td>
               <td className="text-sm text-primary py-2">{invoice.due}</td>
-              <td
-                className={`text-sm text-primary py-2 ${invoice.paid ? "primary-green" : "primary-red"}`}
-              >
-                <span
-                  className={`${invoice.status === "Paid" ? "primary-green" : "primary-red"}`}
-                >
-                  {invoice.paid ? "Yes" : "No"}
-                </span>
-              </td>
               <td className="text-sm text-primary py-2">
                 <span
-                  className={`${invoice.daysToPay > 0 ? "primary-green" : invoice.daysToPay === 0 ? "primary-cyan" : "primary-red"}`}
+                  className={`${invoice.daysToPay === "Paid on time" ? "primary-green" : invoice.daysToPay === "10 days late" ? "primary-amber" : invoice.daysToPay === "2 days late" ? "primary-red" : "primary-slate"}`}
                 >
-                  {invoice.daysToPay > 0
-                    ? `+${invoice.daysToPay}`
-                    : invoice.daysToPay === 0
-                      ? "0"
-                      : invoice.daysToPay}
+                  {invoice.daysToPay}
                 </span>
               </td>
             </tr>

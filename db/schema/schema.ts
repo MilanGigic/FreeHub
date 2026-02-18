@@ -6,8 +6,33 @@ import {
   decimal,
   boolean,
   pgEnum,
+  integer,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+
+export const currencyEnum = pgEnum("currency", [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "RSD",
+  "CAD",
+]);
+
+export const clientStatusEnum = pgEnum("client_status", [
+  "active",
+  "paused",
+  "archived",
+]);
+
+export const projectStatusEnum = pgEnum("project_status", [
+  "active",
+  "in_progress",
+  "completed",
+  "cancelled",
+  "on_hold",
+  "not_started",
+]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -15,6 +40,40 @@ export const users = pgTable("users", {
   userName: text("user_name").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   encryptedDEK: text("encrypted_dek").notNull(), // Data Encryption Key encrypted with password-derived key
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const clients = pgTable("clients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").unique().notNull(),
+  currency: currencyEnum("currency").notNull().default("USD"),
+  status: clientStatusEnum("status").notNull().default("active"),
+  startDate: timestamp("start_date").notNull().defaultNow(),
+  endDate: timestamp("end_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const projects = pgTable("projects", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => clients.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  revenue: decimal("revenue", { precision: 12, scale: 2 }).default("0"),
+  expenses: decimal("expenses", { precision: 12, scale: 2 }).default("0"),
+  profit: decimal("profit", { precision: 12, scale: 2 }).default("0"),
+  margin: decimal("margin", { precision: 12, scale: 2 }).default("0"),
+  hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 }).default("0"),
+  hoursWorked: integer("hours_worked").default(0),
+  status: projectStatusEnum("status").notNull().default("not_started"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -110,6 +169,17 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   categories: many(categories),
   taxSettings: one(taxSettings),
   budgets: many(budgets),
+}));
+
+export const clientRelations = relations(clients, ({ many }) => ({
+  projects: many(projects),
+}));
+
+export const projectRelations = relations(projects, ({ one }) => ({
+  client: one(clients, {
+    fields: [projects.clientId],
+    references: [clients.id],
+  }),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({

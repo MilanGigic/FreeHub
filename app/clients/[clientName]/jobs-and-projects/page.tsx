@@ -2,8 +2,6 @@
 
 import JobsAndProjectsSlideOver from "@/components/Clients/ClientPage/JobsAndProjects/JobsAndProjectsSlideOver";
 import { useUIStore } from "@/lib/store/useUIStore";
-import { Project } from "@/types/types";
-import { useState } from "react";
 
 const projects = [
   {
@@ -69,10 +67,13 @@ const projects = [
 ];
 
 export default function JobsAndProjectsPage() {
-  const { jobsAndProjectsSlideOverOpen, isJobsAndProjectsSlideOverOpen } =
-    useUIStore();
+  const {
+    jobsAndProjectsSlideOverOpen,
+    isJobsAndProjectsSlideOverOpen,
+    setSelectedProject,
+    selectedProject,
+  } = useUIStore();
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   return (
     <div className="w-full h-full flex flex-col gap-2 md:gap-4">
       <div className="flex items-center justify-center">
@@ -86,7 +87,7 @@ export default function JobsAndProjectsPage() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className={`p-px bg-linear-to-b ${project.status === "Done" ? "from-[#34d399] via-[#21262d] to-[#0a0e14]" : project.status === "In Progress" ? "from-[#d29922] via-[#21262d] to-[#0a0e14]" : "from-[#f85149] via-[#21262d] to-[#0a0e14]"} rounded-lg hover:scale-105 transition-all duration-300 ease-out hover:cursor-pointer hover:shadow-xl hover:shadow-[#2dd4bf]/20`}
+            className={`p-px bg-linear-to-b ${project.status === "Done" ? "from-[#34d399] via-[#21262d] to-[#0a0e14]" : project.status === "In Progress" ? "from-[#d29922] via-[#21262d] to-[#0a0e14]" : "from-[#f85149] via-[#21262d] to-[#0a0e14]"} rounded-lg  ${selectedProject ? (selectedProject.id === project.id ? "scale-105 shadow-xl shadow-[#2dd4bf]/20" : "hover:scale-105 transition-all duration-300 ease-out hover:cursor-pointer hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer") : "hover:scale-105 transition-all duration-300 ease-out  hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer"}`}
             onClick={() => {
               jobsAndProjectsSlideOverOpen();
               setSelectedProject(project);
@@ -101,14 +102,6 @@ export default function JobsAndProjectsPage() {
                   {project.description}
                 </p>
               </div>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
-                Revenue:
-                <span className="primary-green">${project.revenue}</span>
-              </p>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
-                Expenses:
-                <span className="primary-red">${project.expenses}</span>
-              </p>
               <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
                 Profit:<span className="primary-green">${project.profit}</span>
               </p>
@@ -125,12 +118,6 @@ export default function JobsAndProjectsPage() {
                 <span className="primary-cyan">${project.hourlyRate}/hour</span>
               </p>
               <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
-                Hours Worked:
-                <span className="primary-cyan">
-                  {project.hoursWorked} hours
-                </span>
-              </p>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
                 Status:
                 <span
                   className={`${project.status === "Done" ? "primary-green" : project.status === "In Progress" ? "primary-slate" : "primary-red"}`}
@@ -142,9 +129,7 @@ export default function JobsAndProjectsPage() {
           </div>
         ))}
       </div>
-      {isJobsAndProjectsSlideOverOpen ? (
-        <JobsAndProjectsSlideOver selectedProject={selectedProject} />
-      ) : null}
+      {isJobsAndProjectsSlideOverOpen ? <JobsAndProjectsSlideOver /> : null}
     </div>
   );
 }

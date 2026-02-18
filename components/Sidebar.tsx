@@ -16,10 +16,10 @@ import { usePathname } from "next/navigation";
 
 const tabs = [
   "Dashboard",
-  "Finances",
   "Clients",
   "Projects",
   "Tasks",
+  "Finances",
   "Reports",
   "Messages",
 ];
