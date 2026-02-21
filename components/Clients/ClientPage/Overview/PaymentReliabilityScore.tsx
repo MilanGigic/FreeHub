@@ -14,7 +14,7 @@ export default function PaymentReliabilityScore() {
           </p>
           <div className="w-full h-4 border-2 background-border rounded-full">
             <div
-              className={`h-full ${paymentReliabilityScore >= 80 ? "bg-[#34d399]" : paymentReliabilityScore >= 60 ? "bg-[#d29922]" : "bg-[#f85149]"} rounded-full transition-all duration-300`}
+              className={`h-full ${paymentReliabilityScore >= 80 ? "bg-[var(--accent-green)]" : paymentReliabilityScore >= 60 ? "bg-[var(--accent-amber)]" : "bg-[var(--accent-red)]"} rounded-full transition-all duration-300`}
               style={{
                 width: `${paymentReliabilityScore.toString() + "%"}`,
                 minWidth: "8px",
@@ -24,7 +24,7 @@ export default function PaymentReliabilityScore() {
         </div>
         <div>
           <p className="text-sm text-secondary">Avg 4 days late</p>
-          <p className="text-sm font-semibold primary-indigo">
+          <p className="text-sm font-semibold primary-purple">
             16 of 20 invoices paid on time
           </p>
         </div>

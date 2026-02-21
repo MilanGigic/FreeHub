@@ -65,7 +65,7 @@ export default function RecentTransactions() {
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 w-full h-full flex flex-col">
-      <header className="flex items-center justify-between w-full border-b border-[#21262d] pb-4">
+      <header className="flex items-center justify-between w-full border-b background-border pb-4">
         <h1 className="text-secondary uppercase font-semibold text-lg">
           Recent Transactions
         </h1>
@@ -95,7 +95,7 @@ export default function RecentTransactions() {
               {transactionTypes.map((type) => (
                 <h1
                   key={type}
-                  className="text-secondary text-sm font-semibold p-2 hover:bg-[#131720] cursor-pointer hover:rounded-lg focus:border-[#2dd4bf] transition-all"
+                  className="text-secondary text-sm font-semibold p-2 hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all"
                 >
                   {type}
                 </h1>
@@ -109,7 +109,7 @@ export default function RecentTransactions() {
         {transactionData.map((transaction, index) => (
           <div
             key={index}
-            className="flex items-center justify-between border-b border-[#21262d] py-2"
+            className="flex items-center justify-between border-b background-border py-2"
           >
             <h1 className="text-primary text-sm font-medium w-full text-center">
               {transaction.name}{" "}

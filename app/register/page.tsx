@@ -75,19 +75,20 @@ export default function RegisterPage() {
     }
   };
 
+  const inputClass =
+    "w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent";
+  const labelClass = "block text-sm font-medium text-secondary mb-2";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f131a]">
-      <div className="w-full max-w-md p-8 bg-[#11151c] rounded-lg border border-[#1f2937]">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+    <div className="min-h-screen flex items-center justify-center background">
+      <div className="w-full max-w-md p-8 background-elevated rounded-lg border background-border">
+        <h1 className="text-2xl font-bold text-primary mb-6 text-center">
           Register
         </h1>
 
         <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="email" className={labelClass}>
               Email
             </label>
             <input
@@ -96,16 +97,13 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="your@email.com"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="country"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="country" className={labelClass}>
               Country
             </label>
             <input
@@ -114,16 +112,13 @@ export default function RegisterPage() {
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="United States"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="state"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="state" className={labelClass}>
               State - US only
             </label>
             <input
@@ -131,16 +126,13 @@ export default function RegisterPage() {
               type="text"
               value={state}
               onChange={(e) => setState(e.target.value)}
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="California"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="userName"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="userName" className={labelClass}>
               Username
             </label>
             <input
@@ -149,16 +141,13 @@ export default function RegisterPage() {
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="johndoe"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="password" className={labelClass}>
               Password
             </label>
             <input
@@ -168,19 +157,16 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="••••••••"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-tertiary mt-1">
               Must be at least 8 characters
             </p>
           </div>
 
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
+            <label htmlFor="confirmPassword" className={labelClass}>
               Confirm Password
             </label>
             <input
@@ -189,13 +175,13 @@ export default function RegisterPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={inputClass}
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-900/20 border border-red-500 rounded-lg text-red-400 text-sm">
+            <div className="p-3 bg-[var(--tag-expense-bg)] border border-[var(--accent-red)] rounded-lg primary-red text-sm">
               {error}
             </div>
           )}
@@ -203,18 +189,18 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            className="w-full py-2 px-4 btn-primary"
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-400 text-sm">
+          <p className="text-tertiary text-sm">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-blue-500 hover:text-blue-400 underline"
+              className="primary-cyan hover:opacity-80 underline"
             >
               Login
             </Link>

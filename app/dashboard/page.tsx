@@ -29,7 +29,7 @@ export default function DashboardPage() {
       {tabs.map((tab) => (
         <div
           key={tab}
-          className="bg-[#11151c] border border-[#1f2937] rounded-lg p-4 flex flex-col gap-2 shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/60 transition-all duration-50 cursor-pointer"
+          className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/60 transition-all duration-50 cursor-pointer text-primary"
         >
           <h1>{tab}</h1>
         </div>

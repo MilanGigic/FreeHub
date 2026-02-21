@@ -28,7 +28,7 @@ interface TooltipProps {
 const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#161b22] border border-[#21262d] rounded-lg p-3 shadow-lg">
+      <div className="background-elevated border background-border rounded-lg p-3 shadow-lg">
         <p className="text-secondary text-sm mb-2">
           {payload[0]?.payload?.date}
         </p>
@@ -105,8 +105,8 @@ export default function RevenueTrendGraph() {
             onClick={() => setTimeRange("30")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
               timeRange === "30"
-                ? "bg-[#21262d] text-primary-cyan border border-[#2dd4bf]"
-                : "bg-[#161b22] text-secondary border border-[#21262d] hover:border-[#30363d]"
+                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
+                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
             }`}
           >
             Monthly
@@ -115,8 +115,8 @@ export default function RevenueTrendGraph() {
             onClick={() => setTimeRange("365")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
               timeRange === "365"
-                ? "bg-[#21262d] text-primary-cyan border border-[#2dd4bf]"
-                : "bg-[#161b22] text-secondary border border-[#21262d] hover:border-[#30363d]"
+                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
+                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
             }`}
           >
             Yearly

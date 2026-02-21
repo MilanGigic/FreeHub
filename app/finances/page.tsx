@@ -13,23 +13,23 @@ export default function FinancesPage() {
 
   if (loading)
     return (
-      <div className="text-center text-white font-semibold">Loading...</div>
+      <div className="text-center text-primary font-semibold">Loading...</div>
     );
   if (!user)
     return (
-      <div className="text-center text-white font-semibold">
+      <div className="text-center text-primary font-semibold">
         You must be logged in to access this page
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-center flex-wrap">
           <Link
             href="/login"
-            className="text-[#2dd4bf] hover:text-[#2dd4bf]/60 transition-all underline"
+            className="primary-cyan hover:opacity-80 transition-all underline"
           >
             Login
           </Link>
-          <span className="text-gray-400">or</span>
+          <span className="text-tertiary">or</span>
           <Link
             href="/register"
-            className="text-[#2dd4bf] hover:text-[#2dd4bf]/60 transition-all underline"
+            className="primary-cyan hover:opacity-80 transition-all underline"
           >
             Register
           </Link>

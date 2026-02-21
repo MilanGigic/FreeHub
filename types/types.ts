@@ -81,14 +81,28 @@ export interface Transaction {
 }
 
 export interface Project {
-  id: number;
+  id: string;
+  userId: string;
+  clientId: string;
   name: string;
-  description: string;
-  revenue: number;
-  expenses: number;
-  profit: number;
-  margin: number;
-  hourlyRate: number;
+  description: string | null;
+  revenue: string | null;
+  expenses: string | null;
+  profit: string | null;
+  margin: string | null;
+  hourlyRate: string | null;
+  hoursWorked: number | null;
+  status: ProjectStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ProjectCalendar {
+  id: string;
+  projectId: string;
+  date: Date;
+  note: string;
   hoursWorked: number;
-  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

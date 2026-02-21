@@ -4,6 +4,7 @@ import { useUIStore } from "@/lib/store/useUIStore";
 import { Bell, ChevronDown, List, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -14,20 +15,20 @@ export default function Header() {
   const spaces = ["Space 1", "Space 2", "Space 3"];
 
   return (
-    <div className="w-full flex px-4 py-2 gap-2 border-b border-[#21262d] sticky top-0 z-10 bg-black/50 backdrop-blur-sm">
+    <div className="w-full flex px-4 py-2 gap-2 border-b background-border sticky top-0 z-30 background backdrop-blur-sm">
       {/* DESKTOP VIEW */}
       <div className="relative hidden sm:block">
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="h-10 min-w-[170px] rounded-lg bg-[#11151c] border border-[#1f2937] px-4 py-2 text-left text-xs font-semibold uppercase text-white flex items-center justify-between focus:border-[#2dd4bf] transition-all"
+          className="h-10 min-w-[170px] rounded-lg background-elevated border background-border px-4 py-2 text-left text-xs font-semibold uppercase text-primary flex items-center justify-between focus-border-accent transition-all outline-none"
         >
           <span>{selected ?? "Select a space"}</span>
           <span className="ml-2 text-[10px]">▾</span>
         </button>
 
         {open && (
-          <div className="absolute mt-1 w-full rounded-lg bg-[#11151c] border border-[#1f2937] shadow-lg z-10">
+          <div className="absolute mt-1 w-full rounded-lg background-elevated border background-border shadow-lg z-10">
             {spaces.map((project) => (
               <button
                 key={project}
@@ -36,7 +37,7 @@ export default function Header() {
                   setSelected(project);
                   setOpen(false);
                 }}
-                className="w-full px-4 py-2 text-xs text-left text-white hover:bg-[#131720] cursor-pointer hover:rounded-lg focus:border-[#2dd4bf] transition-all"
+                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
               >
                 {project}
               </button>
@@ -48,7 +49,7 @@ export default function Header() {
       {!isSidebarOpen ? (
         <div className="flex justify-start items-center sm:hidden">
           <button onClick={() => sidebarOpen()} className="p-2">
-            <List size={40} className="text-white transition-all" />
+            <List size={40} className="text-primary transition-all" />
           </button>
         </div>
       ) : null}
@@ -56,14 +57,14 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="h-10 min-w-[170px] rounded-lg bg-[#11151c] border border-[#1f2937] px-4 py-2 text-left text-xs font-semibold uppercase text-white flex items-center justify-between focus:border-[#2dd4bf] transition-all"
+          className="h-10 min-w-[170px] rounded-lg background-elevated border background-border px-4 py-2 text-left text-xs font-semibold uppercase text-primary flex items-center justify-between focus-border-accent transition-all outline-none"
         >
           <span>{selected ?? "Select a space"}</span>
           <span className="ml-2 text-[10px]">▾</span>
         </button>
 
         {open && (
-          <div className="absolute top-12 w-full rounded-lg bg-[#11151c] border border-[#1f2937] shadow-lg z-10">
+          <div className="absolute top-12 w-full rounded-lg background-elevated border background-border shadow-lg z-10">
             {spaces.map((project) => (
               <button
                 key={project}
@@ -72,7 +73,7 @@ export default function Header() {
                   setSelected(project);
                   setOpen(false);
                 }}
-                className="w-full px-4 py-2 text-xs text-left text-white hover:bg-[#131720] cursor-pointer hover:rounded-lg focus:border-[#2dd4bf] transition-all"
+                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
               >
                 {project}
               </button>
@@ -90,25 +91,27 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search"
-            className="w-64 md:w-md h-8 rounded-md bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+            className="w-64 md:w-md h-8 rounded-md background-elevated border background-border px-4 py-2 outline-none text-sm text-primary placeholder:text-tertiary focus-border-accent transition-all"
           />
         </div>
         <div className="flex items-center gap-2">
           <Bell
             size={40}
-            className="px-2 text-white cursor-pointer hover:text-[#2dd4bf] transition-all"
+            className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
           />
           <Link href="/profile">
             <User
               size={40}
-              className="px-2 text-white cursor-pointer hover:text-[#2dd4bf] transition-all"
+              className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
             />
           </Link>
           <ChevronDown
             size={40}
-            className="px-2 text-white cursor-pointer hover:text-[#2dd4bf] transition-all"
+            className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
           />
         </div>
+
+        <ThemeToggle />
       </div>
     </div>
   );

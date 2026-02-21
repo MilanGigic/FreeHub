@@ -80,7 +80,7 @@ export default function JobsAndProjectsPage() {
         <input
           type="text"
           placeholder="Search projects"
-          className="p-2 w-64 md:w-md text-center rounded-lg border background-border outline-none focus:border-[#2dd4bf] transition-all duration-300 ease-out"
+          className="p-2 w-64 md:w-md text-center rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out placeholder:text-tertiary"
         />
       </div>
       <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">

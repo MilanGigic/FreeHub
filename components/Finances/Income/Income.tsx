@@ -34,17 +34,17 @@ export default function Income() {
         >
           New Income
         </h1>
-        <div className="w-full border-b-2 border-[#1f2937] pb-2">
+        <div className="w-full border-b-2 background-border pb-2">
           <IncomeForm />
         </div>
       </div>
       {incomes.map((income) => (
         <div key={income.id} className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-white">{income.title}</h2>
+            <h2 className="text-sm font-semibold text-primary">{income.title}</h2>
           </div>
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-white">
+            <h2 className="text-sm font-semibold text-primary">
               {income.amount}
             </h2>
           </div>

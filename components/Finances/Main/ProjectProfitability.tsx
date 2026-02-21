@@ -46,17 +46,17 @@ export default function ProjectProfitability() {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown((prev) => !prev)}
-            className={`flex items-center gap-2 text-secondary text-sm font-semibold background-elevated py-2 px-4 rounded-lg border background-border ${openDropdown ? "border-[#2dd4bf]" : "border-[#21262d]"} transition-all`}
+            className={`flex items-center gap-2 text-secondary text-sm font-semibold background-elevated py-2 px-4 rounded-lg border transition-all ${openDropdown ? "border-[var(--accent-cyan)]" : "background-border"}`}
           >
             All Projects <ChevronDown className="w-4 h-4 text-secondary" />
           </button>
           {openDropdown ? (
             <div className="flex flex-col gap-2 absolute mt-1 w-full h-full bg-black/50">
               <div className="flex flex-col items-center gap-2 background-elevated p-2 rounded-lg border background-border">
-                <h1 className="text-sm font-semibold text-secondary py-2 px-4 hover:bg-[#161b22] transition-all cursor-pointer w-full text-center rounded-lg">
+                <h1 className="text-sm font-semibold text-secondary py-2 px-4 hover:bg-[var(--border-default)] transition-all cursor-pointer w-full text-center rounded-lg">
                   Project 1
                 </h1>
-                <h1 className="text-sm font-semibold text-secondary py-2 px-4 hover:bg-[#161b22] transition-all cursor-pointer w-full text-center rounded-lg">
+                <h1 className="text-sm font-semibold text-secondary py-2 px-4 hover:bg-[var(--border-default)] transition-all cursor-pointer w-full text-center rounded-lg">
                   Project 2
                 </h1>
               </div>

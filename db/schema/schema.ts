@@ -80,6 +80,18 @@ export const projects = pgTable("projects", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const projectCalendar = pgTable("project_calendar", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  date: timestamp("date").notNull().defaultNow(),
+  note: text("note").notNull(),
+  hoursWorked: integer("hours_worked").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
 // Transaction type enum
 export const transactionTypeEnum = pgEnum("transaction_type", [
   "income",

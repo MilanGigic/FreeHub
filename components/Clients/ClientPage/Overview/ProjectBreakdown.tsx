@@ -48,7 +48,7 @@ export default function ProjectBreakdown() {
           {projectBreakdown.map((project) => (
             <tr
               key={project.project}
-              className="border-b border-[#21262d] text-center text-secondary"
+              className="border-b background-border text-center text-secondary"
             >
               <td className="text-sm text-primary py-2">{project.project}</td>
               <td className="primary-green">${project.revenue}</td>

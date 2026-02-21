@@ -59,9 +59,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f131a]">
-      <div className="w-full max-w-md p-8 bg-[#11151c] rounded-lg border border-[#1f2937]">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+    <div className="min-h-screen flex items-center justify-center background">
+      <div className="w-full max-w-md p-8 background-elevated rounded-lg border background-border">
+        <h1 className="text-2xl font-bold text-primary mb-6 text-center">
           Login
         </h1>
 
@@ -69,7 +69,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-300 mb-2"
+              className="block text-sm font-medium text-secondary mb-2"
             >
               Email
             </label>
@@ -79,7 +79,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent"
               placeholder="your@email.com"
             />
           </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-300 mb-2"
+              className="block text-sm font-medium text-secondary mb-2"
             >
               Password
             </label>
@@ -97,13 +97,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-900/20 border border-red-500 rounded-lg text-red-400 text-sm">
+            <div className="p-3 bg-[var(--tag-expense-bg)] border border-[var(--accent-red)] rounded-lg primary-red text-sm">
               {error}
             </div>
           )}
@@ -111,18 +111,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            className="w-full py-2 px-4 btn-primary"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-400 text-sm">
+          <p className="text-tertiary text-sm">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="text-blue-500 hover:text-blue-400 underline"
+              className="primary-cyan hover:opacity-80 underline"
             >
               Register
             </Link>

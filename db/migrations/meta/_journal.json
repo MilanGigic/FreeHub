@@ -57,6 +57,20 @@
       "when": 1771620039530,
       "tag": "0007_thick_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771708380570,
+      "tag": "0008_fuzzy_strong_guy",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1771708539777,
+      "tag": "0009_thankful_the_captain",
+      "breakpoints": true
     }
   ]
 }

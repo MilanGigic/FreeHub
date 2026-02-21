@@ -145,13 +145,13 @@ export default function ClientTable() {
         {currentClients.map((client) => (
           <div
             key={client.name}
-            className="rounded-lg border border-[#21262d] bg-[#161b22]/50 p-4"
+            className="rounded-lg border background-border background-elevated p-4"
           >
             <Link
               href={`/clients/${client.name.toLowerCase().replace(" ", "-").replace(".", "")}`}
               className="hover:cursor-pointer"
             >
-              <div className="text-primary font-medium text-base mb-3 border-b border-[#21262d] pb-2">
+              <div className="text-primary font-medium text-base mb-3 border-b background-border pb-2">
                 {client.name}
               </div>
               <dl className="grid gap-2">
@@ -214,7 +214,7 @@ export default function ClientTable() {
             {currentClients.map((client) => (
               <tr
                 key={client.name}
-                className="border-t border-[#21262d] hover:bg-[#161b22]/30"
+                className="border-t background-border hover:bg-[var(--bg-elevated)]"
               >
                 <td className="text-sm text-primary text-center px-2 py-3 hover:cursor-pointer">
                   <Link

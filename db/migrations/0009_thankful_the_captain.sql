@@ -1,0 +1,1 @@
+ALTER TABLE "project_calendar" ALTER COLUMN "hours_worked" SET NOT NULL;

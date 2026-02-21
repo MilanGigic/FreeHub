@@ -45,7 +45,7 @@ export default function TransactionSimulator() {
             {transactionTypes.map((type) => (
               <button
                 key={type}
-                className={`text-sm text-secondary background-elevated border background-border rounded-lg p-2 ${transactionType === type ? "border-[#2dd4bf]" : "border-[#21262d]"} transition-all cursor-pointer`}
+                className={`text-sm text-secondary background-elevated border rounded-lg p-2 transition-all cursor-pointer ${transactionType === type ? "border-[var(--accent-cyan)]" : "background-border"}`}
                 onClick={() => setTransactionType(type)}
               >
                 {type}
@@ -68,7 +68,7 @@ export default function TransactionSimulator() {
             <input
               type="text"
               id="transactionTitle"
-              className="w-full rounded-lg bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none focus:border-[#14b8a6] transition-all"
+              className="w-full rounded-lg background-elevated border background-border px-4 py-2 outline-none text-primary focus-border-accent transition-all"
             />
           </div>
           {transactionType === "Income" ? (
@@ -82,7 +82,7 @@ export default function TransactionSimulator() {
               <input
                 type="text"
                 id="transactionFrom"
-                className="w-full rounded-lg bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none focus:border-[#14b8a6] transition-all"
+                className="w-full rounded-lg background-elevated border background-border px-4 py-2 outline-none text-primary focus-border-accent transition-all"
               />
             </div>
           ) : (
@@ -96,25 +96,25 @@ export default function TransactionSimulator() {
               <input
                 type="text"
                 id="transactionFor"
-                className="w-full rounded-lg bg-[#11151c] border border-[#1f2937] px-4 py-2 outline-none focus:border-[#14b8a6] transition-all"
+                className="w-full rounded-lg background-elevated border background-border px-4 py-2 outline-none text-primary focus-border-accent transition-all"
               />
             </div>
           )}
         </div>
-        <button className="rounded-lg bg-[#11151c] border px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40">
+        <button className="rounded-lg background-elevated border px-4 py-2 outline-none border-[var(--accent-green)] transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-green)]/20">
           Simulate
         </button>
       </header>
 
       <main>
         <div className="flex items-center gap-2 justify-center pb-2">
-          <button className="rounded-lg bg-[#11151c] border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[#34d399]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-green)]">
             Income
           </button>
-          <button className="rounded-lg bg-[#11151c] border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[#f85149]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-red)]">
             Expense
           </button>
-          <button className="rounded-lg bg-[#11151c] border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[#d29922]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-amber)]">
             Recurring
           </button>
         </div>
@@ -130,7 +130,7 @@ export default function TransactionSimulator() {
           </thead>
           <tbody>
             {transactionTableData.map((data) => (
-              <tr key={data.title} className="border-b border-[#21262d] py-2">
+              <tr key={data.title} className="border-b background-border py-2">
                 <td className="text-sm text-primary text-center py-2">
                   {data.title}
                 </td>

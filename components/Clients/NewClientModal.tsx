@@ -57,14 +57,14 @@ export default function NewClientModal() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#34d399]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
       </div>
     );
   }
   if (error) {
     return (
       <div className="flex justify-center items-center h-full w-full">
-        <h1 className="text-red-500">{error}</h1>
+        <h1 className="primary-red">{error}</h1>
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function NewClientModal() {
                   onChange={(e) =>
                     setClientForm({ ...clientForm, firstName: e.target.value })
                   }
-                  className="rounded-md bg-[#11151c] w-full border border-[#1f2937] text-center p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+                  className="rounded-md background-elevated w-full border background-border text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                 />
               </div>
               <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
@@ -116,7 +116,7 @@ export default function NewClientModal() {
                   onChange={(e) =>
                     setClientForm({ ...clientForm, lastName: e.target.value })
                   }
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] w-full text-center p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+                  className="rounded-md background-elevated border background-border w-full text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                 />
               </div>
 
@@ -131,7 +131,7 @@ export default function NewClientModal() {
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] w-full text-center p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+                  className="rounded-md background-elevated border background-border w-full text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.email ? clientForm.email : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, email: e.target.value })
@@ -147,7 +147,7 @@ export default function NewClientModal() {
                 <select
                   name="currency"
                   id="currency"
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all background-elevated"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.currency ? clientForm.currency : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, currency: e.target.value })
@@ -166,7 +166,7 @@ export default function NewClientModal() {
                 <select
                   name="status"
                   id="status"
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all background-elevated"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.status ? clientForm.status : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, status: e.target.value })
@@ -189,7 +189,7 @@ export default function NewClientModal() {
                   type="date"
                   name="startDate"
                   placeholder="Start Date"
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.startDate ? clientForm.startDate : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, startDate: e.target.value })
@@ -207,7 +207,7 @@ export default function NewClientModal() {
                   type="date"
                   name="endDate"
                   placeholder="End Date"
-                  className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.endDate ? clientForm.endDate : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, endDate: e.target.value })
@@ -218,7 +218,7 @@ export default function NewClientModal() {
           </div>
           <button
             type="submit"
-            className="rounded-lg bg-[#11151c] border px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
+            className="rounded-lg background-elevated border px-4 py-2 outline-none border-[var(--accent-green)] transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-green)]/20"
           >
             Add Client
           </button>

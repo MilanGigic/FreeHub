@@ -14,7 +14,7 @@ export default function JobsAndProjectsSlideOver() {
   if (!selectedProject) return null;
   return (
     <div
-      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 ${selectedProject.status === "Done" ? "border-[#34d399]" : selectedProject.status === "In Progress" ? "border-[#d29922]" : "border-[#f85149]"} p-4`}
+      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 ${selectedProject.status === "Done" ? "border-[var(--accent-green)]" : selectedProject.status === "In Progress" ? "border-[var(--accent-amber)]" : "border-[var(--accent-red)]"} p-4`}
     >
       {isJobsAndProjectsSlideOverOpen ? (
         <div className="flex flex-col h-full">
@@ -31,7 +31,7 @@ export default function JobsAndProjectsSlideOver() {
             >
               <X
                 size={40}
-                className="text-white transition-all border rounded-full p-1 hover:cursor-pointer hover:text-[#f85149]"
+                className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:primary-red"
               />
             </button>
           </div>

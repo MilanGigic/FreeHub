@@ -65,38 +65,38 @@ export default function InvoicesTable() {
       <div className="flex items-center gap-2 justify-center pb-4">
         <h1>Show:</h1>
         <button
-          className={`${show === "all" ? "bg-[#2dd4bf]/20 text-[#2dd4bf]" : "primary-cyan"} border rounded-lg px-2 py-1 cursor-pointer hover:bg-[#2dd4bf]/20 hover:text-[#2dd4bf]`}
+          className={`${show === "all" ? "bg-[var(--accent-cyan)]/20 primary-cyan" : "primary-cyan"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-[var(--accent-cyan)]/20 hover:primary-cyan`}
           onClick={() => setShow("all")}
         >
           All
         </button>
         <button
-          className={`${show === "paid" ? "bg-[#34d399]/20 text-[#34d399]" : "primary-green"}  border rounded-lg px-2 py-1 cursor-pointer hover:bg-[#34d399]/20 hover:text-[#34d399]`}
+          className={`${show === "paid" ? "bg-[var(--accent-green)]/20 primary-green" : "primary-green"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-[var(--accent-green)]/20 hover:primary-green`}
           onClick={() => setShow("paid")}
         >
           Paid
         </button>
         <button
-          className={`${show === "pending" ? "bg-[#d29922]/20 text-[#d29922]" : "primary-amber"}  border rounded-lg px-2 py-1 cursor-pointer hover:bg-[#d29922]/20 hover:text-[#d29922]`}
+          className={`${show === "pending" ? "bg-[var(--accent-amber)]/20 primary-amber" : "primary-amber"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-[var(--accent-amber)]/20 hover:primary-amber`}
           onClick={() => setShow("pending")}
         >
           Pending
         </button>
         <button
-          className={`${show === "overdue" ? "bg-[#f85149]/20 text-[#f85149]" : "primary-red"}  border rounded-lg px-2 py-1 cursor-pointer hover:bg-[#f85149]/20 hover:text-[#f85149]`}
+          className={`${show === "overdue" ? "bg-[var(--accent-red)]/20 primary-red" : "primary-red"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-[var(--accent-red)]/20 hover:primary-red`}
           onClick={() => setShow("overdue")}
         >
           Overdue
         </button>
         <button
-          className={`${show === "draft" ? "bg-[#64748b]/20 text-[#64748b]" : "primary-slate"}  border rounded-lg px-2 py-1 cursor-pointer hover:bg-[#64748b]/20 hover:text-[#64748b]`}
+          className={`${show === "draft" ? "bg-[var(--accent-slate)]/20 primary-slate" : "primary-slate"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-[var(--accent-slate)]/20 hover:primary-slate`}
           onClick={() => setShow("draft")}
         >
           Draft
         </button>
       </div>
       <table className="w-full">
-        <thead className="border-b border-[#21262d] background-elevated w-full">
+        <thead className="border-b background-border background-elevated w-full">
           <tr>
             {invoiceListHeaders.map((header) => (
               <th
@@ -108,11 +108,11 @@ export default function InvoicesTable() {
             ))}
           </tr>
         </thead>
-        <tbody className="max-h-[500px] overflow-y-auto border-b border-[#21262d] background-elevated w-full">
+        <tbody className="max-h-[500px] overflow-y-auto border-b background-border background-elevated w-full">
           {invoiceListData.map((invoice, index) => (
             <tr
               key={index}
-              className="border-b border-[#21262d] text-center text-secondary"
+              className="border-b background-border text-center text-secondary"
             >
               <td className="text-sm text-primary py-2">
                 {invoice.invoiceNumber}

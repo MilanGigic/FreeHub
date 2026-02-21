@@ -9,7 +9,7 @@ export default function ProfilePage() {
     <div>
       <h1
         onClick={() => logout()}
-        className="cursor-pointer hover:text-[#ef4444] transition-all font-semibold uppercase"
+        className="text-primary cursor-pointer hover:primary-red transition-all font-semibold uppercase"
       >
         Logout
       </h1>

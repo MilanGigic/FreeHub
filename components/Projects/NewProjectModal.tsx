@@ -87,14 +87,14 @@ export default function NewProjectModal({
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#34d399]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
       </div>
     );
   }
   if (error) {
     return (
       <div className="flex justify-center items-center h-full w-full">
-        <h1 className="text-red-500">{error}</h1>
+        <h1 className="primary-red">{error}</h1>
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function NewProjectModal({
       <button onClick={() => setIsNewProjectModalOpen(false)}>
         <X
           size={40}
-          className="text-white transition-all border rounded-full p-1 hover:cursor-pointer hover:text-[#f85149]"
+          className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:primary-red"
         />
       </button>
       <div className="flex flex-col gap-2 md:gap-4 w-full border-b-2 background-border pb-4 background-elevated">
@@ -115,7 +115,7 @@ export default function NewProjectModal({
         <select
           id="client"
           name="client"
-          className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all background-elevated"
+          className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
           value={selectedClient?.id ?? ""}
           onChange={(e) => {
             const client = clients.find((c) => c.id === e.target.value);
@@ -131,7 +131,7 @@ export default function NewProjectModal({
             <option
               key={client.id}
               value={client.id}
-              className="text-secondary background-elevated border background-border rounded-lg p-2"
+              className="text-primary background-elevated border background-border rounded-lg p-2"
             >
               {client.firstName} {client.lastName}
             </option>
@@ -144,7 +144,7 @@ export default function NewProjectModal({
           type="text"
           id="name"
           name="name"
-          className="w-full p-2 rounded-lg border background-border outline-none focus:border-[#2dd4bf] transition-all duration-300 ease-out"
+          className="w-full p-2 rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out"
           value={projectForm.name ? projectForm.name : ""}
           onChange={(e) =>
             setProjectForm({ ...projectForm, name: e.target.value })
@@ -157,7 +157,7 @@ export default function NewProjectModal({
           type="text"
           id="description"
           name="description"
-          className="w-full p-2 rounded-lg border background-border outline-none focus:border-[#2dd4bf] transition-all duration-300 ease-out"
+          className="w-full p-2 rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out"
           value={projectForm.description ? projectForm.description : ""}
           onChange={(e) =>
             setProjectForm({ ...projectForm, description: e.target.value })
@@ -169,7 +169,7 @@ export default function NewProjectModal({
         <select
           id="status"
           name="status"
-          className="rounded-md bg-[#11151c] border border-[#1f2937] p-4 outline-none text-sm focus:border-[#2dd4bf] transition-all background-elevated"
+          className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
           value={projectForm.status ? projectForm.status : ""}
           onChange={(e) =>
             setProjectForm({
@@ -190,7 +190,7 @@ export default function NewProjectModal({
       <div className="flex flex-col gap-2 md:gap-4 w-full">
         <button
           type="submit"
-          className="primary-green p-2 rounded-lg border background-border outline-none focus:border-[#2dd4bf] transition-all duration-300 ease-out"
+          className="primary-green p-2 rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
         >
           Create Project
         </button>

@@ -31,16 +31,16 @@ export default function ClientPageHeader({
         <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => setOpen((o) => !o)}
-            className="text-secondary w-full hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:text-[#2dd4bf]"
+            className="text-secondary w-full hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
           >
             Select a tab
           </button>
-          <h1 className="text-center text-[#2dd4bf] w-full h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold relative">
+          <h1 className="text-center primary-cyan w-full h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold relative">
             {clientPageTab}
           </h1>
         </div>
         {open && (
-          <div className="absolute mt-1 rounded-lg bg-[#11151c] border border-[#1f2937] shadow-lg z-10">
+          <div className="absolute mt-1 rounded-lg background-elevated border background-border shadow-lg z-10">
             {tabs.map((tab, index) => (
               <button
                 key={index}
@@ -50,13 +50,13 @@ export default function ClientPageHeader({
                   );
                   setOpen(false);
                 }}
-                className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:text-[#2dd4bf] w-full"
+                className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan w-full"
               >
                 <h1 className="text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold">
                   <span>{tab.icon}</span>
                   {tab.tab}
                   <div
-                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[#21262d] dark:bg-[#2dd4bf] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase() ? "w-full" : "w-0"}`}
+                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[var(--accent-cyan)] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase() ? "w-full" : "w-0"}`}
                   ></div>
                 </h1>
               </button>
@@ -70,7 +70,7 @@ export default function ClientPageHeader({
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:text-[#2dd4bf]"
+            className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
             onClick={() =>
               router.push(
                 `/clients/${clientName.toLowerCase().replace(" ", "-")}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
@@ -78,13 +78,13 @@ export default function ClientPageHeader({
             }
           >
             <h1
-              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "text-[#2dd4bf]" : "text-secondary"}`}
+              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "primary-cyan" : "text-secondary"}`}
             >
               <span>{tab.icon}</span>
               {tab.tab}
             </h1>
             <div
-              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[#21262d] dark:bg-[#2dd4bf] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "w-full" : "w-0"}`}
+              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[var(--accent-cyan)] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "w-full" : "w-0"}`}
             ></div>
           </button>
         ))}

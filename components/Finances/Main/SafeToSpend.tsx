@@ -65,16 +65,16 @@ export default function SafeToSpend() {
   };
 
   return (
-    <div className="w-full h-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg">
+    <div className="w-full h-full p-px bg-linear-to-b from-[var(--accent-cyan)] via-[var(--border-default)] to-[var(--bg-main)] rounded-lg">
       <div className="w-full h-full flex flex-col background-border rounded-lg p-4 background-elevated gap-4">
-        <header className="w-full flex flex-col border-b-2 border-[#21262d] pb-4">
+        <header className="w-full flex flex-col border-b-2 background-border pb-4">
           <h1 className="text-2xl font-base uppercase flex flex-col justify-center text-secondary">
             Safe to Spend:
             <span className="primary-cyan text-4xl font-bold">$1,200</span>
           </h1>
         </header>
 
-        <section className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 w-full text-secondary shadow-lg shadow-[#0a0e14]">
+        <section className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 w-full text-secondary shadow-lg shadow-black/10 dark:shadow-black/30">
           <h1 className="flex items-center gap-2">
             <Star className="primary-green" />
             Reserved:{" "}
@@ -86,9 +86,9 @@ export default function SafeToSpend() {
             <span className="primary-red text-lg font-bold">$1,200</span>
           </h1>
           <h1 className="flex items-center gap-2">
-            <ShieldCheck className="primary-indigo" />
+            <ShieldCheck className="primary-purple" />
             Safety Buffer:
-            <span className="primary-indigo text-lg font-bold">$1,600</span>
+            <span className="primary-purple text-lg font-bold">$1,600</span>
           </h1>
         </section>
 
@@ -104,7 +104,7 @@ export default function SafeToSpend() {
               value={price}
               onBlur={handleBlur}
               onChange={(e) => handleChange(e)}
-              className="border border-[#21262d] pl-8 p-2 text-secondary outline-none focus:border-[#2dd4bf] transition-all rounded-lg bg-[#11151c] w-full"
+              className="border background-border pl-8 p-2 text-primary outline-none focus-border-accent transition-all rounded-lg background-elevated w-full placeholder:text-tertiary"
             />
           </div>
           {calculatedPrice !== null && (

@@ -74,7 +74,7 @@ export default function ExpensesForm() {
           <input
             type="text"
             placeholder="Enter Expense Title"
-            className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none focus:border-[#14b8a6] transition-all w-full"
+            className="rounded-lg background-elevated text-primary text-center border background-border px-4 py-2 outline-none focus-border-accent transition-all w-full placeholder:text-tertiary"
             value={
               selectedCategory
                 ? selectedCategory.name
@@ -88,11 +88,11 @@ export default function ExpensesForm() {
           {debouncedFormTitle && debouncedFormTitle.length > 2 && (
             <div>
               {categories.length > 0 ? (
-                <div className="absolute top-12 w-full p-2 rounded-lg bg-[#0f131a] border border-[#1f2937] flex flex-col gap-2  h-48 overflow-y-auto">
+                <div className="absolute top-12 w-full p-2 rounded-lg background-elevated border background-border flex flex-col gap-2 h-48 overflow-y-auto">
                   {categories.map((category) => (
                     <div
                       key={category.id}
-                      className="flex items-center justify-center gap-2 cursor-pointer hover:bg-[#1f2937] rounded-lg p-2"
+                      className="flex items-center justify-center gap-2 cursor-pointer hover:bg-[var(--border-default)] rounded-lg p-2"
                       onClick={() => {
                         setSelectedCategory(category);
                         setExpenseFormTitle(null);
@@ -103,17 +103,17 @@ export default function ExpensesForm() {
                         style={{
                           backgroundColor: category.color
                             ? category.color
-                            : "#000000",
+                            : "var(--text-primary)",
                         }}
                       ></div>
-                      <h2 className="text-sm font-semibold text-white">
+                      <h2 className="text-sm font-semibold text-primary">
                         {category.name}
                       </h2>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="absolute top-12 w-full p-2 rounded-lg bg-[#0f131a] border border-[#1f2937] flex items-center justify-center">
+                <div className="absolute top-12 w-full p-2 rounded-lg background-elevated border background-border flex items-center justify-center text-primary">
                   <p>Other...</p>
                 </div>
               )}
@@ -122,14 +122,14 @@ export default function ExpensesForm() {
         </div>
         <textarea
           placeholder="Enter Expense Description"
-          className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none resize-none text-xs focus:border-[#14b8a6] transition-all"
+          className="rounded-lg background-elevated text-primary text-center border background-border px-4 py-2 outline-none resize-none text-xs focus-border-accent transition-all placeholder:text-tertiary"
           value={expenseFormDescription ? expenseFormDescription : ""}
           onChange={(e) => setExpenseFormDescription(e.target.value)}
         />
         <input
           type="number"
           placeholder="Enter Expense Amount"
-          className="rounded-lg bg-[#11151c] text-center border border-[#1f2937] px-4 py-2 outline-none font-mono focus:border-[#14b8a6] transition-all"
+          className="rounded-lg background-elevated text-primary text-center border background-border px-4 py-2 outline-none font-mono focus-border-accent transition-all placeholder:text-tertiary"
           value={expenseFormAmount ? expenseFormAmount : ""}
           onChange={(e) => setExpenseFormAmount(Number(e.target.value))}
         />
@@ -137,13 +137,13 @@ export default function ExpensesForm() {
       <div className="flex justify-between">
         <button
           type="submit"
-          className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#34d399] transition-all cursor-pointer text-white  font-semibold hover:bg-[#34d399]/40"
+          className="rounded-lg background-elevated border border-[var(--accent-green)] px-4 py-2 outline-none transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-green)]/20"
         >
           Add Expense
         </button>
         <button
           type="button"
-          className="rounded-lg bg-[#11151c] border  px-4 py-2 outline-none border-[#ef4444] transition-all cursor-pointer text-white  font-semibold hover:bg-[#ef4444]/40"
+          className="rounded-lg background-elevated border border-[var(--accent-red)] px-4 py-2 outline-none transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-red)]/20"
         >
           Cancel
         </button>
