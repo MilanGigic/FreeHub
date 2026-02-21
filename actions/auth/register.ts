@@ -17,11 +17,13 @@ export async function register(
   email: string,
   userName: string,
   password: string,
+  country: string,
+  state: string | null,
   encryptedDEK: string,
 ): Promise<RegisterResult> {
   try {
     // Validate input
-    if (!email || !userName || !password || !encryptedDEK) {
+    if (!email || !userName || !password || !encryptedDEK || !country) {
       return { success: false, error: "All fields are required" };
     }
 
@@ -58,6 +60,8 @@ export async function register(
       .values({
         email,
         userName,
+        country,
+        state,
         passwordHash,
         encryptedDEK: encryptedDEK,
       })

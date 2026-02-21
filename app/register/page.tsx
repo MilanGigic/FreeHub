@@ -8,12 +8,14 @@ import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,6 +49,8 @@ export default function RegisterPage() {
         email,
         userName,
         password,
+        country,
+        state,
         encryptedDEKWithSalt,
       );
 
@@ -94,6 +98,41 @@ export default function RegisterPage() {
               required
               className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
               placeholder="your@email.com"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="country"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Country
+            </label>
+            <input
+              id="country"
+              type="text"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              required
+              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              placeholder="United States"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="state"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              State - US only
+            </label>
+            <input
+              id="state"
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="w-full px-4 py-2 bg-[#0f131a] border border-[#1f2937] rounded-lg text-white focus:outline-none focus:border-blue-500"
+              placeholder="California"
             />
           </div>
 
