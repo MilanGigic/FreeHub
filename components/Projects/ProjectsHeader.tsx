@@ -7,10 +7,12 @@ import { useAuth } from "@/lib/useAuth";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { toast } from "react-toastify";
+import { useUIStore } from "@/lib/store/useUIStore";
 
 export default function ProjectsHeader() {
   const { user } = useAuth();
   const {projects, setProjects, totalRevenue, setTotalRevenue} = useDataStore()
+  const { isNewProjectModalLoading } = useUIStore()
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] =
     useState<boolean>(false);
 
@@ -50,6 +52,8 @@ export default function ProjectsHeader() {
       }
     })()
   }, [setProjects, user])
+
+  
   return (
     <header className="grid grid-cols-1 md:grid-cols-5 gap-2 uppercase w-full">
       <div className="background-elevated border background-border rounded-lg p-4 w-full">
@@ -88,12 +92,20 @@ export default function ProjectsHeader() {
             </div>
           )}
         </div>
-        <button
-          className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
-          onClick={() => setIsNewProjectModalOpen(true)}
-        >
-          New Project
+        {isNewProjectModalLoading ? 
+(
+  <div className="flex justify-center items-center h-full w-full">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
+    </div>
+) : (
+
+  <button
+  className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
+  onClick={() => setIsNewProjectModalOpen(true)}
+  >
+   New Project
         </button>
+        )}
         {isNewProjectModalOpen && (
           <NewProjectModal
             setIsNewProjectModalOpen={setIsNewProjectModalOpen}

@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "@/lib/useAuth";
+import { useUIStore } from "@/lib/store/useUIStore";
 
 export default function NewProjectModal({
   setIsNewProjectModalOpen,
@@ -14,7 +15,7 @@ export default function NewProjectModal({
   setIsNewProjectModalOpen: (isOpen: boolean) => void;
 }) {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setIsNewProjectModalLoading } = useUIStore()
   const [error, setError] = useState<string | null>(null);
   const [projectForm, setProjectForm] = useState<ProjectForm>({
     name: "",
@@ -26,7 +27,7 @@ export default function NewProjectModal({
 
   useEffect(() => {
     const fetchClients = async () => {
-      setIsLoading(true);
+      setIsNewProjectModalLoading(true);
       setError(null);
       try {
         const res = await fetchAllClients();
@@ -38,7 +39,7 @@ export default function NewProjectModal({
       } catch (error) {
         setError(error as string);
       } finally {
-        setIsLoading(false);
+        setIsNewProjectModalLoading(false);
       }
     };
     fetchClients();
@@ -46,17 +47,17 @@ export default function NewProjectModal({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsNewProjectModalLoading(true);
     setError(null);
     if (!selectedClient) {
       toast.error("Please select a client");
-      setIsLoading(false);
+      setIsNewProjectModalLoading(false);
       return;
     }
 
     if (!user) {
       toast.error("Please login to add a project");
-      setIsLoading(false);
+      setIsNewProjectModalLoading(false);
       return null;
     }
 
@@ -64,7 +65,7 @@ export default function NewProjectModal({
     if (res.data) {
       if (res.success) {
         toast.success("Project added successfully");
-        setIsLoading(false);
+        setIsNewProjectModalLoading(false);
         setProjectForm({
           name: "",
           description: "",
@@ -75,22 +76,16 @@ export default function NewProjectModal({
       }
       if (!res.success) {
         toast.error(res.error);
-        setIsLoading(false);
+        setIsNewProjectModalLoading(false);
       }
     } else {
       toast.error("An error occurred while adding project: " + res.error);
-      setIsLoading(false);
+      setIsNewProjectModalLoading(false);
       setError("An error occurred while adding project: " + res.error);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
-      </div>
-    );
-  }
+  
   if (error) {
     return (
       <div className="flex justify-center items-center h-full w-full">
