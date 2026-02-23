@@ -13,12 +13,18 @@ const headerLabels = [
 ];
 
 const getLabelColor = (row: string, index: number) => {
-  if (row === "first" && index === 1) return "from-[#34d399] to-[#21262d]";
-  if (row === "first" && index === 2) return "from-[#21262d] to-[#34d399]";
-  if (row === "second" && index === 3) return "from-[#d29922] to-[#21262d]";
-  if (row === "second" && index === 4) return "from-[#21262d] to-[#d29922]";
-  if (row === "third" && index === 5) return "from-[#f85149] to-[#21262d]";
-  if (row === "third" && index === 6) return "from-[#21262d] to-[#f85149]";
+  if (row === "first" && index === 1)
+    return "from-(--accent-green) to-[--background-main]";
+  if (row === "first" && index === 2)
+    return "from-(--background-main) to-(--accent-green)";
+  if (row === "second" && index === 3)
+    return "from-(--accent-amber) to-(--background-main)";
+  if (row === "second" && index === 4)
+    return "from-(--background-main) to-(--accent-amber)";
+  if (row === "third" && index === 5)
+    return "from-(--accent-red) to-(--background-main)";
+  if (row === "third" && index === 6)
+    return "from-(--background-main) to-(--accent-red)";
   return "";
 };
 
@@ -44,7 +50,7 @@ export default function ClientsHeader() {
               <div
                 className={`background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 ${getLabelRowColor(label.row)} uppercase`}
               >
-                <h1 className="text-base font-semibold flex flex-col justify-center text-secondary">
+                <h1 className="text-base font-semibold flex flex-col justify-center primary-slate">
                   {label.label}
                 </h1>
                 <p className={`text-2xl font-bold flex items-center gap-2`}>

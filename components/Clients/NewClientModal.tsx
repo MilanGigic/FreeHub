@@ -57,7 +57,7 @@ export default function NewClientModal() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-(--accent-green)" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function NewClientModal() {
               <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
                 <label
                   htmlFor="firstName"
-                  className="text-secondary uppercase font-semibold"
+                  className="text-primary uppercase font-semibold"
                 >
                   First Name
                 </label>
@@ -104,7 +104,7 @@ export default function NewClientModal() {
               <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
                 <label
                   htmlFor="lastName"
-                  className="text-secondary uppercase font-semibold"
+                  className="text-primary uppercase font-semibold"
                 >
                   Last Name
                 </label>
@@ -123,7 +123,7 @@ export default function NewClientModal() {
               <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
                 <label
                   htmlFor="email"
-                  className="text-secondary uppercase font-semibold"
+                  className="text-primary uppercase font-semibold"
                 >
                   Email
                 </label>
@@ -141,7 +141,7 @@ export default function NewClientModal() {
             </div>
             <div className="flex flex-col gap-2 md:gap-4 w-full">
               <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
-                <h1 className="text-secondary uppercase font-semibold">
+                <h1 className="text-primary uppercase font-semibold">
                   Currency
                 </h1>
                 <select
@@ -160,9 +160,7 @@ export default function NewClientModal() {
                 </select>
               </div>
               <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
-                <h1 className="text-secondary uppercase font-semibold">
-                  Status
-                </h1>
+                <h1 className="text-primary uppercase font-semibold">Status</h1>
                 <select
                   name="status"
                   id="status"
@@ -181,7 +179,7 @@ export default function NewClientModal() {
               <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <label
                   htmlFor="startDate"
-                  className="text-secondary uppercase font-semibold"
+                  className="text-primary uppercase font-semibold"
                 >
                   Start Date
                 </label>
@@ -199,7 +197,7 @@ export default function NewClientModal() {
               <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <label
                   htmlFor="endDate"
-                  className="text-secondary uppercase font-semibold"
+                  className="text-primary uppercase font-semibold"
                 >
                   End Date
                 </label>

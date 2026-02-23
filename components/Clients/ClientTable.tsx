@@ -127,11 +127,11 @@ export default function ClientTable() {
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="text-secondary hover:cursor-pointer disabled:opacity-50"
+            className="primary-slate hover:cursor-pointer disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-secondary">
+          <span className="text-primary">
             {currentPage} of {totalPages}
           </span>
           <button
@@ -162,7 +162,7 @@ export default function ClientTable() {
                       key={label}
                       className="flex justify-between items-center text-sm"
                     >
-                      <dt className="text-secondary">{label}</dt>
+                      <dt className="text-primary">{label}</dt>
                       <dd className="text-primary font-mono">
                         {String(getClientValue(client, key))}
                       </dd>
@@ -181,17 +181,17 @@ export default function ClientTable() {
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="text-secondary hover:cursor-pointer disabled:opacity-50"
+            className="text-primary hover:cursor-pointer disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-secondary">
+          <span className="text-primary">
             {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="text-secondary hover:cursor-pointer disabled:opacity-50"
+            className="text-primary hover:cursor-pointer disabled:opacity-50"
           >
             Next
           </button>
@@ -202,7 +202,7 @@ export default function ClientTable() {
               {tableLists.map((list) => (
                 <th
                   key={list}
-                  className="text-sm text-secondary text-center whitespace-nowrap px-2 py-3"
+                  className="text-sm text-primary text-center whitespace-nowrap px-2 py-3"
                 >
                   {list}
                 </th>
@@ -226,28 +226,28 @@ export default function ClientTable() {
                     {client.name}
                   </Link>
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.status}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.revenueMTD}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.revenueYTD}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.outstanding}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.avgPaymentTime}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.profitability}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.lastPaymentDate}
                 </td>
-                <td className="text-sm text-secondary text-center px-2 py-3">
+                <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.safeToSpendContribution}
                 </td>
               </tr>

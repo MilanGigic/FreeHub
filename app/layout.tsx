@@ -35,6 +35,7 @@ export default function RootLayout({
     <html lang="en" className="min-h-screen" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased w-full min-h-screen h-full`}
+        suppressHydrationWarning
       >
         <Script
           id="theme-init"

@@ -2,7 +2,7 @@
 
 import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { useDataStore } from "@/lib/store/useDataStore";
-import { useUIStore } from "@/lib/store/useUIStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 export default function ProjectsMain() {
   const router = useRouter();
-  const { setSelectedProject } = useUIStore();
+  const { setSelectedProject } = useProjectStore();
   const { projects, setProjects } = useDataStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

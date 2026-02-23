@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useUIStore } from "@/lib/store/useUIStore";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -49,7 +49,7 @@ function getCalendarDays(year: number, month: number) {
 }
 
 export default function ProjectCalendar() {
-  const { selectedProject, selectedDate, setSelectedDate } = useUIStore();
+  const { selectedProject, selectedDate, setSelectedDate } = useProjectStore();
 
   const projectCreatedAt = useMemo(() => {
     if (!selectedProject?.createdAt) return null;
@@ -62,13 +62,19 @@ export default function ProjectCalendar() {
       ? new Date(projectCreatedAt.getFullYear(), projectCreatedAt.getMonth(), 1)
       : new Date(),
   );
+  const [today, setToday] = useState<Date | null>(null);
+
+  useEffect(() => {
+    // Defer client-only "today" to after paint to avoid server/client date mismatch (hydration)
+    const id = requestAnimationFrame(() => setToday(new Date()));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   if (!selectedProject) return null;
 
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const calendarDays = getCalendarDays(year, month);
-  const today = new Date();
 
   const goPrev = () =>
     setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
@@ -76,11 +82,7 @@ export default function ProjectCalendar() {
     setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
 
   return (
-    <div className="p-4 rounded-lg w-full mr-3">
-      <h2 className="text-2xl font-bold text-primary mb-4 text-center sm:text-left">
-        Project Calendar
-      </h2>
-
+    <div className="p-4 rounded-lg w-full h-full mr-3">
       <div className="flex items-center justify-between mb-4">
         <button
           type="button"
@@ -117,7 +119,7 @@ export default function ProjectCalendar() {
             return <div key={`empty-${i}`} className="aspect-square" />;
           }
           const cellDate = new Date(year, month, day);
-          const isToday = isSameDay(cellDate, today);
+          const isToday = today ? isSameDay(cellDate, today) : false;
           const isProjectStart =
             projectCreatedAt && isSameDay(cellDate, projectCreatedAt);
           return (
@@ -130,10 +132,10 @@ export default function ProjectCalendar() {
               }
               className={`
                 h-36 flex items-center justify-center rounded-lg text-sm font-medium border
-                ${isProjectStart ? "bg-(--accent-cyan) text-white ring-2 ring-(--accent-cyan) ring-offset-2 ring-offset-(--bg-main)" : ""}
-                ${!isProjectStart && isToday ? "border-2 border-(--accent-cyan) text-primary" : ""}
+                ${isProjectStart ? "bg-(--accent-cyan) text-white" : ""}
+                ${!isProjectStart && isToday ? "border-2 bg-(--accent-green) text-white" : ""}
                 ${!isProjectStart && !isToday ? "text-primary hover:background-elevated" : ""}
-                ${selectedDate?.getDate() === cellDate.getDate() ? "bg-(--accent-green) text-white ring-2 ring-(--accent-cyan) ring-offset-2 ring-offset-(--bg-main)" : ""}
+                ${selectedDate?.getDate() === cellDate.getDate() ? "bg-(--accent-purple) text-white" : ""}
                 `}
             >
               {day}
@@ -141,13 +143,6 @@ export default function ProjectCalendar() {
           );
         })}
       </div>
-
-      {projectCreatedAt && (
-        <p className="mt-3 text-sm primary-slate">
-          Project started on {MONTHS[projectCreatedAt.getMonth()]}{" "}
-          {projectCreatedAt.getDate()}, {projectCreatedAt.getFullYear()}
-        </p>
-      )}
     </div>
   );
 }

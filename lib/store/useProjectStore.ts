@@ -1,0 +1,25 @@
+import { Project } from "@/types/types";
+import { create } from "zustand";
+
+type ProjectStore = {
+  selectedProject: Project | null;
+  setSelectedProject: (project: Project | null) => void;
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  note: string;
+  setNote: (note: string) => void;
+  hoursWorked: number | null;
+  setHoursWorked: (hoursWorked: number | null) => void;
+};
+
+export const useProjectStore = create<ProjectStore>((set) => ({
+  selectedProject: null,
+  setSelectedProject: (project: Project | null) =>
+    set({ selectedProject: project }),
+  selectedDate: null,
+  setSelectedDate: (date: Date | null) => set({ selectedDate: date }),
+  note: "",
+  setNote: (note: string) => set({ note }),
+  hoursWorked: null,
+  setHoursWorked: (hoursWorked: number | null) => set({ hoursWorked }),
+}));
