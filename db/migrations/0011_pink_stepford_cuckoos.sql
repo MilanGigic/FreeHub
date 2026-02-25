@@ -1,0 +1,1 @@
+ALTER TABLE "project_revenue" ADD COLUMN "note" text NOT NULL DEFAULT '';

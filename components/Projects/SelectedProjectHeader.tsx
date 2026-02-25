@@ -11,6 +11,7 @@ export default function SelectedProjectHeader() {
       <h1 className="text-4xl font-bold text-primary border-b-2 background-border pb-2">
         {selectedProject.name}
       </h1>
+
       <div className="flex gap-2 md:gap-4 w-full justify-between border-b-2 background-border p-2 items-center">
         <div>
           <div className="flex items-center gap-2 px-4">
@@ -39,7 +40,7 @@ export default function SelectedProjectHeader() {
               Revenue
             </h1>
             <p className="text-sm primary-slate text-center">
-              ${selectedProject.revenue}
+              ${selectedProject.totalRevenue}
             </p>
           </div>
           <div className="border h-full background-border" />
@@ -55,6 +56,7 @@ export default function SelectedProjectHeader() {
           </div>
         </div>
       </div>
+      <div></div>
     </header>
   );
 }

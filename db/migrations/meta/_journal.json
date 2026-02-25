@@ -71,6 +71,20 @@
       "when": 1771708539777,
       "tag": "0009_thankful_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1771934666143,
+      "tag": "0010_moaning_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772020960789,
+      "tag": "0011_pink_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }

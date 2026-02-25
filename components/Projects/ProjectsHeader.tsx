@@ -8,11 +8,15 @@ import { useDataStore } from "@/lib/store/useDataStore";
 import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { toast } from "react-toastify";
 import { useUIStore } from "@/lib/store/useUIStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
+import Link from "next/link";
 
 export default function ProjectsHeader() {
   const { user } = useAuth();
-  const {projects, setProjects, totalRevenue, setTotalRevenue} = useDataStore()
-  const { isNewProjectModalLoading } = useUIStore()
+  const { projects, setProjects, totalRevenue, setTotalRevenue } =
+    useDataStore();
+  const { isNewProjectModalLoading } = useUIStore();
+  const { setSelectedProject } = useProjectStore();
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] =
     useState<boolean>(false);
 
@@ -20,8 +24,10 @@ export default function ProjectsHeader() {
   const [results, setResults] = useState<Project[]>([]);
 
   useEffect(() => {
-    setTotalRevenue(projects.reduce((acc, project) => acc + Number(project.revenue || 0), 0))
-  }, [projects, setTotalRevenue])
+    setTotalRevenue(
+      projects.reduce((acc, project) => acc + Number(project.revenue || 0), 0),
+    );
+  }, [projects, setTotalRevenue]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -39,37 +45,44 @@ export default function ProjectsHeader() {
     (async () => {
       if (!user) return;
 
-      const res = await fetchAllProjects(user.id)
+      const res = await fetchAllProjects(user.id);
 
       if (!res.success) {
-        toast.error(res.error)
+        toast.error(res.error);
       }
 
       if (res.data) {
         if (res.data.length > 0) {
-          setProjects(res.data)
+          setProjects(res.data);
         }
       }
-    })()
-  }, [setProjects, user])
+    })();
+  }, [setProjects, user]);
 
-  
   return (
     <header className="grid grid-cols-1 md:grid-cols-5 gap-2 uppercase w-full">
       <div className="background-elevated border background-border rounded-lg p-4 w-full">
         <h1 className="text-base font-semibold flex flex-col justify-center primary-slate">
-          Total Projects: <span className="text-2xl font-bold text-primary">{projects.length}</span>
+          Total Projects:{" "}
+          <span className="text-2xl font-bold text-primary">
+            {projects.length}
+          </span>
         </h1>
       </div>
       <div className="background-elevated border background-border rounded-lg p-4 w-full">
         <h1 className="text-base font-semibold flex flex-col justify-center primary-slate">
-          Active Projects: <span className="text-2xl font-bold text-primary">{projects.filter((project) => project.status === "active").length}</span>
+          Active Projects:{" "}
+          <span className="text-2xl font-bold text-primary">
+            {projects.filter((project) => project.status === "active").length}
+          </span>
         </h1>
       </div>
       <div className="background-elevated border background-border rounded-lg p-4 w-full">
         <h1 className="text-base font-semibold flex flex-col justify-center primary-slate">
           Revenue From Projects:{" "}
-          <span className="text-2xl font-bold text-primary">${totalRevenue}</span>
+          <span className="text-2xl font-bold text-primary">
+            ${totalRevenue}
+          </span>
         </h1>
       </div>
 
@@ -80,31 +93,34 @@ export default function ProjectsHeader() {
             placeholder="Search projects"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full p-2 rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out"
+            className="w-full py-2 px-4 rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out"
           />
           {query.length > 2 && (
-            <div className="absolute top-12 left-0 w-full background-elevated border background-border rounded-lg p-4">
+            <div className="absolute top-12 left-0 w-full background-elevated border background-border rounded-lg max-h-[200px] overflow-y-auto">
               {results.map((result) => (
-                <div key={result.id} className="primary-slate">
+                <Link
+                  href={`/projects/${result.id}`}
+                  key={result.id}
+                  onClick={() => setSelectedProject(result)}
+                  className="primary-slate flex items-center justify-start p-2 rounded-lg hover:bg-(--accent-green)/20 transition-all duration-300 ease-out w-full"
+                >
                   {result.name}
-                </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
-        {isNewProjectModalLoading ? 
-(
-  <div className="flex justify-center items-center h-full w-full">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent-green)]" />
-    </div>
-) : (
-
-  <button
-  className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
-  onClick={() => setIsNewProjectModalOpen(true)}
-  >
-   New Project
-        </button>
+        {isNewProjectModalLoading ? (
+          <div className="flex justify-center items-center h-full w-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-(--accent-green)" />
+          </div>
+        ) : (
+          <button
+            className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
+            onClick={() => setIsNewProjectModalOpen(true)}
+          >
+            New Project
+          </button>
         )}
         {isNewProjectModalOpen && (
           <NewProjectModal

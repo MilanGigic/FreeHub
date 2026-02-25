@@ -1,4 +1,4 @@
-import { ClientPageTab, Project } from "@/types/types";
+import { ClientPageTab } from "@/types/types";
 import { create } from "zustand";
 
 type UIStore = {
@@ -12,6 +12,8 @@ type UIStore = {
   jobsAndProjectsSlideOverClose: () => void;
   isNewProjectModalLoading: boolean;
   setIsNewProjectModalLoading: (loading: boolean) => void;
+  selectedProjectTab: "Calendar" | "Revenue";
+  setSelectedProjectTab: (tab: "Calendar" | "Revenue") => void;
 };
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -32,4 +34,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isNewProjectModalLoading: false,
   setIsNewProjectModalLoading: (loading: boolean) =>
     set({ isNewProjectModalLoading: loading }),
+  selectedProjectTab: "Calendar",
+  setSelectedProjectTab: (tab: "Calendar" | "Revenue") =>
+    set({ selectedProjectTab: tab }),
 }));

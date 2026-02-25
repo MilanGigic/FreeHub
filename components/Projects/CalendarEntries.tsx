@@ -1,13 +1,13 @@
 "use client";
 
-import { addEntryToCalendar } from "@/actions/projects/addEntryToCalendar";
-import { fetchExistingEntries } from "@/actions/projects/fetchExistingEntires";
+import { addEntryToCalendar } from "@/actions/projects/calendar/addEntryToCalendar";
+import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntires";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { ProjectCalendar } from "@/types/types";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export default function ProjectDetails() {
+export default function CalendarEntries() {
   const {
     selectedProject,
     selectedDate,

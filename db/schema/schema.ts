@@ -69,12 +69,19 @@ export const projects = pgTable("projects", {
     .references(() => clients.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   description: text("description"),
-  revenue: decimal("revenue", { precision: 12, scale: 2 }).default("0"),
-  expenses: decimal("expenses", { precision: 12, scale: 2 }).default("0"),
-  profit: decimal("profit", { precision: 12, scale: 2 }).default("0"),
-  margin: decimal("margin", { precision: 12, scale: 2 }).default("0"),
-  hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 }).default("0"),
-  hoursWorked: integer("hours_worked").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 12, scale: 2 }).default(
+    "0",
+  ),
+  totalExpenses: decimal("total_expenses", { precision: 12, scale: 2 }).default(
+    "0",
+  ),
+  totalProfit: decimal("total_profit", { precision: 12, scale: 2 }).default(
+    "0",
+  ),
+  totalMargin: decimal("total_margin", { precision: 12, scale: 2 }).default(
+    "0",
+  ),
+  totalHoursWorked: integer("total_hours_worked").default(0),
   status: projectStatusEnum("status").notNull().default("not_started"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -90,7 +97,22 @@ export const projectCalendar = pgTable("project_calendar", {
   hoursWorked: integer("hours_worked").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+});
+
+export const projectRevenue = pgTable("project_revenue", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  revenue: decimal("revenue", { precision: 12, scale: 2 }).notNull(),
+  expenses: decimal("expenses", { precision: 12, scale: 2 }).notNull(),
+  note: text("note").notNull().default(""),
+  profit: decimal("profit", { precision: 12, scale: 2 }).notNull(),
+  margin: decimal("margin", { precision: 12, scale: 2 }).notNull(),
+  hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 // Transaction type enum
 export const transactionTypeEnum = pgEnum("transaction_type", [

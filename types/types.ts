@@ -86,12 +86,11 @@ export interface Project {
   clientId: string;
   name: string;
   description: string | null;
-  revenue: string | null;
-  expenses: string | null;
-  profit: string | null;
-  margin: string | null;
-  hourlyRate: string | null;
-  hoursWorked: number | null;
+  totalRevenue: string | null;
+  totalExpenses: string | null;
+  totalProfit: string | null;
+  totalMargin: string | null;
+  totalHoursWorked: number | null;
   status: ProjectStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -103,6 +102,19 @@ export interface ProjectCalendar {
   date: Date;
   note: string;
   hoursWorked: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ProjectRevenue {
+  id: string;
+  projectId: string;
+  revenue: string;
+  expenses: string;
+  note: string;
+  profit: string;
+  margin: string;
+  hourlyRate: string;
   createdAt: Date;
   updatedAt: Date;
 }

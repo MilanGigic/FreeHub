@@ -56,7 +56,7 @@ export default function ProjectsMain() {
             <div
               key={project.id}
               onClick={() => {
-                router.push(`/projects/${project.id}`);
+                router.push(`/projects/${project.id}?tab=calendar`);
                 setSelectedProject(project);
               }}
               className="w-full h-full background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 md:gap-4 hover:shadow-lg dark:hover:shadow-[#2dd4bf]/20 cursor-pointer"
@@ -69,7 +69,7 @@ export default function ProjectsMain() {
               </p>
               <p className="primary-green font-semibold">
                 <span className="primary-slate">Revenue: </span>$
-                {project.revenue}
+                {project.totalRevenue}
               </p>
               <p
                 className={`${project.status === "completed" ? "primary-green" : project.status === "in_progress" ? "primary-cyan" : project.status === "cancelled" ? "primary-red" : project.status === "on_hold" ? "primary-amber" : project.status === "not_started" ? "primary-slate" : "primary-purple"} font-semibold uppercase`}
