@@ -3,7 +3,7 @@
 import { useProjectStore } from "@/lib/store/useProjectStore";
 
 export default function SelectedProjectHeader() {
-  const { selectedProject } = useProjectStore();
+  const { selectedProject, profit } = useProjectStore();
 
   if (!selectedProject) return null;
   return (
@@ -29,7 +29,7 @@ export default function SelectedProjectHeader() {
           <div className="flex items-center gap-2 px-4">
             <div className="w-4 h-4 bg-(--accent-purple) rounded-full" />
             <h1 className="text-sm text-primary uppercase font-semibold">
-              Selected date
+              Selected date -{" "}
             </h1>
           </div>
         </div>
@@ -39,9 +39,7 @@ export default function SelectedProjectHeader() {
             <h1 className="text-lg text-primary uppercase font-semibold">
               Profit
             </h1>
-            <p className="text-sm primary-slate text-center">
-              ${selectedProject.totalProfit}
-            </p>
+            <p className="text-sm primary-slate text-center">${profit}</p>
           </div>
           <div className="border h-full background-border" />
           <div className="flex flex-col gap-2 items-center">

@@ -1,78 +1,33 @@
 "use client";
 
 import JobsAndProjectsSlideOver from "@/components/Clients/ClientPage/JobsAndProjects/JobsAndProjectsSlideOver";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
-
-const projects = [
-  {
-    id: 1,
-    name: "Project 1",
-    description: "Project 1 description",
-    revenue: 1000,
-    expenses: 500,
-    profit: 500,
-    margin: 50,
-    hourlyRate: 100,
-    hoursWorked: 10,
-    status: "Done",
-  },
-  {
-    id: 2,
-    name: "Project 2",
-    description: "Project 2 description",
-    revenue: 2000,
-    expenses: 1000,
-    profit: 1000,
-    margin: 20,
-    hourlyRate: 100,
-    hoursWorked: 10,
-    status: "In Progress",
-  },
-  {
-    id: 3,
-    name: "Project 3",
-    description: "Project 3 description",
-    revenue: 3000,
-    expenses: 1500,
-    profit: 1500,
-    margin: 30,
-    hourlyRate: 100,
-    hoursWorked: 10,
-    status: "In Progress",
-  },
-  {
-    id: 4,
-    name: "Project 4",
-    description: "Project 4 description",
-    revenue: 4000,
-    expenses: 2000,
-    profit: 2000,
-    margin: 40,
-    hourlyRate: 100,
-    hoursWorked: 10,
-    status: "Cancelled",
-  },
-  {
-    id: 5,
-    name: "Project 5",
-    description: "Project 5 description",
-    revenue: 5000,
-    expenses: 2500,
-    profit: 2500,
-    margin: 50,
-    hourlyRate: 100,
-    hoursWorked: 10,
-    status: "Done",
-  },
-];
+import { useEffect } from "react";
+import { useClientStore } from "@/lib/store/useClientStore";
+import { fetchClientsProjects } from "@/actions/clients/fetchClientsProjects";
 
 export default function JobsAndProjectsPage() {
-  const {
-    jobsAndProjectsSlideOverOpen,
-    isJobsAndProjectsSlideOverOpen,
-    setSelectedProject,
-    selectedProject,
-  } = useUIStore();
+  const { jobsAndProjectsSlideOverOpen, isJobsAndProjectsSlideOverOpen } =
+    useUIStore();
+
+  const { setSelectedProject, selectedProject } = useProjectStore();
+  const { clientProjects, selectedClientId, setClientProjects } =
+    useClientStore();
+
+  useEffect(() => {
+    if (!selectedClientId) {
+      return;
+    }
+    (async () => {
+      const res = await fetchClientsProjects(selectedClientId as string);
+      if (res.success) {
+        if (res.data) {
+          setClientProjects(res.data);
+        }
+      }
+    })();
+  }, [selectedClientId, setClientProjects]);
 
   return (
     <div className="w-full h-full flex flex-col gap-2 md:gap-4">
@@ -84,10 +39,10 @@ export default function JobsAndProjectsPage() {
         />
       </div>
       <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-        {projects.map((project) => (
+        {clientProjects.map((project) => (
           <div
             key={project.id}
-            className={`p-px bg-linear-to-b ${project.status === "Done" ? "from-[#34d399] via-[#21262d] to-[#0a0e14]" : project.status === "In Progress" ? "from-[#d29922] via-[#21262d] to-[#0a0e14]" : "from-[#f85149] via-[#21262d] to-[#0a0e14]"} rounded-lg  ${selectedProject ? (selectedProject.id === project.id ? "scale-105 shadow-xl shadow-[#2dd4bf]/20" : "hover:scale-105 transition-all duration-300 ease-out hover:cursor-pointer hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer") : "hover:scale-105 transition-all duration-300 ease-out  hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer"}`}
+            className={`p-px bg-linear-to-b ${project.status === "completed" ? "from-(--accent-green) via-[#21262d] to-[#0a0e14]" : project.status === "in_progress" ? "from-(--accent-amber) via-[#21262d] to-[#0a0e14]" : project.status === "cancelled" ? "from-(--accent-red) via-[#21262d] to-[#0a0e14]" : project.status === "on_hold" ? "from-[#21262d] via-[#21262d] to-[#0a0e14]" : project.status === "not_started" ? "from-[#21262d] via-[#21262d] to-[#0a0e14]" : project.status === "active" ? "from-(--accent-purple) via-[#21262d] to-[#0a0e14]" : "from-(--accent-red) via-[#21262d] to-[#0a0e14]"} rounded-lg  ${selectedProject ? (selectedProject.id === project.id ? "scale-105 shadow-xl shadow-[#2dd4bf]/20" : "hover:scale-105 transition-all duration-300 ease-out hover:cursor-pointer hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer") : "hover:scale-105 transition-all duration-300 ease-out  hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer"}`}
             onClick={() => {
               jobsAndProjectsSlideOverOpen();
               setSelectedProject(project);
@@ -98,29 +53,32 @@ export default function JobsAndProjectsPage() {
                 <h1 className="text-lg text-primary uppercase font-bold">
                   {project.name}
                 </h1>
-                <p className="text-secondary font-semibold">
+                <p className="primary-slate font-semibold">
                   {project.description}
                 </p>
               </div>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
-                Profit:<span className="primary-green">${project.profit}</span>
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Profit:
+                <span className="primary-green">${project.totalProfit}</span>
               </p>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Margin:
                 <span
-                  className={`${project.margin >= 40 ? "primary-green" : project.margin >= 25 ? "primary-slate" : "primary-red"}`}
+                  className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
                 >
-                  {project.margin}%
+                  {project.totalMargin && Number(project.totalMargin)}%
                 </span>
               </p>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Hourly Rate:
-                <span className="primary-cyan">${project.hourlyRate}/hour</span>
+                <span className="primary-cyan">
+                  ${project.totalHoursWorked}/hour
+                </span>
               </p>
-              <p className="text-sm text-secondary uppercase font-semibold flex items-center gap-2">
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Status:
                 <span
-                  className={`${project.status === "Done" ? "primary-green" : project.status === "In Progress" ? "primary-slate" : "primary-red"}`}
+                  className={`${project.status === "completed" ? "primary-green" : project.status === "in_progress" ? "primary-slate" : project.status === "cancelled" ? "primary-red" : project.status === "on_hold" ? "primary-slate" : project.status === "not_started" ? "primary-slate" : project.status === "active" ? "primary-purple" : "primary-red"}`}
                 >
                   {project.status}
                 </span>

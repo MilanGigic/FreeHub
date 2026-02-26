@@ -10,6 +10,8 @@ type ProjectStore = {
   setNote: (note: string) => void;
   hoursWorked: number | null;
   setHoursWorked: (hoursWorked: number | null) => void;
+  profit: string;
+  setProfit: (profit: string) => void;
 };
 
 export const useProjectStore = create<ProjectStore>((set) => ({
@@ -22,4 +24,6 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   setNote: (note: string) => set({ note }),
   hoursWorked: null,
   setHoursWorked: (hoursWorked: number | null) => set({ hoursWorked }),
+  profit: "0",
+  setProfit: (profit: string) => set({ profit }),
 }));

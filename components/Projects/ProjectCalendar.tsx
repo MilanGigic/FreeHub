@@ -82,7 +82,10 @@ export default function ProjectCalendar() {
     setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
 
   return (
-    <div className="p-4 rounded-lg w-full h-full mr-3">
+    <div className="p-4 rounded-lg w-full h-full mr-3 flex flex-col gap-2">
+      <h1 className="text-sm primary-slate text-center uppercase font-semibold">
+        Click on the calendar to pick a date
+      </h1>
       <div className="flex items-center justify-between mb-4">
         <button
           type="button"

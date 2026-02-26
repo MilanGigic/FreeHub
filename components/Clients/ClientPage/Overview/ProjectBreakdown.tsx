@@ -1,34 +1,14 @@
+import { useClientStore } from "@/lib/store/useClientStore";
+
 // | Project | Revenue | Expenses | Profit | Margin |
 const tableLists = ["Project", "Revenue", "Expenses", "Profit", "Margin"];
 
-const projectBreakdown = [
-  {
-    project: "Project 1",
-    revenue: 1000,
-    expenses: 500,
-    profit: 500,
-    margin: 50,
-  },
-  {
-    project: "Project 2",
-    revenue: 2000,
-    expenses: 1000,
-    profit: 1000,
-    margin: 20,
-  },
-  {
-    project: "Project 3",
-    revenue: 3000,
-    expenses: 1500,
-    profit: 1500,
-    margin: 30,
-  },
-];
-
 export default function ProjectBreakdown() {
+  const { clientProjects } = useClientStore();
+
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
-      <h1 className="text-base text-secondary uppercase font-semibold">
+      <h1 className="text-base primary-slate uppercase font-semibold">
         Project Breakdown
       </h1>
       <table className="w-full">
@@ -37,7 +17,7 @@ export default function ProjectBreakdown() {
             {tableLists.map((list) => (
               <th
                 key={list}
-                className="text-sm font-semibold text-secondary text-center pb-2"
+                className="text-sm font-semibold primary-slate text-center pb-2"
               >
                 {list}
               </th>
@@ -45,25 +25,26 @@ export default function ProjectBreakdown() {
           </tr>
         </thead>
         <tbody>
-          {projectBreakdown.map((project) => (
+          {clientProjects.map((project) => (
             <tr
-              key={project.project}
-              className="border-b background-border text-center text-secondary"
+              key={project.id}
+              className="border-b background-border text-center primary-slate"
             >
-              <td className="text-sm text-primary py-2">{project.project}</td>
-              <td className="primary-green">${project.revenue}</td>
-              <td className="primary-red">${project.expenses}</td>
-              <td className="primary-green">${project.profit}</td>
+              <td className="text-sm text-primary py-2">{project.name}</td>
+              <td className="primary-green">${project.totalRevenue}</td>
+              <td className="primary-red">${project.totalExpenses}</td>
+              <td className="primary-green">${project.totalProfit}</td>
               <td
-                className={`${project.margin >= 40 ? "primary-green" : project.margin >= 25 ? "primary-slate" : "primary-red"}`}
+                className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
               >
-                {project.margin}%
+                {/* {project.totalMargin && Number(project.totalMargin)}% */}
+                To be added...
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="text-sm text-secondary">
+      <p className="text-sm primary-slate">
         Revenue and profit by project under this client.
       </p>
     </div>

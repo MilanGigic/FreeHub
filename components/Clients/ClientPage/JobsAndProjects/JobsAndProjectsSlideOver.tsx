@@ -1,20 +1,32 @@
 "use client";
 
+import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { X } from "lucide-react";
+import { useMemo } from "react";
 
 export default function JobsAndProjectsSlideOver() {
-  const {
-    isJobsAndProjectsSlideOverOpen,
-    jobsAndProjectsSlideOverClose,
-    setSelectedProject,
-    selectedProject,
-  } = useUIStore();
+  const { isJobsAndProjectsSlideOverOpen, jobsAndProjectsSlideOverClose } =
+    useUIStore();
+
+  const { selectedProject, setSelectedProject } = useProjectStore();
+
+  const totalProfitPerHour = useMemo(() => {
+    if (!selectedProject) return 0;
+    return selectedProject.totalProfit &&
+      Number(selectedProject.totalProfit) &&
+      selectedProject.totalHoursWorked &&
+      Number(selectedProject.totalHoursWorked)
+      ? Number(selectedProject.totalProfit) /
+          Number(selectedProject.totalHoursWorked)
+      : 0;
+  }, [selectedProject]);
 
   if (!selectedProject) return null;
+
   return (
     <div
-      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 ${selectedProject.status === "Done" ? "border-[var(--accent-green)]" : selectedProject.status === "In Progress" ? "border-[var(--accent-amber)]" : "border-[var(--accent-red)]"} p-4`}
+      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 ${selectedProject.status === "completed" ? "border-(--accent-green)" : selectedProject.status === "in_progress" ? "border-(--accent-amber)" : selectedProject.status === "cancelled" ? "border-(--accent-red)" : selectedProject.status === "on_hold" ? "border-(--accent-slate)" : selectedProject.status === "not_started" ? "border-(--accent-slate)" : selectedProject.status === "active" ? "border-(--accent-purple)" : "border-(--accent-red)"} p-4`}
     >
       {isJobsAndProjectsSlideOverOpen ? (
         <div className="flex flex-col h-full">
@@ -39,24 +51,34 @@ export default function JobsAndProjectsSlideOver() {
             <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border pb-2">
               Revenue
             </h1>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Revenue:{" "}
-              <span className="primary-green">${selectedProject.revenue}</span>
+              <span className="primary-green">
+                ${selectedProject.totalRevenue}
+              </span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Expenses:{" "}
-              <span className="primary-red">${selectedProject.expenses}</span>
+              <span className="primary-red">
+                ${selectedProject.totalExpenses}
+              </span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Profit:{" "}
-              <span className="primary-green">${selectedProject.profit}</span>
+              <span className="primary-green">
+                ${selectedProject.totalProfit}
+              </span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Margin:{" "}
               <span
-                className={`${selectedProject.margin >= 40 ? "primary-green" : selectedProject.margin >= 25 ? "primary-slate" : "primary-red"}`}
+                className={`${selectedProject.totalMargin && Number(selectedProject.totalMargin) >= 40 ? "primary-green" : selectedProject.totalMargin && Number(selectedProject.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
               >
-                ${selectedProject.margin}%
+                To be added...
+                {/* $
+                {selectedProject.totalMargin &&
+                  Number(selectedProject.totalMargin)}
+                % */}
               </span>
             </p>
           </div>
@@ -64,16 +86,19 @@ export default function JobsAndProjectsSlideOver() {
             <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
               Worked Hours
             </h1>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Hours Worked:{" "}
               <span className="primary-cyan">
-                {selectedProject.hoursWorked}
+                {selectedProject.totalHoursWorked}
               </span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Hourly Rate:{" "}
               <span className="primary-cyan">
-                ${selectedProject.hourlyRate}/hour
+                <span className="primary-green">
+                  ${totalProfitPerHour.toFixed(2)}
+                  /hour
+                </span>
               </span>
             </p>
           </div>
@@ -82,29 +107,23 @@ export default function JobsAndProjectsSlideOver() {
               Details
             </h1>
 
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Planned Hours: <span className="primary-cyan">12 hours</span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
+            <p className="primary-slate text-sm uppercase font-semibold">
               Hours Left: <span className="primary-cyan">2 hours</span>
             </p>
-            <p className="text-secondary text-sm uppercase font-semibold">
-              Profit per Hour{" "}
-              <span className="primary-green">
-                ${selectedProject.profit / selectedProject.hoursWorked}/hour
-              </span>
-            </p>
           </div>
-          {selectedProject.status === "Done" ? (
+          {selectedProject.status === "completed" ? (
             <div>
               <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
                   Client Feedback
                 </h1>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Paid on Time: <span className="primary-red">2 days late</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Message from Client:{" "}
                   <span className="primary-cyan">Great work!</span>
                 </p>
@@ -113,28 +132,28 @@ export default function JobsAndProjectsSlideOver() {
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
                   Invoice Details
                 </h1>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Number:{" "}
                   <span className="primary-cyan">1234567890</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Date: <span className="primary-cyan">12/12/2025</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Amount: <span className="primary-cyan">$1000</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Status: <span className="primary-cyan">Paid</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Due Date:{" "}
                   <span className="primary-cyan">12/12/2025</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Payment Date:{" "}
                   <span className="primary-cyan">12/12/2025</span>
                 </p>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   Invoice Payment Method:{" "}
                   <span className="primary-cyan">Bank Transfer</span>
                 </p>
@@ -149,7 +168,7 @@ export default function JobsAndProjectsSlideOver() {
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
                   Project Description
                 </h1>
-                <p className="text-secondary text-sm uppercase font-semibold">
+                <p className="primary-slate text-sm uppercase font-semibold">
                   {selectedProject.description}
                 </p>
               </div>

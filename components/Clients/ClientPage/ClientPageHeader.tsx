@@ -12,11 +12,7 @@ const tabs = [
   { tab: "Insights", icon: <ChartBar /> },
 ];
 
-export default function ClientPageHeader({
-  clientName,
-}: {
-  clientName: string;
-}) {
+export default function ClientPageHeader({ clientId }: { clientId: string }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -31,11 +27,11 @@ export default function ClientPageHeader({
         <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => setOpen((o) => !o)}
-            className="text-secondary w-full hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
+            className="primary-slate w-full hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
           >
             Select a tab
           </button>
-          <h1 className="text-center primary-cyan w-full h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold relative">
+          <h1 className="text-center primary-slate w-full h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold relative">
             {clientPageTab}
           </h1>
         </div>
@@ -46,17 +42,17 @@ export default function ClientPageHeader({
                 key={index}
                 onClick={() => {
                   router.push(
-                    `/clients/${clientName.toLowerCase().replace(" ", "-")}/${tab.tab.toLowerCase().replace(" ", "-").replace("/", "")}`,
+                    `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace("/", "")}`,
                   );
                   setOpen(false);
                 }}
-                className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan w-full"
+                className="primary-slate hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan w-full"
               >
                 <h1 className="text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold">
                   <span>{tab.icon}</span>
                   {tab.tab}
                   <div
-                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[var(--accent-cyan)] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase() ? "w-full" : "w-0"}`}
+                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase() ? "w-full" : "w-0"}`}
                   ></div>
                 </h1>
               </button>
@@ -70,21 +66,21 @@ export default function ClientPageHeader({
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className="text-secondary hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
+            className="primary-slate hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
             onClick={() =>
               router.push(
-                `/clients/${clientName.toLowerCase().replace(" ", "-")}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
+                `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
               )
             }
           >
             <h1
-              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "primary-cyan" : "text-secondary"}`}
+              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "primary-cyan" : "primary-slate"}`}
             >
               <span>{tab.icon}</span>
               {tab.tab}
             </h1>
             <div
-              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-[var(--accent-cyan)] transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "w-full" : "w-0"}`}
+              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "w-full" : "w-0"}`}
             ></div>
           </button>
         ))}

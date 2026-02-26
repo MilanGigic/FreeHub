@@ -1,0 +1,1 @@
+ALTER TABLE "project_finance" ADD COLUMN "hourly_rate" numeric(12, 2) DEFAULT '0' NOT NULL;

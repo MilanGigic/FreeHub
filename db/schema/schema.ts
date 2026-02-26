@@ -111,6 +111,9 @@ export const projectFinance = pgTable("project_finance", {
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
   note: text("note").notNull().default(""),
+  hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 })
+    .notNull()
+    .default("0"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

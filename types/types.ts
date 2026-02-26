@@ -112,6 +112,7 @@ export interface ProjectRevenue {
   type: "income" | "expense";
   amount: string;
   note: string;
+  hourlyRate: string;
   createdAt: Date;
   updatedAt: Date;
 }

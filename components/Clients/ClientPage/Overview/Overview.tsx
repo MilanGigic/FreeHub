@@ -8,11 +8,30 @@ import ProfitMargin from "./ProfitMargin";
 import TaxReservedFromThisClient from "./TaxReservedFromThisClient";
 import ProjectBreakdown from "./ProjectBreakdown";
 import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
+import { useClientStore } from "@/lib/store/useClientStore";
+import { fetchClientsProjects } from "@/actions/clients/fetchClientsProjects";
+import { useEffect } from "react";
 
 export default function OverviewClient() {
+  const { setClientProjects, selectedClientId } = useClientStore();
+
+  useEffect(() => {
+    (async () => {
+      if (!selectedClientId) {
+        return;
+      }
+
+      const res = await fetchClientsProjects(selectedClientId as string);
+      if (res.success) {
+        if (res.data) {
+          setClientProjects(res.data);
+        }
+      }
+    })();
+  }, [selectedClientId, setClientProjects]);
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
-      <header className="text-sm text-secondary text-center">
+      <header className="text-sm primary-slate font-semibold text-center">
         Status:{" "}
         <span className="primary-green uppercase font-semibold">Active</span>
       </header>

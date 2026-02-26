@@ -96,7 +96,7 @@ export default function RevenueTrendGraph() {
   return (
     <div className="flex flex-col gap-2 md:gap-4 items-center justify-between p-4 background-elevated border background-border rounded-lg">
       <div className="flex items-center justify-between w-full">
-        <h1 className="text-lg font-semibold text-secondary uppercase">
+        <h1 className="text-lg font-semibold primary-slate uppercase">
           Revenue Trend
         </h1>
 
@@ -105,8 +105,8 @@ export default function RevenueTrendGraph() {
             onClick={() => setTimeRange("30")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
               timeRange === "30"
-                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
-                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
+                ? "bg-(--border-default) primary-cyan border border-(--accent-cyan)"
+                : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
             Monthly
@@ -115,8 +115,8 @@ export default function RevenueTrendGraph() {
             onClick={() => setTimeRange("365")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
               timeRange === "365"
-                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
-                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
+                ? "bg-(--border-default) primary-cyan border border-(--accent-cyan)"
+                : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
             Yearly

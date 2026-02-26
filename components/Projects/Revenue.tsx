@@ -9,11 +9,11 @@ import { MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Revenue() {
-  const { selectedProject } = useProjectStore();
+  const { selectedProject, profit, setProfit } = useProjectStore();
 
   const [revenue, setRevenue] = useState<string>("0");
   const [expenses, setExpenses] = useState<string>("0");
-  const [profit, setProfit] = useState<string>("0");
+  const [hourlyRate, setHourlyRate] = useState<string>("0");
 
   const [revenueList, setRevenueList] = useState<ProjectRevenue[]>([]);
   const [expenseList, setExpenseList] = useState<ProjectRevenue[]>([]);
@@ -64,6 +64,16 @@ export default function Revenue() {
       }
     })();
   }, [selectedProjectId]);
+
+  useEffect(() => {
+    (async () => {
+      if (!selectedProject) return;
+      if (selectedProject.totalHoursWorked === null) return;
+
+      const res = Number(profit) / Number(selectedProject.totalHoursWorked);
+      setHourlyRate(res.toFixed(2));
+    })();
+  }, [profit, selectedProject]);
 
   const handleAddRevenue = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -227,7 +237,7 @@ export default function Revenue() {
 
       {/* WORK ON HOURLY RATE CALCULATION */}
       <div className="w-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 items-center">
-        {/* <header className="flex flex-col gap-2 md:gap-4 items-center border-b-2 background-border pb-4 w-full">
+        <header className="flex flex-col gap-2 md:gap-4 items-center border-b-2 background-border pb-4 w-full">
           <p className="text-lg primary-slate uppercase font-semibold">
             Hourly Rate:
           </p>
@@ -244,11 +254,6 @@ export default function Revenue() {
             </span>
           </h1>
         </div>
-      </div>
-      <div className="w-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 items-center">
-        <p className="text-lg primary-slate uppercase font-semibold">Margin:</p>
-        <span className="primary-amber text-2xl font-bold">{margin}%</span>
-      </div> */}
       </div>
     </div>
   );

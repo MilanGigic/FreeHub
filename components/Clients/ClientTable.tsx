@@ -1,76 +1,9 @@
 "use client";
 
+import { useClientStore } from "@/lib/store/useClientStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-
-const clientsData = [
-  {
-    name: "Client 1",
-    status: "Active",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Overdue",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-  {
-    name: "Client 2",
-    status: "Inactive",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Pending",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-  {
-    name: "Client 3",
-    status: "Overdue",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Overdue",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-  {
-    name: "Client 4",
-    status: "Pending",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Pending",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-  {
-    name: "Client 5",
-    status: "Overdue",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Overdue",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-  {
-    name: "Client 6",
-    status: "Pending",
-    revenueMTD: 1000,
-    revenueYTD: 1000,
-    outstanding: "Pending",
-    avgPaymentTime: 10,
-    profitability: 10,
-    lastPaymentDate: "2026-01-01",
-    safeToSpendContribution: 10,
-  },
-];
 
 const tableLists = [
   "Client Name",
@@ -84,40 +17,24 @@ const tableLists = [
   "Safe-to-Spend Contribution",
 ];
 
-const clientKeys = [
-  "name",
-  "status",
-  "revenueMTD",
-  "revenueYTD",
-  "outstanding",
-  "avgPaymentTime",
-  "profitability",
-  "lastPaymentDate",
-  "safeToSpendContribution",
-] as const;
-
-function getClientValue(
-  client: (typeof clientsData)[number],
-  key: (typeof clientKeys)[number],
-) {
-  return client[key];
-}
-
 const maxMobileClients = 5;
 
 export default function ClientTable() {
+  const router = useRouter();
+
+  const { clients, setSelectedClientId } = useClientStore();
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const currentClients = useMemo(() => {
-    return clientsData.slice(
+    return clients.slice(
       (currentPage - 1) * maxMobileClients,
       currentPage * maxMobileClients,
     );
-  }, [currentPage]);
+  }, [currentPage, clients]);
 
   const totalPages = useMemo(() => {
-    return Math.ceil(clientsData.length / maxMobileClients);
-  }, []);
+    return Math.ceil(clients.length / maxMobileClients);
+  }, [clients]);
 
   return (
     <>
@@ -144,28 +61,24 @@ export default function ClientTable() {
         </div>
         {currentClients.map((client) => (
           <div
-            key={client.name}
+            key={client.id}
             className="rounded-lg border background-border background-elevated p-4"
           >
             <Link
-              href={`/clients/${client.name.toLowerCase().replace(" ", "-").replace(".", "")}`}
+              href={`/clients/${client.id}`}
               className="hover:cursor-pointer"
             >
               <div className="text-primary font-medium text-base mb-3 border-b background-border pb-2">
-                {client.name}
+                {client.firstName} {client.lastName}
               </div>
               <dl className="grid gap-2">
                 {tableLists.slice(1).map((label, i) => {
-                  const key = clientKeys[i + 1];
                   return (
                     <div
                       key={label}
                       className="flex justify-between items-center text-sm"
                     >
                       <dt className="text-primary">{label}</dt>
-                      <dd className="text-primary font-mono">
-                        {String(getClientValue(client, key))}
-                      </dd>
                     </div>
                   );
                 })}
@@ -213,42 +126,39 @@ export default function ClientTable() {
             {/* TODO: Add input search and filter */}
             {currentClients.map((client) => (
               <tr
-                key={client.name}
-                className="border-t background-border hover:bg-[var(--bg-elevated)]"
+                key={client.id}
+                className="border-t background-border hover:bg-(--bg-elevated)"
+                onClick={() => {
+                  setSelectedClientId(client.id);
+                  router.push(`/clients/${client.id}/overview`);
+                }}
               >
                 <td className="text-sm text-primary text-center px-2 py-3 hover:cursor-pointer">
-                  <Link
-                    href={`/clients/${client.name
-                      .toLowerCase()
-                      .replace(" ", "-")
-                      .replace(".", "")}/overview`}
-                  >
-                    {client.name}
-                  </Link>
+                  {client.firstName} {client.lastName}
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
                   {client.status}
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.revenueMTD}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.revenueYTD}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.outstanding}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.avgPaymentTime}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.profitability}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.lastPaymentDate}
+                  To be added
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.safeToSpendContribution}
+                  To be added
                 </td>
               </tr>
             ))}
