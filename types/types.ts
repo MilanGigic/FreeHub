@@ -109,12 +109,9 @@ export interface ProjectCalendar {
 export interface ProjectRevenue {
   id: string;
   projectId: string;
-  revenue: string;
-  expenses: string;
+  type: "income" | "expense";
+  amount: string;
   note: string;
-  profit: string;
-  margin: string;
-  hourlyRate: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,34 +1,12 @@
 import { addExpense } from "@/actions/projects/revenue/addExpense";
-import { addRevenue } from "@/actions/projects/revenue/addRevenue";
+import { addIncome } from "@/actions/projects/revenue/addIncome";
+import { calculateProfit } from "@/actions/projects/revenue/calculateProfit";
 import { fetchExpenseData } from "@/actions/projects/revenue/fetchExpenseData";
-import { fetchRevenueData } from "@/actions/projects/revenue/fetchRevenueData";
+import { fetchIncomeData } from "@/actions/projects/revenue/fetchIncomeData";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { ProjectRevenue } from "@/types/types";
 import { MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-// const Input = ({
-//   label,
-//   value,
-//   onChange,
-// }: {
-//   label: string;
-//   value: string;
-//   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-// }) => {
-//   return (
-//     <div>
-//       <label htmlFor={label}>{label}</label>
-//       <input
-//         type="number"
-//         id={label}
-//         value={value}
-//         onChange={onChange}
-//         className="w-full p-2 border background-border rounded-lg"
-//       />
-//     </div>
-//   );
-// };
 
 export default function Revenue() {
   const { selectedProject } = useProjectStore();
@@ -36,8 +14,6 @@ export default function Revenue() {
   const [revenue, setRevenue] = useState<string>("0");
   const [expenses, setExpenses] = useState<string>("0");
   const [profit, setProfit] = useState<string>("0");
-  const [margin, setMargin] = useState<string>("0");
-  const [hourlyRate, setHourlyRate] = useState<string>("0");
 
   const [revenueList, setRevenueList] = useState<ProjectRevenue[]>([]);
   const [expenseList, setExpenseList] = useState<ProjectRevenue[]>([]);
@@ -64,7 +40,7 @@ export default function Revenue() {
     (async () => {
       if (!selectedProjectId) return;
 
-      const res = await fetchRevenueData(selectedProjectId);
+      const res = await fetchIncomeData(selectedProjectId);
       const expenseRes = await fetchExpenseData(selectedProjectId);
 
       if (res.success) {
@@ -94,7 +70,7 @@ export default function Revenue() {
 
     if (!selectedProject) return;
 
-    const result = await addRevenue(selectedProject.id, revenue, revenueNote);
+    const result = await addIncome(selectedProject.id, revenue, revenueNote);
 
     if (result.success) {
       if (result.data) {
@@ -192,39 +168,25 @@ export default function Revenue() {
           </h1>
           {card.label === "Revenue" ? (
             <div>
-              {revenueList
-                .filter(
-                  (item) => item[card.label.toLowerCase() as keyof typeof item],
-                )
-                .map((item) => (
-                  <div key={item.id}>
-                    <p className="flex items-center gap-2">
-                      {String(
-                        item[card.label.toLowerCase() as keyof typeof item],
-                      )}{" "}
-                      -{" "}
-                      <span className="primary-slate text-sm">{item.note}</span>
-                    </p>
-                  </div>
-                ))}
+              {revenueList.map((item) => (
+                <div key={item.id}>
+                  <p className="flex items-center gap-2">
+                    ${String(item.amount)} -
+                    <span className="primary-slate text-sm">{item.note}</span>
+                  </p>
+                </div>
+              ))}
             </div>
           ) : card.label === "Expenses" ? (
             <div>
-              {expenseList
-                .filter(
-                  (item) => item[card.label.toLowerCase() as keyof typeof item],
-                )
-                .map((item) => (
-                  <div key={item.id}>
-                    <p className="flex items-center gap-2">
-                      {String(
-                        item[card.label.toLowerCase() as keyof typeof item],
-                      )}{" "}
-                      -{" "}
-                      <span className="primary-slate text-sm">{item.note}</span>
-                    </p>
-                  </div>
-                ))}
+              {expenseList.map((item) => (
+                <div key={item.id}>
+                  <p className="flex items-center gap-2">
+                    ${String(item.amount)} -
+                    <span className="primary-slate text-sm">{item.note}</span>
+                  </p>
+                </div>
+              ))}
             </div>
           ) : null}
         </div>
@@ -234,23 +196,26 @@ export default function Revenue() {
 
   useEffect(() => {
     (async () => {
-      const calculateProfit = () => {
-        if (!selectedProject) return;
-        if (selectedProject.totalHoursWorked === null) return;
-        const totalRevenue = revenueList.reduce(
-          (acc, item) => acc + Number(item.revenue),
-          0,
-        );
-        const totalExpenses = expenseList.reduce(
-          (acc, item) => acc + Number(item.expenses),
-          0,
-        );
-        setProfit(String(totalRevenue - totalExpenses));
-      };
+      if (!selectedProject) return;
 
-      await calculateProfit();
+      const res = await calculateProfit(
+        selectedProject.id,
+        revenueList,
+        expenseList,
+      );
+
+      if (res.success) {
+        if (res.data) {
+          setProfit(String(res.data.totalProfit));
+        }
+      } else {
+        toast.error(res.error as string);
+      }
     })();
   }, [revenueList, expenseList, selectedProject]);
+
+  // THE REVENUE AND EXPENSE HISTORIES DONT WORK - THEY SHOW BOTH REVENUE AND EXPENSES -- FIX IT
+  // WORK ON HOURLY RATE CALCULATION
 
   return (
     <div className="w-full flex gap-2 md:gap-4 justify-between h-full">
@@ -259,8 +224,10 @@ export default function Revenue() {
         <p className="text-lg primary-slate uppercase font-semibold">Profit:</p>
         <span className="primary-cyan text-2xl font-bold">${profit}</span>
       </div>
+
+      {/* WORK ON HOURLY RATE CALCULATION */}
       <div className="w-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 items-center">
-        <header className="flex flex-col gap-2 md:gap-4 items-center border-b-2 background-border pb-4 w-full">
+        {/* <header className="flex flex-col gap-2 md:gap-4 items-center border-b-2 background-border pb-4 w-full">
           <p className="text-lg primary-slate uppercase font-semibold">
             Hourly Rate:
           </p>
@@ -281,6 +248,7 @@ export default function Revenue() {
       <div className="w-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 items-center">
         <p className="text-lg primary-slate uppercase font-semibold">Margin:</p>
         <span className="primary-amber text-2xl font-bold">{margin}%</span>
+      </div> */}
       </div>
     </div>
   );

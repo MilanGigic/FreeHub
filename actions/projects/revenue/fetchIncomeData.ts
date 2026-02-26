@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { projectFinance } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 
-export async function fetchExpenseData(projectId: string) {
+export async function fetchIncomeData(projectId: string) {
   if (!projectId) {
     return { success: false, error: "Project ID is required" };
   }
@@ -16,14 +16,14 @@ export async function fetchExpenseData(projectId: string) {
       .where(
         and(
           eq(projectFinance.projectId, projectId),
-          eq(projectFinance.type, "expense"),
+          eq(projectFinance.type, "income"),
         ),
       )
       .orderBy(desc(projectFinance.createdAt));
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error fetching expense data:", error);
+    console.error("Error fetching income data:", error);
     return { success: false, error: error as Error };
   }
 }

@@ -37,10 +37,10 @@ export default function SelectedProjectHeader() {
         <div className="flex items-center gap-2">
           <div className="flex flex-col gap-2 items-center">
             <h1 className="text-lg text-primary uppercase font-semibold">
-              Revenue
+              Profit
             </h1>
             <p className="text-sm primary-slate text-center">
-              ${selectedProject.totalRevenue}
+              ${selectedProject.totalProfit}
             </p>
           </div>
           <div className="border h-full background-border" />

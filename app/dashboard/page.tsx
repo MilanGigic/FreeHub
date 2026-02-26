@@ -1,9 +1,5 @@
 "use client";
 
-import { getCurrentUser } from "@/actions/auth/getCurrentUser";
-import { seedIncomes, seedExpenses } from "@/db/seeds/seedCategories";
-import { useEffect } from "react";
-
 const tabs = [
   "Finances",
   "Clients",
@@ -14,16 +10,6 @@ const tabs = [
 ];
 
 export default function DashboardPage() {
-  useEffect(() => {
-    (async () => {
-      const user = await getCurrentUser();
-      if (user) {
-        await seedIncomes(user.id);
-        await seedExpenses(user.id);
-      }
-    })();
-  }, []);
-
   return (
     <div className="w-full h-full grid grid-cols-3 gap-4">
       {tabs.map((tab) => (

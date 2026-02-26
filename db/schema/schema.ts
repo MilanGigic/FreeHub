@@ -4,7 +4,6 @@ import {
   timestamp,
   uuid,
   decimal,
-  boolean,
   pgEnum,
   integer,
 } from "drizzle-orm/pg-core";
@@ -32,6 +31,11 @@ export const projectStatusEnum = pgEnum("project_status", [
   "cancelled",
   "on_hold",
   "not_started",
+]);
+
+export const projectFinanceTypeEnum = pgEnum("project_finance_type", [
+  "income",
+  "expense",
 ]);
 
 export const users = pgTable("users", {
@@ -99,55 +103,14 @@ export const projectCalendar = pgTable("project_calendar", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const projectRevenue = pgTable("project_revenue", {
+export const projectFinance = pgTable("project_finance", {
   id: uuid("id").defaultRandom().primaryKey(),
   projectId: uuid("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
-  revenue: decimal("revenue", { precision: 12, scale: 2 }).notNull(),
-  expenses: decimal("expenses", { precision: 12, scale: 2 }).notNull(),
-  note: text("note").notNull().default(""),
-  profit: decimal("profit", { precision: 12, scale: 2 }).notNull(),
-  margin: decimal("margin", { precision: 12, scale: 2 }).notNull(),
-  hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Transaction type enum
-export const transactionTypeEnum = pgEnum("transaction_type", [
-  "income",
-  "expense",
-]);
-
-// Transactions table - tracks both income and expenses
-export const transactions = pgTable("transactions", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  type: transactionTypeEnum("type").notNull(), // "income" or "expense"
-  title: text("title").notNull(),
+  type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
-  categoryId: uuid("category_id").references(() => categories.id, {
-    onDelete: "set null",
-  }),
-  description: text("description"),
-  date: timestamp("date").notNull().defaultNow(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Categories table - for organizing transactions
-export const categories = pgTable("categories", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  type: transactionTypeEnum("type").notNull(), // "income" or "expense"
-  color: text("color"), // Optional: for UI color coding
-  icon: text("icon"), // Optional: for UI icons
+  note: text("note").notNull().default(""),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -181,32 +144,6 @@ export const taxSettings = pgTable("tax_settings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Budgets table - optional: for setting spending limits
-export const budgets = pgTable("budgets", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  categoryId: uuid("category_id").references(() => categories.id, {
-    onDelete: "cascade",
-  }),
-  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
-  period: text("period").notNull().default("monthly"), // "monthly", "yearly", etc.
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date"),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Relations
-export const usersRelations = relations(users, ({ many, one }) => ({
-  transactions: many(transactions),
-  categories: many(categories),
-  taxSettings: one(taxSettings),
-  budgets: many(budgets),
-}));
-
 export const clientRelations = relations(clients, ({ many }) => ({
   projects: many(projects),
 }));
@@ -215,43 +152,5 @@ export const projectRelations = relations(projects, ({ one }) => ({
   client: one(clients, {
     fields: [projects.clientId],
     references: [clients.id],
-  }),
-}));
-
-export const transactionsRelations = relations(transactions, ({ one }) => ({
-  user: one(users, {
-    fields: [transactions.userId],
-    references: [users.id],
-  }),
-  category: one(categories, {
-    fields: [transactions.categoryId],
-    references: [categories.id],
-  }),
-}));
-
-export const categoriesRelations = relations(categories, ({ one, many }) => ({
-  user: one(users, {
-    fields: [categories.userId],
-    references: [users.id],
-  }),
-  transactions: many(transactions),
-  budgets: many(budgets),
-}));
-
-export const taxSettingsRelations = relations(taxSettings, ({ one }) => ({
-  user: one(users, {
-    fields: [taxSettings.userId],
-    references: [users.id],
-  }),
-}));
-
-export const budgetsRelations = relations(budgets, ({ one }) => ({
-  user: one(users, {
-    fields: [budgets.userId],
-    references: [users.id],
-  }),
-  category: one(categories, {
-    fields: [budgets.categoryId],
-    references: [categories.id],
   }),
 }));
