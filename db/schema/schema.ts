@@ -38,6 +38,13 @@ export const projectFinanceTypeEnum = pgEnum("project_finance_type", [
   "expense",
 ]);
 
+export const invoiceStatusEnum = pgEnum("invoice_status", [
+  "draft",
+  "overdue",
+  "sent",
+  "paid",
+]);
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").unique().notNull(),
@@ -114,6 +121,22 @@ export const projectFinance = pgTable("project_finance", {
   hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 })
     .notNull()
     .default("0"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const invoices = pgTable("invoices", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => clients.id, { onDelete: "cascade" }),
+  issueDate: timestamp("issue_date").notNull().defaultNow(),
+  dueDate: timestamp("due_date").notNull(),
+  paymentDate: timestamp("payment_date"),
+  status: invoiceStatusEnum("status").notNull().default("draft"),
+  totalAmount: decimal("total_amount", { precision: 12, scale: 2 }).notNull(),
+  paidAmount: decimal("paid_amount", { precision: 12, scale: 2 }),
+  note: text("note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

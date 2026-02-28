@@ -216,7 +216,7 @@ export default function NewClientModal() {
           </div>
           <button
             type="submit"
-            className="rounded-lg background-elevated border px-4 py-2 outline-none border-[var(--accent-green)] transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-green)]/20"
+            className="rounded-lg background-elevated border px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer text-primary font-semibold hover:bg-(--accent-green)/20"
           >
             Add Client
           </button>

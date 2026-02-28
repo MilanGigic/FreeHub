@@ -4,12 +4,12 @@ import NewClientModal from "@/components/Clients/NewClientModal";
 
 export default function ClientsPage() {
   return (
-    <div className="flex flex-col justify-between gap-2 md:gap-4 w-full min-h-screen h-full">
+    <div className="flex flex-col gap-2 md:gap-4 w-full min-h-screen h-full">
       <header>
         <ClientsHeader />
       </header>
 
-      <main className="w-full h-full flex justify-center items-center">
+      <main className="w-full flex justify-center items-center">
         <NewClientModal />
       </main>
 

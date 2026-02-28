@@ -21,6 +21,8 @@ export type ProjectStatus =
   | "on_hold"
   | "not_started";
 
+export type InvoiceStatus = "draft" | "overdue" | "sent" | "paid";
+
 export type ClientForm = {
   firstName: string;
   lastName: string;
@@ -113,6 +115,20 @@ export interface ProjectRevenue {
   amount: string;
   note: string;
   hourlyRate: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Invoice {
+  id: string;
+  clientId: string;
+  issueDate: Date;
+  dueDate: Date;
+  paymentDate: Date | null;
+  status: InvoiceStatus;
+  totalAmount: string;
+  paidAmount: string | null;
+  note: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -5,7 +5,7 @@ import { fetchExpenseData } from "@/actions/projects/revenue/fetchExpenseData";
 import { fetchIncomeData } from "@/actions/projects/revenue/fetchIncomeData";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { ProjectRevenue } from "@/types/types";
-import { MouseEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Revenue() {
@@ -75,7 +75,7 @@ export default function Revenue() {
     })();
   }, [profit, selectedProject]);
 
-  const handleAddRevenue = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleAddRevenue = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedProject) return;
@@ -93,7 +93,7 @@ export default function Revenue() {
     }
   };
 
-  const handleAddExpense = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleAddExpense = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedProject) return;
@@ -122,7 +122,16 @@ export default function Revenue() {
         key={card.label}
         className="flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 w-full"
       >
-        <div className="flex flex-col gap-2 md:gap-4 border-b-2 background-border pb-4">
+        <form
+          onSubmit={(e) =>
+            card.label === "Revenue"
+              ? handleAddRevenue(e)
+              : card.label === "Expenses"
+                ? handleAddExpense(e)
+                : undefined
+          }
+          className="flex flex-col gap-2 md:gap-4 border-b-2 background-border pb-4"
+        >
           <p className="text-lg primary-slate uppercase font-semibold">
             {card.label}:
             <span
@@ -157,20 +166,14 @@ export default function Revenue() {
             />
           </div>
           <button
-            onClick={(e) =>
-              card.label === "Revenue"
-                ? handleAddRevenue(e)
-                : card.label === "Expenses"
-                  ? handleAddExpense(e)
-                  : undefined
-            }
+            type="submit"
             className={`p-2 w-full border rounded-lg cursor-pointer transition-all
               ${card.label === "Revenue" ? "border-(--accent-green) hover:bg-(--accent-green)/20" : card.label === "Expenses" ? "border-(--accent-red) hover:bg-(--accent-red)/20" : "border-(--accent-cyan) hover:bg-(--accent-cyan)/20"}
               `}
           >
             New <span className="capitalize">{card.label}</span>
           </button>
-        </div>
+        </form>
 
         <div className="flex flex-col gap-2 md:gap-4">
           <h1 className="text-lg primary-slate uppercase font-semibold text-center">
@@ -222,7 +225,7 @@ export default function Revenue() {
         toast.error(res.error as string);
       }
     })();
-  }, [revenueList, expenseList, selectedProject]);
+  }, [revenueList, expenseList, selectedProject, setProfit]);
 
   // THE REVENUE AND EXPENSE HISTORIES DONT WORK - THEY SHOW BOTH REVENUE AND EXPENSES -- FIX IT
   // WORK ON HOURLY RATE CALCULATION

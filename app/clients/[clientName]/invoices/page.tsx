@@ -1,37 +1,46 @@
+"use client";
+
 import InvoicesTable from "@/components/Clients/ClientPage/Invoices/InvoicesTable";
+import useFetchAllInvoices from "@/components/Clients/hooks/useFetchAllInvoices";
+import useFetchClient from "@/components/Clients/hooks/useFetchClient";
+import useCalculateOutstandingInvoices from "@/components/Clients/hooks/useCalculateOutstandingInvoices";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import useCalculateOverdueInvoices from "@/components/Clients/hooks/useCalculateOverdueInvoices";
+import NewInvoiceForm from "@/components/Clients/ClientPage/Invoices/NewInvoiceForm";
+import InvoiceHeader from "@/components/Clients/ClientPage/Invoices/InvoiceHeader";
+import DraftedInvoices from "@/components/Clients/ClientPage/Invoices/DraftedInvoices";
 
 export default function InvoicesPage() {
+  const pathname = usePathname();
+  const clientId = pathname.split("/").pop();
+  console.log("Client name:", clientId);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useFetchClient(setIsLoading);
+  useFetchAllInvoices();
+  useCalculateOutstandingInvoices();
+  useCalculateOverdueInvoices();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full w-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-(--accent-green)" />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full flex flex-col gap-2 md:gap-4">
-      <header className="flex gap-2 md:gap-4 justify-center">
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
-          <h1 className="text-base text-secondary uppercase font-semibold">
-            Outstanding Invoices
-          </h1>
-          <p className="text-2xl font-bold primary-amber">$1,200</p>
-        </div>
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
-          <h1 className="text-base text-secondary uppercase font-semibold">
-            Overdue Invoices
-          </h1>
-          <p className="text-2xl font-bold primary-red flex items-center gap-2">
-            $600
-            <span className="text-sm text-secondary">- 2 invoices overdue</span>
-          </p>
-        </div>
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
-          <h1 className="text-base text-secondary uppercase font-semibold">
-            Total Paid
-          </h1>
-          <p className="text-2xl font-bold primary-green">$12,400</p>
-        </div>
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
-          <h1 className="text-base text-secondary uppercase font-semibold">
-            Average Days to Pay
-          </h1>
-          <p className="text-2xl font-bold primary-cyan">7 days</p>
-        </div>
-      </header>
+      <InvoiceHeader />
+
+      <div className="flex justify-center w-full h-full gap-2 md:gap-4">
+        <NewInvoiceForm />
+
+        <DraftedInvoices />
+      </div>
+
       <InvoicesTable />
     </div>
   );

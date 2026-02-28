@@ -25,7 +25,7 @@ export default function ProjectsHeader() {
 
   useEffect(() => {
     setTotalRevenue(
-      projects.reduce((acc, project) => acc + Number(project.revenue || 0), 0),
+      projects.reduce((acc, project) => acc + Number(project.totalRevenue || 0), 0),
     );
   }, [projects, setTotalRevenue]);
 

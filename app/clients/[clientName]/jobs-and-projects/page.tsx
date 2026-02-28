@@ -72,7 +72,16 @@ export default function JobsAndProjectsPage() {
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Hourly Rate:
                 <span className="primary-cyan">
-                  ${project.totalHoursWorked}/hour
+                  $
+                  {(project.totalProfit &&
+                  Number(project.totalProfit) &&
+                  project.totalHoursWorked &&
+                  Number(project.totalHoursWorked)
+                    ? Number(project.totalProfit) /
+                      Number(project.totalHoursWorked)
+                    : 0
+                  ).toFixed(2)}
+                  /hour
                 </span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">

@@ -11,6 +11,10 @@
   - Publish to vercel.
 */
 
+import { redirect, usePathname } from "next/navigation";
+
 export default function ClientNamePage() {
-  return null;
+  const pathname = usePathname();
+
+  redirect(`${pathname}/overview`);
 }
