@@ -192,6 +192,60 @@
   }
 }
 
+/* Custom Animations */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(88, 166, 255, 0.4),
+      0 0 40px rgba(63, 185, 80, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(88, 166, 255, 0.6),
+      0 0 60px rgba(63, 185, 80, 0.4);
+  }
+}
+
+@layer utilities {
+  .animate-gradient-shift {
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .font-mono {
+    font-family: var(--font-jetbrains-mono);
+  }
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

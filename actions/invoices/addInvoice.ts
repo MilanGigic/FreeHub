@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { invoices } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 
 export async function addInvoice(
   amount: string,
@@ -26,6 +27,29 @@ export async function addInvoice(
         status: "sent",
       })
       .returning();
+
+    const draftedInvoice = await db.query.invoices.findFirst({
+      where: and(
+        eq(invoices.status, "draft"),
+        eq(invoices.clientId, clientId),
+        eq(invoices.totalAmount, amount),
+        eq(invoices.issueDate, issueDate),
+        eq(invoices.dueDate, dueDate),
+        eq(invoices.note, note),
+      ),
+    });
+
+    if (draftedInvoice) {
+      await db.delete(invoices).where(eq(invoices.id, draftedInvoice.id));
+
+      const draftedInvoices = await db
+        .select()
+        .from(invoices)
+        .where(
+          and(eq(invoices.clientId, clientId), eq(invoices.status, "draft")),
+        );
+      return { success: true, data, draftedInvoices };
+    }
     return { success: true, data };
   } catch (error) {
     console.error("Error adding invoice:", error);

@@ -10,6 +10,7 @@ import useCalculateOverdueInvoices from "@/components/Clients/hooks/useCalculate
 import NewInvoiceForm from "@/components/Clients/ClientPage/Invoices/NewInvoiceForm";
 import InvoiceHeader from "@/components/Clients/ClientPage/Invoices/InvoiceHeader";
 import DraftedInvoices from "@/components/Clients/ClientPage/Invoices/DraftedInvoices";
+import useCalculatePaidInvoices from "@/components/Clients/hooks/useCalculatePaidInvoices";
 
 export default function InvoicesPage() {
   const pathname = usePathname();
@@ -22,6 +23,7 @@ export default function InvoicesPage() {
   useFetchAllInvoices();
   useCalculateOutstandingInvoices();
   useCalculateOverdueInvoices();
+  useCalculatePaidInvoices();
 
   if (isLoading) {
     return (

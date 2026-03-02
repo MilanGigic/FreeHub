@@ -65,16 +65,16 @@ export default function SafeToSpend() {
   };
 
   return (
-    <div className="w-full h-full p-px bg-linear-to-b from-[var(--accent-cyan)] via-[var(--border-default)] to-[var(--bg-main)] rounded-lg">
+    <div className="w-full h-full p-px bg-linear-to-b from-(--accent-cyan) via-(--border-default) to-(--bg-main) rounded-lg">
       <div className="w-full h-full flex flex-col background-border rounded-lg p-4 background-elevated gap-4">
         <header className="w-full flex flex-col border-b-2 background-border pb-4">
-          <h1 className="text-2xl font-base uppercase flex flex-col justify-center text-secondary">
+          <h1 className="text-2xl font-base uppercase flex flex-col justify-center primary-slate">
             Safe to Spend:
             <span className="primary-cyan text-4xl font-bold">$1,200</span>
           </h1>
         </header>
 
-        <section className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 w-full text-secondary shadow-lg shadow-black/10 dark:shadow-black/30">
+        <section className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 w-full primary-slate shadow-lg shadow-black/10 dark:shadow-black/30">
           <h1 className="flex items-center gap-2">
             <Star className="primary-green" />
             Reserved:{" "}
@@ -93,11 +93,11 @@ export default function SafeToSpend() {
         </section>
 
         <main className="w-full flex flex-col gap-2">
-          <h1 className="text-lg font-semibold text-secondary">
+          <h1 className="text-lg font-semibold primary-slate">
             What if I buy a...
           </h1>
           <div className="relative">
-            <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 text-secondary" />
+            <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 primary-slate" />
             <input
               type="text"
               placeholder="Enter Item Price (e.g., 100 + 50 or 200 * 1.5)"
@@ -108,7 +108,7 @@ export default function SafeToSpend() {
             />
           </div>
           {calculatedPrice !== null && (
-            <p className="text-sm text-secondary">
+            <p className="text-sm primary-slate">
               Calculated:{" "}
               <span className="primary-green">
                 $
@@ -123,7 +123,7 @@ export default function SafeToSpend() {
           <div className="flex items-center gap-2">
             <HandCoins className="primary-cyan w-5 h-5" />
             <div>
-              <h1 className="text-base font-medium text-secondary flex items-center gap-2">
+              <h1 className="text-base font-medium primary-slate flex items-center gap-2">
                 New Safe to Spend:
                 <span className="primary-cyan text-lg font-bold">
                   {calculatedPrice !== null
@@ -134,7 +134,7 @@ export default function SafeToSpend() {
                     : "$1200"}
                 </span>
               </h1>
-              <p className="text-sm text-secondary">
+              <p className="text-sm primary-slate">
                 Cash buffer lasts:{" "}
                 <span className="primary-indigo">
                   {/* {Math.floor((1200 - calculatedPrice!) / 1000)} days */}

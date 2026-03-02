@@ -17,6 +17,16 @@ type ClientStore = {
   setOutstandingInvoices: (outstandingInvoices: string) => void;
   overdueInvoices: { data: string; count: number };
   setOverdueInvoices: Dispatch<SetStateAction<{ data: string; count: number }>>;
+  amount: string;
+  setAmount: (amount: string) => void;
+  issueDate: Date;
+  setIssueDate: (issueDate: Date) => void;
+  dueDate: Date;
+  setDueDate: (dueDate: Date) => void;
+  note: string;
+  setNote: (note: string) => void;
+  paidInvoices: string;
+  setPaidInvoices: (paidInvoices: string) => void;
 };
 
 export const useClientStore = create<ClientStore>((set) => ({
@@ -39,4 +49,14 @@ export const useClientStore = create<ClientStore>((set) => ({
       overdueInvoices:
         typeof value === "function" ? value(state.overdueInvoices) : value,
     })),
+  amount: "",
+  setAmount: (amount: string) => set({ amount }),
+  issueDate: new Date(),
+  setIssueDate: (issueDate: Date) => set({ issueDate }),
+  dueDate: new Date(),
+  setDueDate: (dueDate: Date) => set({ dueDate }),
+  note: "",
+  setNote: (note: string) => set({ note }),
+  paidInvoices: "",
+  setPaidInvoices: (paidInvoices: string) => set({ paidInvoices }),
 }));

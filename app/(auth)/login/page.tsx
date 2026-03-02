@@ -103,7 +103,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 bg-[var(--tag-expense-bg)] border border-[var(--accent-red)] rounded-lg primary-red text-sm">
+            <div className="p-3 bg-(--tag-expense-bg) border border-(--accent-red) rounded-lg primary-red text-sm">
               {error}
             </div>
           )}

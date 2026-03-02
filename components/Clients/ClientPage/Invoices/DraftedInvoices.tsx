@@ -4,7 +4,8 @@ import { useClientStore } from "@/lib/store/useClientStore";
 import { useMemo } from "react";
 
 export default function DraftedInvoices() {
-  const { invoices } = useClientStore();
+  const { invoices, setAmount, setIssueDate, setDueDate, setNote } =
+    useClientStore();
 
   const draftedInvoices = useMemo(
     () => invoices.filter((invoice) => invoice.status === "draft"),
@@ -29,7 +30,13 @@ export default function DraftedInvoices() {
           {draftedInvoices.map((invoice) => (
             <div
               key={invoice.id}
-              className="flex flex-col gap-2 border background-border rounded-lg p-2 background-elevated shrink-0 min-w-[240px] w-[240px]"
+              className="flex flex-col gap-2 border background-border rounded-lg p-2 background-elevated shrink-0 min-w-[240px] w-[240px] cursor-pointer transition-all duration-300 ease-out hover:shadow-xl hover:shadow-[#2dd4bf]/20"
+              onClick={() => {
+                setAmount(invoice.totalAmount);
+                setIssueDate(invoice.issueDate);
+                setDueDate(invoice.dueDate);
+                setNote(invoice.note || "");
+              }}
             >
               <p className="text-sm primary-slate text-center uppercase font-semibold flex flex-col items-center">
                 Amount:{" "}

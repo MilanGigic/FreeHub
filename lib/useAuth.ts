@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Client-side auth hook
  * Provides utilities for checking auth state and accessing DEK

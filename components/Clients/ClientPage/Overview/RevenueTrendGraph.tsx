@@ -8,6 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useClientStore } from "@/lib/store/useClientStore";
+import type { Invoice } from "@/types/types";
 
 interface RevenueData {
   date: string;
@@ -45,30 +47,58 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
   return null;
 };
 
-function generateSampleData(days: number): RevenueData[] {
+function buildRevenueWindow(
+  invoices: Invoice[],
+  start: Date,
+  end: Date,
+): RevenueData[] {
   const data: RevenueData[] = [];
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
+  const dayMs = 1000 * 60 * 60 * 24;
+  const days =
+    Math.floor((end.getTime() - start.getTime()) / dayMs) >= 0
+      ? Math.floor((end.getTime() - start.getTime()) / dayMs) + 1
+      : 0;
 
-  // Example pattern for pure revenue values over time (no inflow/outflow/balance concept)
-  const revenuePattern = [
-    2000, 2200, 2500, 1900, 2300, 2400, 2100, 2500, 2700, 2600, 3000, 3200,
-    3100, 2900, 3300, 3500, 3400, 3700, 3900, 3800, 4000, 4200, 4100, 4300,
-    4400, 4600, 4700, 4500, 4800, 5000,
-  ];
+  const totalsByDay = new Map<string, number>();
 
+  // Prepopulate all days in the window with 0 so the chart has a continuous x-axis
   for (let i = 0; i < days; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    const key = date.toISOString().slice(0, 10); // YYYY-MM-DD
+    totalsByDay.set(key, 0);
+  }
 
+  invoices.forEach((invoice) => {
+    if (invoice.status !== "paid") return;
+
+    const rawDate = invoice.paymentDate || invoice.issueDate;
+    const dateObj = new Date(rawDate);
+
+    if (dateObj < start || dateObj > end) return;
+
+    const key = dateObj.toISOString().slice(0, 10);
+    const current = totalsByDay.get(key) ?? 0;
+    totalsByDay.set(key, current + Number(invoice.totalAmount || 0));
+  });
+
+  totalsByDay.forEach((value, key) => {
+    const dateObj = new Date(key);
     data.push({
-      date: date.toLocaleDateString("en-US", {
+      date: dateObj.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      value: revenuePattern[i % revenuePattern.length],
+      value,
     });
-  }
+  });
+
+  // Ensure chronological order
+  data.sort((a, b) => {
+    const aDate = new Date(a.date);
+    const bDate = new Date(b.date);
+    return aDate.getTime() - bDate.getTime();
+  });
 
   return data;
 }
@@ -83,15 +113,49 @@ const formatCurrency = (value: number) => {
   return `$${value.toFixed(0)}`;
 };
 
-const revenueTrendPercentage = 12;
-
 export default function RevenueTrendGraph() {
+  const { invoices } = useClientStore();
   const [timeRange, setTimeRange] = useState<"30" | "365">("30");
 
-  const chartData = useMemo(() => {
+  const { chartData, revenueTrendPercentage } = useMemo(() => {
+    const now = new Date();
     const days = timeRange === "30" ? 30 : 365;
-    return generateSampleData(days);
-  }, [timeRange]);
+
+    const endCurrent = now;
+    const startCurrent = new Date(endCurrent);
+    startCurrent.setDate(endCurrent.getDate() - (days - 1));
+
+    const endPrevious = new Date(startCurrent);
+    endPrevious.setDate(startCurrent.getDate() - 1);
+    const startPrevious = new Date(endPrevious);
+    startPrevious.setDate(endPrevious.getDate() - (days - 1));
+
+    const currentWindow = buildRevenueWindow(invoices, startCurrent, endCurrent);
+    const previousWindow = buildRevenueWindow(
+      invoices,
+      startPrevious,
+      endPrevious,
+    );
+
+    const currentTotal = currentWindow.reduce(
+      (sum, entry) => sum + entry.value,
+      0,
+    );
+    const previousTotal = previousWindow.reduce(
+      (sum, entry) => sum + entry.value,
+      0,
+    );
+
+    let percentage = 0;
+    if (previousTotal > 0) {
+      percentage = ((currentTotal - previousTotal) / previousTotal) * 100;
+    }
+
+    return {
+      chartData: currentWindow,
+      revenueTrendPercentage: percentage,
+    };
+  }, [invoices, timeRange]);
 
   return (
     <div className="flex flex-col gap-2 md:gap-4 items-center justify-between p-4 background-elevated border background-border rounded-lg">

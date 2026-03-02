@@ -1,8 +1,13 @@
 "use client";
 
+import { calculateOutstandingInvoices } from "@/actions/invoices/calculateOutstandingInvoices";
+import { calculateOverdueInvoices } from "@/actions/invoices/calculateOverdueInvoice";
+import { calculatePaidInvoices } from "@/actions/invoices/calculatePaidInvoices";
+import { updateInvoiceStatus } from "@/actions/invoices/updateInvoiceStatus";
 import { useClientStore } from "@/lib/store/useClientStore";
-import { Invoice } from "@/types/types";
+import { Invoice, InvoiceStatus } from "@/types/types";
 import { useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 const invoiceListHeaders = [
   "Invoice #",
@@ -23,7 +28,14 @@ function filterInvoices(invoices: Invoice[], show: StatusFilter): Invoice[] {
 }
 
 export default function InvoicesTable() {
-  const { invoices, selectedClient } = useClientStore();
+  const {
+    invoices,
+    selectedClient,
+    setInvoices,
+    setOutstandingInvoices,
+    setOverdueInvoices,
+    setPaidInvoices,
+  } = useClientStore();
 
   const [show, setShow] = useState<StatusFilter>("all");
 
@@ -31,6 +43,45 @@ export default function InvoicesTable() {
     () => filterInvoices(invoices, show),
     [invoices, show],
   );
+
+  const handleStatusChange = async (id: string, status: InvoiceStatus) => {
+    if (!selectedClient) return;
+    const res = await updateInvoiceStatus(id, status, selectedClient.id);
+    if (res.success) {
+      if (res.data) {
+        setInvoices(res.data);
+
+        const [outstandingRes, overdueRes, paidRes] = await Promise.all([
+          calculateOutstandingInvoices(selectedClient.id),
+          calculateOverdueInvoices(selectedClient.id),
+          calculatePaidInvoices(selectedClient.id),
+        ]);
+
+        if (outstandingRes.success && outstandingRes.data) {
+          setOutstandingInvoices(outstandingRes.data);
+        } else if (!outstandingRes.success && outstandingRes.error) {
+          toast.error(outstandingRes.error as string);
+        }
+
+        if (overdueRes.success && overdueRes.data !== undefined) {
+          setOverdueInvoices({
+            data: overdueRes.data,
+            count: overdueRes.count,
+          });
+        } else if (!overdueRes.success && overdueRes.error) {
+          toast.error(overdueRes.error as string);
+        }
+
+        if (paidRes.success && paidRes.data) {
+          setPaidInvoices(paidRes.data);
+        } else if (!paidRes.success && paidRes.error) {
+          toast.error(paidRes.error as string);
+        }
+      }
+    } else {
+      toast.error(res.error);
+    }
+  };
 
   return (
     <div className="w-full h-full">
@@ -93,11 +144,29 @@ export default function InvoicesTable() {
               <td
                 className={`text-sm text-primary py-2 ${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
               >
-                <span
+                <select
                   className={`${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
+                  value={invoice.status}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      invoice.id,
+                      e.target.value as InvoiceStatus,
+                    )
+                  }
                 >
-                  {invoice.status}
-                </span>
+                  <option value="draft" className="primary-slate">
+                    Draft
+                  </option>
+                  <option value="sent" className="primary-amber">
+                    Sent
+                  </option>
+                  <option value="overdue" className="primary-red">
+                    Overdue
+                  </option>
+                  <option value="paid" className="primary-green">
+                    Paid
+                  </option>
+                </select>
               </td>
               <td className="text-sm text-primary py-2">
                 {invoice.issueDate.toLocaleDateString()}
@@ -109,16 +178,16 @@ export default function InvoicesTable() {
                 <span
                   className={`${invoice.paymentDate ? "primary-green" : invoice.paymentDate ? "primary-amber" : invoice.paymentDate ? "primary-red" : "primary-slate"}`}
                 >
-                  {invoice.dueDate < new Date()
-                    ? Math.floor(
-                        (invoice.dueDate.getTime() - new Date().getTime()) /
-                          (1000 * 60 * 60 * 24),
-                      )
-                    : Math.floor(
-                        (invoice.dueDate.getTime() -
-                          invoice.issueDate.getTime()) /
-                          (1000 * 60 * 60 * 24),
-                      )}
+                  {invoice.status === "paid" ? (
+                    <span className="primary-green uppercase font-semibold text-sm">
+                      Paid
+                    </span>
+                  ) : (
+                    Math.floor(
+                      (invoice.dueDate.getTime() - new Date().getTime()) /
+                        (1000 * 60 * 60 * 24),
+                    )
+                  )}
                 </span>
               </td>
             </tr>

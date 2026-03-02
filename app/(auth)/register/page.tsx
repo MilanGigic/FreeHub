@@ -77,7 +77,7 @@ export default function RegisterPage() {
 
   const inputClass =
     "w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent";
-  const labelClass = "block text-sm font-medium text-secondary mb-2";
+  const labelClass = "block text-sm font-medium primary-slate mb-2";
 
   return (
     <div className="min-h-screen flex items-center justify-center background">
@@ -181,7 +181,7 @@ export default function RegisterPage() {
           </div>
 
           {error && (
-            <div className="p-3 bg-[var(--tag-expense-bg)] border border-[var(--accent-red)] rounded-lg primary-red text-sm">
+            <div className="p-3 bg-(--tag-expense-bg) border border-(--accent-red) rounded-lg primary-red text-sm">
               {error}
             </div>
           )}

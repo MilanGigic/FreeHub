@@ -11,9 +11,13 @@ import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { fetchClientsProjects } from "@/actions/clients/fetchClientsProjects";
 import { useEffect } from "react";
+import useFetchAllInvoices from "@/components/Clients/hooks/useFetchAllInvoices";
 
 export default function OverviewClient() {
   const { setClientProjects, selectedClientId } = useClientStore();
+
+  // Ensure invoices are loaded for this client so overview components can use real data
+  useFetchAllInvoices();
 
   useEffect(() => {
     (async () => {

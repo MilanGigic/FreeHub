@@ -2,16 +2,23 @@
 
 import { addInvoice, addToDrafts } from "@/actions/invoices/addInvoice";
 import { useClientStore } from "@/lib/store/useClientStore";
-import { FormEvent, MouseEvent, useState } from "react";
+import { FormEvent, MouseEvent } from "react";
 import { toast } from "react-toastify";
 
 export default function NewInvoiceForm() {
-  const { selectedClient, invoices, setInvoices } = useClientStore();
-
-  const [amount, setAmount] = useState<string>("");
-  const [issueDate, setIssueDate] = useState<Date>(new Date());
-  const [dueDate, setDueDate] = useState<Date>(new Date());
-  const [note, setNote] = useState<string>("");
+  const {
+    selectedClient,
+    invoices,
+    setInvoices,
+    amount,
+    setAmount,
+    issueDate,
+    setIssueDate,
+    dueDate,
+    setDueDate,
+    note,
+    setNote,
+  } = useClientStore();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

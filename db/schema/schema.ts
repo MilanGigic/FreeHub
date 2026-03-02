@@ -141,35 +141,6 @@ export const invoices = pgTable("invoices", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Tax settings table - stores tax rates and settings per user
-export const taxSettings = pgTable("tax_settings", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .unique()
-    .references(() => users.id, { onDelete: "cascade" }),
-  federalTaxRate: decimal("federal_tax_rate", {
-    precision: 5,
-    scale: 2,
-  }).default("0"), // e.g., 22.00 for 22%
-  stateTaxRate: decimal("state_tax_rate", { precision: 5, scale: 2 }).default(
-    "0",
-  ),
-  localTaxRate: decimal("local_tax_rate", { precision: 5, scale: 2 }).default(
-    "0",
-  ),
-  socialSecurityRate: decimal("social_security_rate", {
-    precision: 5,
-    scale: 2,
-  }).default("6.2"), // Default 6.2%
-  medicareRate: decimal("medicare_rate", { precision: 5, scale: 2 }).default(
-    "1.45",
-  ), // Default 1.45%
-  taxYear: text("tax_year").notNull().default("2026"), // For tracking different tax years
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const clientRelations = relations(clients, ({ many }) => ({
   projects: many(projects),
 }));

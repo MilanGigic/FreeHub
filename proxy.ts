@@ -18,7 +18,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Protect all other routes
-  if (!sessionToken) {
+  if (!sessionToken && !pathname.includes("/landing")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

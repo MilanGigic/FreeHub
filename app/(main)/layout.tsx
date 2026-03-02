@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 

@@ -18,8 +18,8 @@ const tabs = [
   "Dashboard",
   "Clients",
   "Projects",
-  "Tasks",
   "Finances",
+  "Tasks",
   "Reports",
   "Messages",
 ];
