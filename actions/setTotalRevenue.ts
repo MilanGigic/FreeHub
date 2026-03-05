@@ -13,9 +13,13 @@ export async function setTotalRevenue(userId: string, userProjects: Project[]) {
     userProjects,
   );
 
-  if (!userId || !userProjects || userProjects.length === 0) {
+  if (!userId || !userProjects) {
     console.log("Validation failed: All fields are required");
     return { success: false, error: "All fields are required" };
+  }
+
+  if (userProjects.length === 0) {
+    return { success: true, data: [] };
   }
 
   try {
