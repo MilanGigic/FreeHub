@@ -62,7 +62,7 @@ export default function RegisterPage() {
         sessionStorage.setItem("dekSalt", salt);
 
         // Redirect to dashboard
-        router.push("/dashboard");
+        router.push("/dashboard?wizard=true");
         router.refresh();
       } else {
         setError(result.error || "Registration failed");

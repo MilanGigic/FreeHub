@@ -1,9 +1,11 @@
 "use client";
 
+import { useUIStore } from "@/lib/store/useUIStore";
 import { useRouter } from "next/navigation";
 
 export default function CTASection() {
   const router = useRouter();
+  const { setIsRegisterWindowOpen } = useUIStore();
   return (
     <section className="relative py-24 px-6 bg-linear-to-br from-gray-900 via-gray-800 to-black">
       <div className="max-w-4xl mx-auto text-center">
@@ -20,7 +22,10 @@ export default function CTASection() {
         <div className="inline-block">
           <button
             className="group relative px-12 py-5 text-xl font-bold text-white bg-linear-to-r from-purple-600 via-blue-500 to-green-500 rounded-2xl bg-size-[200%_200%] animate-gradient-shift hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(88,166,255,0.4),0_0_40px_rgba(63,185,80,0.2)] animate-pulse-glow cursor-pointer"
-            onClick={() => router.push("/register")}
+            onClick={() => {
+              router.push("/dashboard");
+              setIsRegisterWindowOpen(true);
+            }}
           >
             <span className="relative z-10">Start Free — No Card Required</span>
           </button>

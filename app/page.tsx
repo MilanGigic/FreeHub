@@ -12,9 +12,9 @@ export default function Home() {
     if (loading) return;
 
     if (user) {
-      router.replace("/dashboard");
+      router.push("/dashboard");
     } else {
-      router.replace("/landing");
+      router.push("/landing");
     }
   }, [user, loading, router]);
 

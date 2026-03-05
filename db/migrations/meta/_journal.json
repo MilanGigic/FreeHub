@@ -127,6 +127,20 @@
       "when": 1772550958045,
       "tag": "0017_dizzy_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1772722170727,
+      "tag": "0018_wooden_skaar",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1772751835146,
+      "tag": "0019_material_ultron",
+      "breakpoints": true
     }
   ]
 }

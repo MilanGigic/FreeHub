@@ -136,3 +136,14 @@ export interface Invoice {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface TaxProfile {
+  entityType: string | null;
+  filingStatus: string | null;
+  stateResidence: string | null;
+  homeOfficeSqft: number | null;
+  homeOfficeSimplified: boolean | null;
+  mileageTracking: boolean | null;
+  healthInsuranceDeduction: boolean | null;
+  retirementContribution: boolean | null;
+}

@@ -69,7 +69,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-secondary mb-2"
+              className="block text-sm font-medium primary-slate mb-2"
             >
               Email
             </label>
@@ -87,7 +87,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-secondary mb-2"
+              className="block text-sm font-medium primary-slate mb-2"
             >
               Password
             </label>
