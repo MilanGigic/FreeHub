@@ -3,11 +3,13 @@
 import { addEntryToCalendar } from "@/actions/projects/calendar/addEntryToCalendar";
 import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntries";
 import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useAuth } from "@/lib/useAuth";
 import { ProjectCalendar } from "@/types/types";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function CalendarEntries() {
+  const { user } = useAuth();
   const {
     selectedProject,
     selectedDate,
@@ -20,9 +22,10 @@ export default function CalendarEntries() {
   const [existingEntries, setExistingEntries] = useState<ProjectCalendar[]>([]);
 
   useEffect(() => {
-    if (!selectedProject || !selectedDate) return;
+    if (!selectedProject || !selectedDate || !user) return;
     (async () => {
       const entries = await fetchExistingEntries(
+        user.id,
         selectedProject.id,
         selectedDate,
       );
@@ -36,7 +39,7 @@ export default function CalendarEntries() {
         );
       }
     })();
-  }, [selectedProject, selectedDate]);
+  }, [selectedProject, selectedDate, user]);
 
   if (!selectedProject) return null;
 
@@ -47,9 +50,10 @@ export default function CalendarEntries() {
   const handleAddEntry = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!selectedProject || !selectedDate || !hoursWorked) return;
+    if (!selectedProject || !selectedDate || !hoursWorked || !user) return;
 
     const result = await addEntryToCalendar(
+      user.id,
       selectedProject.id,
       selectedDate,
       note,

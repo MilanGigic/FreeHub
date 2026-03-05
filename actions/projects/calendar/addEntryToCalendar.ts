@@ -6,6 +6,7 @@ import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingE
 import { storeTotalHours } from "../storeTotalHours";
 
 export async function addEntryToCalendar(
+  userId: string,
   projectId: string,
   date: Date,
   note: string,
@@ -15,6 +16,7 @@ export async function addEntryToCalendar(
     const [data] = await db
       .insert(projectCalendar)
       .values({
+        userId,
         projectId,
         date,
         note,
@@ -26,7 +28,7 @@ export async function addEntryToCalendar(
       return { success: false, error: "Failed to add entry to calendar" };
     }
 
-    const newEntries = await fetchExistingEntries(projectId, date);
+    const newEntries = await fetchExistingEntries(userId, projectId, date);
 
     await storeTotalHours(projectId);
 
