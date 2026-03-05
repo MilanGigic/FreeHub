@@ -63,7 +63,7 @@ export default function Sidebar() {
                 className="text-primary transition-all border background-border rounded-full p-1"
               />
             </button>
-            <div className="flex flex-col pt-2 gap-2 border-b background-border h-[92%]">
+            <div className="flex flex-col pt-2 gap-2 h-[92%]">
               {tabs.map((tab) => (
                 <Link
                   key={tab}
@@ -87,7 +87,7 @@ export default function Sidebar() {
 
       {/* DESKTOP VIEW */}
       <div className="hidden w-24 md:w-48 h-full background-sidebar background-border border-r p-1 z-20 relative sm:flex sm:flex-col">
-        <div className="flex flex-col pt-2 gap-2 border-b background-border flex-1">
+        <div className="flex flex-col pt-2 gap-2 flex-1">
           {tabs.map((tab) => (
             <Link
               key={tab}

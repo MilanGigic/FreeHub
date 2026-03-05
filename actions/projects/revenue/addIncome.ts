@@ -1,9 +1,11 @@
 "use server";
 
 import { db } from "@/db";
-import { projectFinance } from "@/db/schema";
+import { projectFinance, projects } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function addIncome(
+  userId: string,
   projectId: string,
   revenue: string,
   note: string,
@@ -16,12 +18,27 @@ export async function addIncome(
     const [data] = await db
       .insert(projectFinance)
       .values({
+        userId,
         projectId,
         type: "income",
         amount: revenue,
         note,
       })
       .returning();
+
+    const project = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
+
+    const currentTotal = Number(project?.totalRevenue ?? 0);
+
+    await db
+      .update(projects)
+      .set({
+        totalRevenue: (currentTotal + Number(revenue)).toFixed(2),
+      })
+      .where(eq(projects.id, projectId));
+
     return { success: true, data };
   } catch (error) {
     console.error("Error adding revenue:", error);

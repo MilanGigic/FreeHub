@@ -24,8 +24,12 @@ export default function ProjectsHeader() {
   const [results, setResults] = useState<Project[]>([]);
 
   useEffect(() => {
+    if (projects.length === 0) return;
     setTotalRevenue(
-      projects.reduce((acc, project) => acc + Number(project.totalRevenue || 0), 0),
+      projects
+        .reduce((acc, project) => acc + Number(project.totalRevenue || 0), 0)
+        .toFixed(2)
+        .toString(),
     );
   }, [projects, setTotalRevenue]);
 

@@ -1,13 +1,22 @@
 "use client";
 
 import { addInvoice, addToDrafts } from "@/actions/invoices/addInvoice";
+import { fetchAllClientProjects } from "@/actions/projects/fetchAllClientProjects";
 import { useClientStore } from "@/lib/store/useClientStore";
-import { FormEvent, MouseEvent } from "react";
+import { useDataStore } from "@/lib/store/useDataStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useAuth } from "@/lib/useAuth";
+import { Project } from "@/types/types";
+import { FormEvent, MouseEvent, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function NewInvoiceForm() {
+  const { user } = useAuth();
+  const { selectedClient } = useClientStore();
+  const { projects, setProjects } = useDataStore();
+  const { selectedProject, setSelectedProject } = useProjectStore();
   const {
-    selectedClient,
     invoices,
     setInvoices,
     amount,
@@ -18,13 +27,29 @@ export default function NewInvoiceForm() {
     setDueDate,
     note,
     setNote,
-  } = useClientStore();
+    setOutstandingInvoices,
+    setOverdueInvoices,
+    setPaidInvoices,
+  } = useInvoiceStore();
+
+  useEffect(() => {
+    (async () => {
+      if (!selectedClient || !user) return;
+
+      const res = await fetchAllClientProjects(selectedClient.id, user.id);
+      if (res.success) {
+        if (res.data) {
+          setProjects(res.data);
+        }
+      }
+    })();
+  }, [selectedClient, setProjects, user]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submit triggered for new invoice.");
 
-    if (!selectedClient) {
+    if (!selectedClient || !user || !selectedProject) {
       console.log("No selected client found. Exiting submission handler.");
       return;
     }
@@ -36,6 +61,7 @@ export default function NewInvoiceForm() {
         dueDate,
         note,
         clientId: selectedClient.id,
+        projectId: selectedProject.id,
       });
       const res = await addInvoice(
         amount,
@@ -43,6 +69,8 @@ export default function NewInvoiceForm() {
         dueDate,
         note,
         selectedClient.id,
+        user.id,
+        selectedProject.id,
       );
 
       if (!res.success) {
@@ -53,7 +81,20 @@ export default function NewInvoiceForm() {
           "Invoice created successfully. Updating state with new invoice.",
         );
         setInvoices([...invoices, res.data]);
+        if (res.outstandingInvoices) {
+          setOutstandingInvoices(res.outstandingInvoices);
+        }
+        if (res.overdueInvoices) {
+          setOverdueInvoices({
+            data: res.overdueInvoices.data,
+            count: res.overdueInvoices.count,
+          });
+        }
+        if (res.paidInvoices) {
+          setPaidInvoices(res.paidInvoices);
+        }
         toast.success("Invoice created successfully");
+        setSelectedProject(null);
         setAmount("");
         setIssueDate(new Date());
         setDueDate(new Date());
@@ -67,7 +108,15 @@ export default function NewInvoiceForm() {
   const handleAddToDrafts = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!selectedClient) return;
+    if (!selectedClient || !user || !selectedProject) return;
+    console.log("Calling addToDrafts with values:", {
+      amount,
+      issueDate,
+      dueDate,
+      note,
+      clientId: selectedClient.id,
+      projectId: selectedProject.id,
+    });
 
     try {
       const res = await addToDrafts(
@@ -76,13 +125,17 @@ export default function NewInvoiceForm() {
         dueDate,
         note,
         selectedClient.id,
+        user.id,
+        selectedProject.id,
       );
 
       if (!res.success) {
         toast.error(res.error as string);
+        console.log("Error adding to drafts:", res.error);
       } else if (res.data) {
         setInvoices([...invoices, res.data]);
         toast.success("Invoice added to drafts successfully");
+        setSelectedProject(null);
         setAmount("");
         setIssueDate(new Date());
         setDueDate(new Date());
@@ -113,9 +166,43 @@ export default function NewInvoiceForm() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
-          className="w-full p-2 border background-border rounded-lg"
+          className="w-full p-2 border background-border rounded-lg text-primary focus:outline focus:outline-(--accent-cyan)"
         />
       </div>
+      {/*  */}
+
+      {/* PROJECT SELECTION */}
+      <div>
+        <label
+          htmlFor="project"
+          className="primary-slate font-semibold uppercase"
+        >
+          Project:
+        </label>
+        <select
+          id="project"
+          name="project"
+          className="w-full p-2 border background-border rounded-lg text-primary focus:outline focus:outline-(--accent-cyan)"
+          value={selectedProject ? selectedProject.id : ""}
+          onChange={(e) => {
+            const project = projects.find((p) => p.id === e.target.value) as
+              | Project
+              | undefined;
+            if (project) {
+              setSelectedProject(project);
+              console.log("Selected project:", project);
+            }
+          }}
+        >
+          <option value="">Select Project</option>
+          {projects.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/*  */}
 
       {/* DATE INPUTS */}
@@ -133,7 +220,7 @@ export default function NewInvoiceForm() {
             value={issueDate.toISOString().split("T")[0]}
             onChange={(e) => setIssueDate(new Date(e.target.value))}
             required
-            className="w-full p-2 border background-border rounded-lg"
+            className="w-full p-2 border background-border rounded-lg text-primary focus:outline focus:outline-(--accent-cyan)"
           />
         </div>
         <div className="w-full">
@@ -149,7 +236,7 @@ export default function NewInvoiceForm() {
             value={dueDate.toISOString().split("T")[0]}
             onChange={(e) => setDueDate(new Date(e.target.value))}
             required
-            className="w-full p-2 border background-border rounded-lg"
+            className="w-full p-2 border background-border rounded-lg text-primary focus:outline focus:outline-(--accent-cyan)"
           />
         </div>
       </div>
@@ -164,7 +251,7 @@ export default function NewInvoiceForm() {
           id="note"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full p-2 border background-border rounded-lg"
+          className="w-full p-2 border background-border rounded-lg text-primary focus:outline focus:outline-(--accent-cyan)"
         />
       </div>
       {/*  */}

@@ -1,7 +1,7 @@
-import { Minus, Plus, Repeat } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 
-const transactionTypes = ["Income", "Expense", "Recurring"];
+const transactionTypes = ["Income", "Expense"];
 const transactionTableLabels = ["Title", "Type", "Amount"];
 const transactionTableData = [
   {
@@ -38,14 +38,14 @@ export default function TransactionSimulator() {
     <div className="background-elevated border background-border rounded-lg p-4 w-full">
       <header className="flex flex-col gap-2 md:gap-4 w-full pb-4">
         <div className="flex md:flex-row flex-col items-center justify-between">
-          <h1 className="text-secondary uppercase font-semibold text-lg">
+          <h1 className="primary-slate uppercase font-semibold text-lg">
             Transaction Simulator
           </h1>
           <div className="flex items-center gap-2 md:gap-4">
             {transactionTypes.map((type) => (
               <button
                 key={type}
-                className={`text-sm text-secondary background-elevated border rounded-lg p-2 transition-all cursor-pointer ${transactionType === type ? "border-[var(--accent-cyan)]" : "background-border"}`}
+                className={`text-sm primary-slate background-elevated border rounded-lg p-2 transition-all cursor-pointer ${transactionType === type ? "border-(--accent-cyan)" : "background-border"}`}
                 onClick={() => setTransactionType(type)}
               >
                 {type}
@@ -55,14 +55,11 @@ export default function TransactionSimulator() {
         </div>
         <div className="w-full flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2 md:gap-4">
-            <label
-              htmlFor="transactionTitle"
-              className="text-sm text-secondary"
-            >
+            <label htmlFor="transactionTitle" className="text-sm primary-slate">
               {transactionType === "Income" ? (
-                <Plus className="w-4 h-4 text-secondary" />
+                <Plus className="w-4 h-4 primary-slate" />
               ) : (
-                <Minus className="w-4 h-4 text-secondary" />
+                <Minus className="w-4 h-4 primary-slate" />
               )}
             </label>
             <input
@@ -75,7 +72,7 @@ export default function TransactionSimulator() {
             <div className="flex items-center gap-2 md:gap-4">
               <label
                 htmlFor="transactionFrom"
-                className="text-sm text-secondary"
+                className="text-sm primary-slate"
               >
                 from
               </label>
@@ -87,10 +84,7 @@ export default function TransactionSimulator() {
             </div>
           ) : (
             <div className="flex items-center gap-2 md:gap-4">
-              <label
-                htmlFor="transactionFor"
-                className="text-sm text-secondary"
-              >
+              <label htmlFor="transactionFor" className="text-sm primary-slate">
                 for
               </label>
               <input
@@ -101,20 +95,20 @@ export default function TransactionSimulator() {
             </div>
           )}
         </div>
-        <button className="rounded-lg background-elevated border px-4 py-2 outline-none border-[var(--accent-green)] transition-all cursor-pointer text-primary font-semibold hover:bg-[var(--accent-green)]/20">
+        <button className="rounded-lg background-elevated border px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer text-primary font-semibold hover:bg-(--accent-green)/20">
           Simulate
         </button>
       </header>
 
       <main>
         <div className="flex items-center gap-2 justify-center pb-2">
-          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-green)]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold primary-slate hover:border-(--accent-green)">
             Income
           </button>
-          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-red)]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold primary-slate hover:border-(--accent-red)">
             Expense
           </button>
-          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold text-secondary hover:border-[var(--accent-amber)]">
+          <button className="rounded-lg background-elevated border px-4 py-2 outline-none background-border transition-all cursor-pointer font-semibold primary-slate hover:border-(--accent-amber)">
             Recurring
           </button>
         </div>
@@ -122,7 +116,7 @@ export default function TransactionSimulator() {
           <thead>
             <tr>
               {transactionTableLabels.map((label) => (
-                <th key={label} className="text-sm text-secondary text-center">
+                <th key={label} className="text-sm primary-slate text-center">
                   {label}
                 </th>
               ))}
@@ -139,7 +133,7 @@ export default function TransactionSimulator() {
                 >
                   {data.type}
                 </td>
-                <td className={`text-sm text-center text-secondary py-2`}>
+                <td className={`text-sm text-center primary-slate py-2`}>
                   $
                   <span
                     className={`ml-0.5 ${data.type === "Income" ? "primary-green" : data.type === "Expense" ? "primary-red" : data.type === "Recurring" ? "primary-cyan" : "primary-amber"}`}

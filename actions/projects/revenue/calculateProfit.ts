@@ -2,29 +2,29 @@
 
 import { db } from "@/db";
 import { projects } from "@/db/schema";
-import { ProjectRevenue } from "@/types/types";
+import { Invoice, ProjectRevenue } from "@/types/types";
 import { eq } from "drizzle-orm";
 
 export async function calculateProfit(
   projectId: string,
   revenueList: ProjectRevenue[],
   expenseList: ProjectRevenue[],
+  paidInvoices: Invoice[],
 ) {
-  if (!projectId || !revenueList || !expenseList) {
-    if (revenueList.length === 0 || expenseList.length === 0) {
-      return {
-        success: false,
-        error: "Revenue and expense lists are required",
-      };
-    }
-    return {
-      success: false,
-      error: "Project ID, revenue list, and expense list are required",
-    };
+  if (!projectId) {
+    return { success: false, error: "Project ID is required" };
+  }
+  if (!revenueList || !expenseList || !paidInvoices) {
+    return { success: false, error: "Revenue and expense lists are required" };
   }
 
   const totalRevenue = revenueList.reduce(
     (acc, item) => acc + Number(item.amount),
+    0,
+  );
+
+  const totalPaidInvoices = paidInvoices.reduce(
+    (acc, item) => acc + Number(item.totalAmount),
     0,
   );
   const totalExpenses = expenseList.reduce(
@@ -32,7 +32,7 @@ export async function calculateProfit(
     0,
   );
 
-  const totalProfit = totalRevenue - totalExpenses;
+  const totalProfit = totalRevenue + totalPaidInvoices - totalExpenses;
 
   try {
     const project = await db
@@ -50,9 +50,9 @@ export async function calculateProfit(
     const [updatedProject] = await db
       .update(projects)
       .set({
-        totalProfit: totalProfit.toString(),
-        totalRevenue: totalRevenue.toString(),
-        totalExpenses: totalExpenses.toString(),
+        totalRevenue: (totalRevenue + totalPaidInvoices).toFixed(2),
+        totalExpenses: totalExpenses.toFixed(2),
+        totalProfit: totalProfit.toFixed(2),
       })
       .where(eq(projects.id, projectId))
       .returning();

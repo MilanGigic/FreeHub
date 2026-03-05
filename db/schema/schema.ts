@@ -59,6 +59,9 @@ export const users = pgTable("users", {
 
 export const clients = pgTable("clients", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").unique().notNull(),
@@ -100,6 +103,9 @@ export const projects = pgTable("projects", {
 
 export const projectCalendar = pgTable("project_calendar", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   projectId: uuid("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
@@ -112,6 +118,9 @@ export const projectCalendar = pgTable("project_calendar", {
 
 export const projectFinance = pgTable("project_finance", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   projectId: uuid("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
@@ -127,12 +136,19 @@ export const projectFinance = pgTable("project_finance", {
 
 export const invoices = pgTable("invoices", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   clientId: uuid("client_id")
     .notNull()
     .references(() => clients.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
   issueDate: timestamp("issue_date").notNull().defaultNow(),
   dueDate: timestamp("due_date").notNull(),
   paymentDate: timestamp("payment_date"),
+  paidAfter: text("paid_after"),
   status: invoiceStatusEnum("status").notNull().default("draft"),
   totalAmount: decimal("total_amount", { precision: 12, scale: 2 }).notNull(),
   paidAmount: decimal("paid_amount", { precision: 12, scale: 2 }),

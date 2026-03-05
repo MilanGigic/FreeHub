@@ -8,6 +8,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "@/lib/useAuth";
 import { useUIStore } from "@/lib/store/useUIStore";
+import { useDataStore } from "@/lib/store/useDataStore";
 
 export default function NewProjectModal({
   setIsNewProjectModalOpen,
@@ -15,7 +16,8 @@ export default function NewProjectModal({
   setIsNewProjectModalOpen: (isOpen: boolean) => void;
 }) {
   const { user } = useAuth();
-  const { setIsNewProjectModalLoading } = useUIStore()
+  const { setIsNewProjectModalLoading } = useUIStore();
+  const { setProjects } = useDataStore();
   const [error, setError] = useState<string | null>(null);
   const [projectForm, setProjectForm] = useState<ProjectForm>({
     name: "",
@@ -29,8 +31,10 @@ export default function NewProjectModal({
     const fetchClients = async () => {
       setIsNewProjectModalLoading(true);
       setError(null);
+
+      if (!user) return;
       try {
-        const res = await fetchAllClients();
+        const res = await fetchAllClients(user.id);
         if (res.success) {
           if (res.data) {
             setClients(res.data);
@@ -43,7 +47,7 @@ export default function NewProjectModal({
       }
     };
     fetchClients();
-  }, []);
+  }, [user, setIsNewProjectModalLoading]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,6 +68,7 @@ export default function NewProjectModal({
     const res = await addNewProject(projectForm, selectedClient, user);
     if (res.data) {
       if (res.success) {
+        setProjects(res.data);
         toast.success("Project added successfully");
         setIsNewProjectModalLoading(false);
         setProjectForm({
@@ -85,7 +90,6 @@ export default function NewProjectModal({
     }
   };
 
-  
   if (error) {
     return (
       <div className="flex justify-center items-center h-full w-full">
@@ -96,7 +100,7 @@ export default function NewProjectModal({
 
   return (
     <form
-      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-25 right-0"
+      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-25 right-0 primary-slate"
       onSubmit={(e) => handleSubmit(e)}
     >
       <button onClick={() => setIsNewProjectModalOpen(false)}>

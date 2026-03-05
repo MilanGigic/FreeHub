@@ -12,22 +12,22 @@ export default function JobsAndProjectsPage() {
     useUIStore();
 
   const { setSelectedProject, selectedProject } = useProjectStore();
-  const { clientProjects, selectedClientId, setClientProjects } =
+  const { clientProjects, selectedClient, setClientProjects } =
     useClientStore();
 
   useEffect(() => {
-    if (!selectedClientId) {
+    if (!selectedClient) {
       return;
     }
     (async () => {
-      const res = await fetchClientsProjects(selectedClientId as string);
+      const res = await fetchClientsProjects(selectedClient.id);
       if (res.success) {
         if (res.data) {
           setClientProjects(res.data);
         }
       }
     })();
-  }, [selectedClientId, setClientProjects]);
+  }, [selectedClient, setClientProjects]);
 
   return (
     <div className="w-full h-full flex flex-col gap-2 md:gap-4">

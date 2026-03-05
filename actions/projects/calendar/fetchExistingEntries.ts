@@ -8,12 +8,6 @@ export async function fetchExistingEntries(
   projectId: string,
   selectedDate: Date | null,
 ) {
-  console.log(
-    "fetching existing entries for projectId:",
-    projectId,
-    "and selectedDate:",
-    selectedDate,
-  );
   if (!projectId || !selectedDate)
     return {
       success: false,

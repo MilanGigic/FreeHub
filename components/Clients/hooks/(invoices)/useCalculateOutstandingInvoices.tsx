@@ -2,11 +2,13 @@
 
 import { calculateOutstandingInvoices } from "@/actions/invoices/calculateOutstandingInvoices";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function useCalculateOutstandingInvoices() {
-  const { selectedClient, setOutstandingInvoices } = useClientStore();
+  const { selectedClient } = useClientStore();
+  const { setOutstandingInvoices } = useInvoiceStore();
   useEffect(() => {
     (async () => {
       console.log(

@@ -10,9 +10,13 @@ export default function TotalRevenue() {
         </h1>
         <p className="text-2xl font-bold primary-green">
           $
-          {clientProjects.reduce(
-            (acc, project) => acc + Number(project.totalRevenue || 0),
-            0,
+          {clientProjects.length > 0 ? (
+            clientProjects.reduce(
+              (acc, project) => acc + Number(project.totalRevenue || 0),
+              0,
+            )
+          ) : (
+            <span className="text-sm primary-slate">No projects found</span>
           )}
         </p>
         <p className="text-sm primary-slate">

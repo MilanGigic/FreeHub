@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { projects } from "@/db/schema/schema";
 import { Client, ProjectForm, ProjectStatus, User } from "@/types/types";
+import { eq } from "drizzle-orm";
 
 export async function addNewProject(
   projectForm: ProjectForm,
@@ -16,16 +17,18 @@ export async function addNewProject(
   }
 
   try {
-    const [data] = await db
-      .insert(projects)
-      .values({
-        clientId: client.id,
-        name,
-        description,
-        status: status as ProjectStatus,
-        userId: user.id,
-      })
-      .returning();
+    await db.insert(projects).values({
+      clientId: client.id,
+      name,
+      description,
+      status: status as ProjectStatus,
+      userId: user.id,
+    });
+
+    const data = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.userId, user.id));
     console.log("New project added successfully:", data);
     return { success: true, data };
   } catch (error) {

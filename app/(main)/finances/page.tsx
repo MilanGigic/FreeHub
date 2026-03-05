@@ -1,15 +1,17 @@
 "use client";
 
+import useFetchAllClients from "@/components/Clients/hooks/(clients)/useFetchAllClients";
 import FinanceHeader from "@/components/Finances/FinanceHeader";
 import FinanceMain from "@/components/Finances/Main/FinanceMain";
+import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects";
 import { useAuth } from "@/lib/useAuth";
 import Link from "next/link";
-// track income and expenses
-// calculate taxes
-// generate "Safe to spend" amount
 
 export default function FinancesPage() {
   const { user, loading } = useAuth();
+
+  useFetchAllClients();
+  useFetchAllProjects();
 
   if (loading)
     return (

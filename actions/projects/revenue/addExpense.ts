@@ -1,9 +1,11 @@
 "use server";
 
 import { db } from "@/db";
-import { projectFinance } from "@/db/schema";
+import { projectFinance, projects } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function addExpense(
+  userId: string,
   projectId: string,
   expense: string,
   note: string,
@@ -13,15 +15,37 @@ export async function addExpense(
   }
 
   try {
+    const currentProject = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
+
+    if (!currentProject) {
+      return { success: false, error: "Project not found" };
+    }
+
     const [newExpense] = await db
       .insert(projectFinance)
-      .values({
-        projectId,
-        type: "expense",
-        amount: expense,
-        note,
-      })
+      .values({ userId, projectId, type: "expense", amount: expense, note })
       .returning();
+
+    const newTotalExpenses = (
+      Number(currentProject.totalExpenses) + Number(expense)
+    ).toFixed(2);
+
+    const newTotalProfit = (
+      Number(currentProject.totalProfit) - Number(expense)
+    ).toFixed(2);
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(projects)
+        .set({
+          totalExpenses: newTotalExpenses,
+          totalProfit: newTotalProfit,
+        })
+        .where(eq(projects.id, projectId));
+    });
+
     return { success: true, data: newExpense };
   } catch (error) {
     console.error("Error adding expense:", error);

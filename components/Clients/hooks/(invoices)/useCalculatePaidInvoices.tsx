@@ -2,11 +2,13 @@
 
 import { calculatePaidInvoices } from "@/actions/invoices/calculatePaidInvoices";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function useCalculatePaidInvoices() {
-  const { selectedClient, setPaidInvoices } = useClientStore();
+  const { selectedClient } = useClientStore();
+  const { setPaidInvoices } = useInvoiceStore();
 
   useEffect(() => {
     (async () => {

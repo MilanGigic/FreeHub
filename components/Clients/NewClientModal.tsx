@@ -1,11 +1,16 @@
 "use client";
 
 import { addNewClient } from "@/actions/clients/addNewClient";
+import { useClientStore } from "@/lib/store/useClientStore";
+import { useAuth } from "@/lib/useAuth";
 import { ClientForm } from "@/types/types";
+import { redirect } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function NewClientModal() {
+  const { user } = useAuth();
+  const { setClients } = useClientStore();
   const [clientForm, setClientForm] = useState<ClientForm>({
     firstName: "",
     lastName: "",
@@ -19,18 +24,19 @@ export default function NewClientModal() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log("Client form:", clientForm);
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsLoading(true);
     setError(null);
 
-    const res = await addNewClient(clientForm);
+    if (!user) redirect("/login");
+
+    const res = await addNewClient(clientForm, user.id);
 
     if (res.data) {
       if (res.success) {
+        setClients(res.data);
         toast.success("Client added successfully");
         setIsLoading(false);
         setClientForm({

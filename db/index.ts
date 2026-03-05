@@ -11,6 +11,4 @@ const pool = new Pool({
   connectionString: process.env.NEONDB_URL,
 });
 
-console.log("Loaded DB URL:", process.env.NEONDB_URL);
-
 export const db = drizzle(pool, { schema }); // ✅ include schema

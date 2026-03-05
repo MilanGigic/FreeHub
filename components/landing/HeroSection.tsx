@@ -2,7 +2,7 @@
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-20 pb-32 px-6 bg-linear-to-br from-gray-50 via-white to-blue-50">
+    <section className="relative overflow-hidden p-8 bg-linear-to-br from-gray-50 via-white to-blue-50">
       {/* Decorative background elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
       <div className="absolute top-40 right-20 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse [animation-delay:700ms]" />
@@ -117,7 +117,7 @@ export default function HeroSection() {
         </div>
 
         {/* Safe to Spend Demo Card */}
-        <div className="max-w-2xl mx-auto mb-20 opacity-0 animate-fade-in-up [animation-delay:400ms]">
+        <div className="max-w-2xl mx-auto mb-12 opacity-0 animate-fade-in-up [animation-delay:400ms]">
           <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl p-10 shadow-2xl shadow-green-500/30">
             <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">
               Live Preview

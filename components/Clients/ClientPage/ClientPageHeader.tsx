@@ -42,7 +42,7 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
                 key={index}
                 onClick={() => {
                   router.push(
-                    `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace("/", "")}`,
+                    `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
                   );
                   setOpen(false);
                 }}
@@ -62,7 +62,7 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
       </div>
 
       {/* DESKTOP VIEW */}
-      <div className="hidden sm:flex justify-center items-center gap-2 md:gap-4 w-full">
+      <div className="hidden sm:flex sm:flex-col md:flex-row justify-center items-center gap-2 md:gap-4 w-full">
         {tabs.map((tab, index) => (
           <button
             key={index}

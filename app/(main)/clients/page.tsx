@@ -1,4 +1,4 @@
-import ClientsHeader from "@/components/Clients/ClientsHeader";
+import ClientsHeader from "@/components/Clients/Header/ClientsHeader";
 import ClientsMain from "@/components/Clients/ClientsMain";
 import NewClientModal from "@/components/Clients/NewClientModal";
 

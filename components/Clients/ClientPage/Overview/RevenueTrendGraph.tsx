@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useClientStore } from "@/lib/store/useClientStore";
 import type { Invoice } from "@/types/types";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 
 interface RevenueData {
   date: string;
@@ -31,13 +31,14 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="background-elevated border background-border rounded-lg p-3 shadow-lg">
-        <p className="text-secondary text-sm mb-2">
-          {payload[0]?.payload?.date}
-        </p>
+        <p className="text-primary text-sm mb-2">{payload[0]?.payload?.date}</p>
         {payload.map((entry, index: number) => {
           return (
-            <p key={index} className="text-secondary text-sm">
-              {entry.dataKey}: {formatCurrency(entry.value)}
+            <p key={index} className="primary-slate text-sm">
+              {entry.dataKey}:{" "}
+              <span className="primary-green">
+                {formatCurrency(entry.value)}
+              </span>
             </p>
           );
         })}
@@ -69,18 +70,22 @@ function buildRevenueWindow(
     totalsByDay.set(key, 0);
   }
 
-  invoices.forEach((invoice) => {
-    if (invoice.status !== "paid") return;
+  if (invoices.length > 0) {
+    invoices.forEach((invoice) => {
+      if (invoice.status !== "paid") return;
 
-    const rawDate = invoice.paymentDate || invoice.issueDate;
-    const dateObj = new Date(rawDate);
+      const rawDate = invoice.paymentDate || invoice.issueDate;
+      const dateObj = new Date(rawDate);
 
-    if (dateObj < start || dateObj > end) return;
+      if (dateObj < start || dateObj > end) return;
 
-    const key = dateObj.toISOString().slice(0, 10);
-    const current = totalsByDay.get(key) ?? 0;
-    totalsByDay.set(key, current + Number(invoice.totalAmount || 0));
-  });
+      const key = dateObj.toISOString().slice(0, 10);
+      const current = totalsByDay.get(key) ?? 0;
+      totalsByDay.set(key, current + Number(invoice.totalAmount || 0));
+    });
+  } else {
+    return [];
+  }
 
   totalsByDay.forEach((value, key) => {
     const dateObj = new Date(key);
@@ -114,7 +119,7 @@ const formatCurrency = (value: number) => {
 };
 
 export default function RevenueTrendGraph() {
-  const { invoices } = useClientStore();
+  const { invoices } = useInvoiceStore();
   const [timeRange, setTimeRange] = useState<"30" | "365">("30");
 
   const { chartData, revenueTrendPercentage } = useMemo(() => {
@@ -130,7 +135,11 @@ export default function RevenueTrendGraph() {
     const startPrevious = new Date(endPrevious);
     startPrevious.setDate(endPrevious.getDate() - (days - 1));
 
-    const currentWindow = buildRevenueWindow(invoices, startCurrent, endCurrent);
+    const currentWindow = buildRevenueWindow(
+      invoices,
+      startCurrent,
+      endCurrent,
+    );
     const previousWindow = buildRevenueWindow(
       invoices,
       startPrevious,

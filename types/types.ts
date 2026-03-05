@@ -47,6 +47,7 @@ export interface User {
 
 export interface Client {
   id: string;
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -100,6 +101,7 @@ export interface Project {
 
 export interface ProjectCalendar {
   id: string;
+  userId: string;
   projectId: string;
   date: Date;
   note: string;
@@ -110,6 +112,7 @@ export interface ProjectCalendar {
 
 export interface ProjectRevenue {
   id: string;
+  userId: string;
   projectId: string;
   type: "income" | "expense";
   amount: string;
@@ -121,6 +124,7 @@ export interface ProjectRevenue {
 
 export interface Invoice {
   id: string;
+  userId: string;
   clientId: string;
   issueDate: Date;
   dueDate: Date;

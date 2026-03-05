@@ -8,12 +8,12 @@ import { toast } from "react-toastify";
 export default function useFetchClient(
   setIsLoading: (isLoading: boolean) => void,
 ) {
-  const { setSelectedClient, selectedClientId } = useClientStore();
+  const { setSelectedClient, selectedClient } = useClientStore();
   useEffect(() => {
-    if (!selectedClientId) return;
+    if (!selectedClient) return;
     (async () => {
       setIsLoading(true);
-      const res = await fetchClient(selectedClientId);
+      const res = await fetchClient(selectedClient.id);
       if (res.success) {
         if (res.data) {
           setSelectedClient(res.data);
@@ -27,5 +27,5 @@ export default function useFetchClient(
         toast.error(res.error as string);
       }
     })();
-  }, [selectedClientId, setSelectedClient, setIsLoading]);
+  }, [selectedClient, setSelectedClient, setIsLoading]);
 }

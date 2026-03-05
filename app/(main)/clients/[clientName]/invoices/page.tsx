@@ -1,25 +1,22 @@
 "use client";
 
 import InvoicesTable from "@/components/Clients/ClientPage/Invoices/InvoicesTable";
-import useFetchAllInvoices from "@/components/Clients/hooks/useFetchAllInvoices";
-import useFetchClient from "@/components/Clients/hooks/useFetchClient";
-import useCalculateOutstandingInvoices from "@/components/Clients/hooks/useCalculateOutstandingInvoices";
-import { usePathname } from "next/navigation";
+import useFetchAllInvoices from "@/components/Clients/hooks/(invoices)/useFetchAllInvoices";
+import useCalculateOutstandingInvoices from "@/components/Clients/hooks/(invoices)/useCalculateOutstandingInvoices";
 import { useState } from "react";
-import useCalculateOverdueInvoices from "@/components/Clients/hooks/useCalculateOverdueInvoices";
+import useCalculateOverdueInvoices from "@/components/Clients/hooks/(invoices)/useCalculateOverdueInvoices";
 import NewInvoiceForm from "@/components/Clients/ClientPage/Invoices/NewInvoiceForm";
 import InvoiceHeader from "@/components/Clients/ClientPage/Invoices/InvoiceHeader";
 import DraftedInvoices from "@/components/Clients/ClientPage/Invoices/DraftedInvoices";
-import useCalculatePaidInvoices from "@/components/Clients/hooks/useCalculatePaidInvoices";
+import useCalculatePaidInvoices from "@/components/Clients/hooks/(invoices)/useCalculatePaidInvoices";
+import { useClientStore } from "@/lib/store/useClientStore";
 
 export default function InvoicesPage() {
-  const pathname = usePathname();
-  const clientId = pathname.split("/").pop();
-  console.log("Client name:", clientId);
+  const { selectedClient } = useClientStore();
+  console.log("selectedClient", selectedClient);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useFetchClient(setIsLoading);
   useFetchAllInvoices();
   useCalculateOutstandingInvoices();
   useCalculateOverdueInvoices();
@@ -37,7 +34,7 @@ export default function InvoicesPage() {
     <div className="w-full h-full flex flex-col gap-2 md:gap-4">
       <InvoiceHeader />
 
-      <div className="flex justify-center w-full h-full gap-2 md:gap-4">
+      <div className="flex flex-col md:flex-row justify-center w-full h-full gap-2 md:gap-4">
         <NewInvoiceForm />
 
         <DraftedInvoices />

@@ -39,7 +39,9 @@ export default function SelectedProjectHeader() {
             <h1 className="text-lg text-primary uppercase font-semibold">
               Profit
             </h1>
-            <p className="text-sm primary-slate text-center">${profit}</p>
+            <p className="text-sm primary-cyan font-semibold text-center">
+              ${profit}
+            </p>
           </div>
           <div className="border h-full background-border" />
           <div className="flex flex-col gap-2 items-center">

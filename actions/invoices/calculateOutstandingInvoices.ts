@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { invoices } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 export async function calculateOutstandingInvoices(clientId: string) {
   if (!clientId) {
@@ -21,7 +21,12 @@ export async function calculateOutstandingInvoices(clientId: string) {
     const data = await db
       .select()
       .from(invoices)
-      .where(and(eq(invoices.clientId, clientId), eq(invoices.status, "sent")));
+      .where(
+        and(
+          eq(invoices.clientId, clientId),
+          or(eq(invoices.status, "sent"), eq(invoices.status, "overdue")),
+        ),
+      );
 
     console.log(
       `[calculateOutstandingInvoices] Found ${data.length} 'sent' invoices. Calculating total outstanding amount...`,

@@ -10,9 +10,13 @@ export default function NetTakeHomeFromThisClient() {
         </h1>
         <p className="text-2xl font-bold primary-cyan">
           $
-          {clientProjects.reduce(
-            (acc, project) => acc + Number(project.totalProfit || 0),
-            0,
+          {clientProjects.length > 0 ? (
+            clientProjects.reduce(
+              (acc, project) => acc + Number(project.totalProfit || 0),
+              0,
+            )
+          ) : (
+            <span className="text-sm primary-slate">No projects found</span>
           )}
         </p>
         <p className="text-sm primary-slate">

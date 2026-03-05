@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { projectCalendar } from "@/db/schema/schema";
-import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntires";
+import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntries";
 import { storeTotalHours } from "../storeTotalHours";
 
 export async function addEntryToCalendar(

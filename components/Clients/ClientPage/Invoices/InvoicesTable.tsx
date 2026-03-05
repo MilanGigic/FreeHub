@@ -5,6 +5,8 @@ import { calculateOverdueInvoices } from "@/actions/invoices/calculateOverdueInv
 import { calculatePaidInvoices } from "@/actions/invoices/calculatePaidInvoices";
 import { updateInvoiceStatus } from "@/actions/invoices/updateInvoiceStatus";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useAuth } from "@/lib/useAuth";
 import { Invoice, InvoiceStatus } from "@/types/types";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,6 +14,7 @@ import { toast } from "react-toastify";
 const invoiceListHeaders = [
   "Invoice #",
   "Client",
+  "Note",
   "Amount",
   "Status",
   "Issued",
@@ -30,14 +33,15 @@ function filterInvoices(invoices: Invoice[], show: StatusFilter): Invoice[] {
 export default function InvoicesTable() {
   const {
     invoices,
-    selectedClient,
     setInvoices,
     setOutstandingInvoices,
     setOverdueInvoices,
     setPaidInvoices,
-  } = useClientStore();
-
+  } = useInvoiceStore();
+  const { selectedClient } = useClientStore();
   const [show, setShow] = useState<StatusFilter>("all");
+
+  const { user } = useAuth();
 
   const filteredInvoices = useMemo(
     () => filterInvoices(invoices, show),
@@ -45,8 +49,13 @@ export default function InvoicesTable() {
   );
 
   const handleStatusChange = async (id: string, status: InvoiceStatus) => {
-    if (!selectedClient) return;
-    const res = await updateInvoiceStatus(id, status, selectedClient.id);
+    if (!selectedClient || !user) return;
+    const res = await updateInvoiceStatus(
+      id,
+      status,
+      selectedClient.id,
+      user.id,
+    );
     if (res.success) {
       if (res.data) {
         setInvoices(res.data);
@@ -85,8 +94,9 @@ export default function InvoicesTable() {
 
   return (
     <div className="w-full h-full">
-      <div className="flex items-center gap-2 justify-center pb-4">
-        <h1>Show:</h1>
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 justify-center pb-4 text-xs sm:text-sm">
+        <h1 className="text-primary">Show:</h1>
         <button
           className={`${show === "all" ? "bg-(--accent-cyan)/20 primary-cyan" : "primary-cyan"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-cyan)/20 hover:primary-cyan`}
           onClick={() => setShow("all")}
@@ -118,82 +128,231 @@ export default function InvoicesTable() {
           Draft
         </button>
       </div>
-      <table className="w-full">
-        <thead className="border-b background-border background-elevated w-full">
-          <tr>
-            {invoiceListHeaders.map((header) => (
-              <th
-                key={header}
-                className="text-sm text-primary text-center whitespace-nowrap px-2 py-3"
-              >
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="max-h-[500px] overflow-y-auto border-b background-border background-elevated w-full">
-          {filteredInvoices.map((invoice, index) => (
-            <tr key={index} className="border-b background-border text-center">
-              <td className="text-sm text-primary py-2">{invoice.id}</td>
-              <td className="text-sm text-primary py-2">
-                {selectedClient?.firstName} {selectedClient?.lastName}
-              </td>
-              <td className="text-sm text-primary py-2">
-                <span className="primary-cyan">${invoice.totalAmount}</span>
-              </td>
-              <td
-                className={`text-sm text-primary py-2 ${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
-              >
-                <select
-                  className={`${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
-                  value={invoice.status}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      invoice.id,
-                      e.target.value as InvoiceStatus,
-                    )
-                  }
-                >
-                  <option value="draft" className="primary-slate">
-                    Draft
-                  </option>
-                  <option value="sent" className="primary-amber">
-                    Sent
-                  </option>
-                  <option value="overdue" className="primary-red">
-                    Overdue
-                  </option>
-                  <option value="paid" className="primary-green">
-                    Paid
-                  </option>
-                </select>
-              </td>
-              <td className="text-sm text-primary py-2">
-                {invoice.issueDate.toLocaleDateString()}
-              </td>
-              <td className="text-sm text-primary py-2">
-                {invoice.dueDate.toLocaleDateString()}
-              </td>
-              <td className="text-sm text-primary py-2">
-                <span
-                  className={`${invoice.paymentDate ? "primary-green" : invoice.paymentDate ? "primary-amber" : invoice.paymentDate ? "primary-red" : "primary-slate"}`}
-                >
-                  {invoice.status === "paid" ? (
-                    <span className="primary-green uppercase font-semibold text-sm">
-                      Paid
-                    </span>
-                  ) : (
-                    Math.floor(
-                      (invoice.dueDate.getTime() - new Date().getTime()) /
-                        (1000 * 60 * 60 * 24),
-                    )
-                  )}
+
+      {/* Mobile cards */}
+      <div className="grid grid-cols-1 gap-2 md:hidden">
+        {filteredInvoices.map((invoice) => {
+          const daysToPay = Math.floor(
+            (invoice.dueDate.getTime() - new Date().getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
+
+          const daysToPayColor = invoice.paymentDate
+            ? "primary-green"
+            : daysToPay < 0
+              ? "primary-red"
+              : daysToPay === 0
+                ? "primary-amber"
+                : "primary-slate";
+
+          return (
+            <div
+              key={invoice.id}
+              className="background-elevated border background-border rounded-lg p-3 flex flex-col gap-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  <span className="text-xs text-tertiary uppercase">
+                    Invoice #
+                  </span>
+                  <span className="text-sm text-primary font-semibold">
+                    {invoice.id}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-xs text-tertiary uppercase">
+                    Amount
+                  </span>
+                  <span className="text-sm primary-cyan font-semibold">
+                    ${invoice.totalAmount}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-tertiary uppercase">Client</span>
+                <span className="text-sm text-primary">
+                  {selectedClient?.firstName} {selectedClient?.lastName}
                 </span>
-              </td>
+              </div>
+
+              {invoice.note && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-tertiary uppercase">Note</span>
+                  <span className="text-xs text-primary wrap-break-word">
+                    {invoice.note}
+                  </span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-tertiary uppercase">
+                    Issued
+                  </span>
+                  <span className="text-xs text-primary">
+                    {invoice.issueDate.toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-tertiary uppercase">Due</span>
+                  <span className="text-xs text-primary">
+                    {invoice.dueDate.toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-tertiary uppercase">
+                    Status
+                  </span>
+                  <select
+                    className={`text-xs ${
+                      invoice.status === "paid"
+                        ? "primary-green"
+                        : invoice.status === "sent"
+                          ? "primary-amber"
+                          : invoice.status === "overdue"
+                            ? "primary-red"
+                            : "primary-slate"
+                    }`}
+                    value={invoice.status}
+                    onChange={(e) =>
+                      handleStatusChange(
+                        invoice.id,
+                        e.target.value as InvoiceStatus,
+                      )
+                    }
+                  >
+                    <option value="draft" className="primary-slate">
+                      Draft
+                    </option>
+                    <option value="sent" className="primary-amber">
+                      Sent
+                    </option>
+                    <option value="overdue" className="primary-red">
+                      Overdue
+                    </option>
+                    <option value="paid" className="primary-green">
+                      Paid
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1 items-end">
+                  <span className="text-xs text-tertiary uppercase">
+                    Days to pay
+                  </span>
+                  <span className={`text-xs ${daysToPayColor}`}>
+                    {invoice.status === "paid" ? "Paid" : daysToPay}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop / tablet table */}
+      <div className="w-full overflow-x-auto hidden md:block">
+        <table className="w-full">
+          <thead className="border-b background-border background-elevated w-full">
+            <tr>
+              {invoiceListHeaders.map((header) => (
+                <th
+                  key={header}
+                  className="text-sm text-primary text-center whitespace-nowrap px-2 py-3"
+                >
+                  {header}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="max-h-[500px] overflow-y-auto border-b background-border background-elevated w-full">
+            {filteredInvoices.map((invoice, index) => (
+              <tr
+                key={index}
+                className="border-b background-border text-center"
+              >
+                <td className="text-sm text-primary py-2">{invoice.id}</td>
+                <td className="text-sm text-primary py-2">
+                  {selectedClient?.firstName} {selectedClient?.lastName}
+                </td>
+                <td className="text-sm text-primary py-2">{invoice.note}</td>
+                <td className="text-sm text-primary py-2">
+                  <span className="primary-cyan">${invoice.totalAmount}</span>
+                </td>
+                <td
+                  className={`text-sm text-primary py-2 ${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
+                >
+                  <select
+                    className={`${invoice.status === "paid" ? "primary-green" : invoice.status === "sent" ? "primary-amber" : invoice.status === "overdue" ? "primary-red" : "primary-slate"}`}
+                    value={invoice.status}
+                    onChange={(e) =>
+                      handleStatusChange(
+                        invoice.id,
+                        e.target.value as InvoiceStatus,
+                      )
+                    }
+                  >
+                    <option value="draft" className="primary-slate">
+                      Draft
+                    </option>
+                    <option value="sent" className="primary-amber">
+                      Sent
+                    </option>
+                    <option value="overdue" className="primary-red">
+                      Overdue
+                    </option>
+                    <option value="paid" className="primary-green">
+                      Paid
+                    </option>
+                  </select>
+                </td>
+                <td className="text-sm text-primary py-2">
+                  {invoice.issueDate.toLocaleDateString()}
+                </td>
+                <td className="text-sm text-primary py-2">
+                  {invoice.dueDate.toLocaleDateString()}
+                </td>
+                <td className="text-sm text-primary py-2">
+                  <span
+                    className={`${
+                      invoice.paymentDate
+                        ? "primary-green"
+                        : Math.floor(
+                              (invoice.dueDate.getTime() -
+                                new Date().getTime()) /
+                                (1000 * 60 * 60 * 24),
+                            ) < 0
+                          ? "primary-red"
+                          : Math.floor(
+                                (invoice.dueDate.getTime() -
+                                  new Date().getTime()) /
+                                  (1000 * 60 * 60 * 24),
+                              ) === 0
+                            ? "primary-amber"
+                            : "primary-slate"
+                    }`}
+                  >
+                    {invoice.status === "paid" ? (
+                      <span className="primary-green uppercase font-semibold text-sm">
+                        Paid
+                      </span>
+                    ) : (
+                      Math.floor(
+                        (invoice.dueDate.getTime() - new Date().getTime()) /
+                          (1000 * 60 * 60 * 24),
+                      )
+                    )}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -11,28 +11,32 @@ import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { fetchClientsProjects } from "@/actions/clients/fetchClientsProjects";
 import { useEffect } from "react";
-import useFetchAllInvoices from "@/components/Clients/hooks/useFetchAllInvoices";
+import useFetchAllInvoices from "@/components/Clients/hooks/(invoices)/useFetchAllInvoices";
+import useCalculateOutstandingInvoices from "../../hooks/(invoices)/useCalculateOutstandingInvoices";
+import useCalculateOverdueInvoices from "../../hooks/(invoices)/useCalculateOverdueInvoices";
 
 export default function OverviewClient() {
-  const { setClientProjects, selectedClientId } = useClientStore();
+  const { setClientProjects, selectedClient } = useClientStore();
 
   // Ensure invoices are loaded for this client so overview components can use real data
   useFetchAllInvoices();
+  useCalculateOutstandingInvoices();
+  useCalculateOverdueInvoices();
 
   useEffect(() => {
     (async () => {
-      if (!selectedClientId) {
+      if (!selectedClient) {
         return;
       }
 
-      const res = await fetchClientsProjects(selectedClientId as string);
+      const res = await fetchClientsProjects(selectedClient.id);
       if (res.success) {
         if (res.data) {
           setClientProjects(res.data);
         }
       }
     })();
-  }, [selectedClientId, setClientProjects]);
+  }, [selectedClient, setClientProjects]);
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
       <header className="text-sm primary-slate font-semibold text-center">

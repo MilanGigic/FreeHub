@@ -22,7 +22,7 @@ const maxMobileClients = 5;
 export default function ClientTable() {
   const router = useRouter();
 
-  const { clients, setSelectedClientId } = useClientStore();
+  const { clients, setSelectedClient } = useClientStore();
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const currentClients = useMemo(() => {
@@ -129,7 +129,7 @@ export default function ClientTable() {
                 key={client.id}
                 className="border-t background-border hover:bg-(--bg-elevated)"
                 onClick={() => {
-                  setSelectedClientId(client.id);
+                  setSelectedClient(client);
                   router.push(`/clients/${client.id}/overview`);
                 }}
               >

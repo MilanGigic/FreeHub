@@ -2,11 +2,13 @@
 
 import { calculateOverdueInvoices } from "@/actions/invoices/calculateOverdueInvoice";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function useCalculateOverdueInvoices() {
-  const { selectedClient, setOverdueInvoices } = useClientStore();
+  const { selectedClient } = useClientStore();
+  const { setOverdueInvoices } = useInvoiceStore();
 
   useEffect(() => {
     (async () => {

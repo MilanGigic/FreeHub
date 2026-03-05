@@ -2,11 +2,13 @@
 
 import { fetchAllInvoices } from "@/actions/invoices/fetchAllInvoices";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function useFetchAllInvoices() {
-  const { setInvoices, selectedClient } = useClientStore();
+  const { selectedClient } = useClientStore();
+  const { setInvoices } = useInvoiceStore();
 
   useEffect(() => {
     if (!selectedClient) return;

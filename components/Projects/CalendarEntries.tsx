@@ -1,7 +1,7 @@
 "use client";
 
 import { addEntryToCalendar } from "@/actions/projects/calendar/addEntryToCalendar";
-import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntires";
+import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingEntries";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { ProjectCalendar } from "@/types/types";
 import { FormEvent, useEffect, useState } from "react";

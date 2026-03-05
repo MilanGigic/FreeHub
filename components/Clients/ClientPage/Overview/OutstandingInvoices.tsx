@@ -1,7 +1,7 @@
-import { useClientStore } from "@/lib/store/useClientStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 
 export default function OutstandingInvoices() {
-  const { outstandingInvoices, overdueInvoices } = useClientStore();
+  const { outstandingInvoices, overdueInvoices } = useInvoiceStore();
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
       <div className="">
