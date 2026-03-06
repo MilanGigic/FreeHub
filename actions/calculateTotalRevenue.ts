@@ -5,7 +5,10 @@ import { invoices, projectFinance, projects } from "@/db/schema";
 import { Project } from "@/types/types";
 import { and, eq, inArray } from "drizzle-orm";
 
-export async function setTotalRevenue(userId: string, userProjects: Project[]) {
+export async function calculateTotalRevenue(
+  userId: string,
+  userProjects: Project[],
+) {
   console.log(
     "setTotalRevenue called with userId:",
     userId,
@@ -41,7 +44,6 @@ export async function setTotalRevenue(userId: string, userProjects: Project[]) {
 
     const results = await Promise.all(
       projectsData.map(async (project) => {
-        // Step 3: fetch paid invoices for THIS specific project
         const invoicesData = await db
           .select()
           .from(invoices)

@@ -87,7 +87,7 @@ export default function NewClientModal() {
           onSubmit={(e) => handleSubmit(e)}
           className="flex flex-col gap-2 md:gap-4 w-full"
         >
-          <div className="flex w-full justify-center gap-2 md:gap-4">
+          <div className="flex flex-col sm:flex-row w-full justify-center gap-2 md:gap-4">
             <div className="flex flex-col gap-2 md:gap-4 w-full border-r-2 background-border px-4">
               <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
                 <label
@@ -146,7 +146,7 @@ export default function NewClientModal() {
               </div>
             </div>
             <div className="flex flex-col gap-2 md:gap-4 w-full">
-              <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <h1 className="text-primary uppercase font-semibold">
                   Currency
                 </h1>
@@ -165,7 +165,7 @@ export default function NewClientModal() {
                   <option value="GBP">GBP</option>
                 </select>
               </div>
-              <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <h1 className="text-primary uppercase font-semibold">Status</h1>
                 <select
                   name="status"
@@ -182,7 +182,7 @@ export default function NewClientModal() {
                   <option value="archived">Archived</option>
                 </select>
               </div>
-              <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <label
                   htmlFor="startDate"
                   className="text-primary uppercase font-semibold"
@@ -190,17 +190,18 @@ export default function NewClientModal() {
                   Start Date
                 </label>
                 <input
+                  id="startDate"
                   type="date"
                   name="startDate"
                   placeholder="Start Date"
-                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all min-h-[44px] touch-manipulation"
                   value={clientForm.startDate ? clientForm.startDate : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, startDate: e.target.value })
                   }
                 />
               </div>
-              <div className="flex gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <label
                   htmlFor="endDate"
                   className="text-primary uppercase font-semibold"
@@ -208,10 +209,11 @@ export default function NewClientModal() {
                   End Date
                 </label>
                 <input
+                  id="endDate"
                   type="date"
                   name="endDate"
                   placeholder="End Date"
-                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all"
+                  className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all min-h-[44px] touch-manipulation"
                   value={clientForm.endDate ? clientForm.endDate : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, endDate: e.target.value })

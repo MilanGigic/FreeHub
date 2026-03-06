@@ -16,6 +16,7 @@ export default function Income() {
     setRevenueList,
     paidInvoices,
     setPaidInvoices,
+    setProfit,
   } = useProjectStore();
 
   const [revenue, setRevenue] = useState<string>("0");
@@ -72,6 +73,12 @@ export default function Income() {
         setRevenue("0");
         setRevenueNote("");
         toast.success("Revenue added successfully");
+      }
+
+      if (res.projectData) {
+        setProfit(res.projectData.totalProfit ?? "0");
+      } else {
+        console.log("Error setting profit");
       }
     } else {
       console.error(res.error);

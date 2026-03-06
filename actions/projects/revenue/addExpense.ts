@@ -36,17 +36,16 @@ export async function addExpense(
       Number(currentProject.totalProfit) - Number(expense)
     ).toFixed(2);
 
-    await db.transaction(async (tx) => {
-      await tx
-        .update(projects)
-        .set({
-          totalExpenses: newTotalExpenses,
-          totalProfit: newTotalProfit,
-        })
-        .where(eq(projects.id, projectId));
-    });
+    const [updatedProject] = await db
+      .update(projects)
+      .set({
+        totalExpenses: newTotalExpenses,
+        totalProfit: newTotalProfit,
+      })
+      .where(eq(projects.id, projectId))
+      .returning();
 
-    return { success: true, data: newExpense };
+    return { success: true, data: newExpense, projectData: updatedProject };
   } catch (error) {
     console.error("Error adding expense:", error);
     return { success: false, error: error as Error };

@@ -72,7 +72,7 @@ export default function ClientTable() {
                 {client.firstName} {client.lastName}
               </div>
               <dl className="grid gap-2">
-                {tableLists.slice(1).map((label, i) => {
+                {tableLists.slice(1).map((label) => {
                   return (
                     <div
                       key={label}

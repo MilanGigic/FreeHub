@@ -13,7 +13,7 @@ export default function HourlyRate() {
       if (selectedProject.totalHoursWorked === null) return;
 
       const res = Number(profit) / Number(selectedProject.totalHoursWorked);
-      setHourlyRate(res.toFixed(2));
+      setHourlyRate(res.toFixed(2).toString());
     })();
   }, [profit, selectedProject]);
 

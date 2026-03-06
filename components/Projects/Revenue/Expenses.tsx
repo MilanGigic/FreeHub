@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 export default function Expenses() {
   const { user } = useAuth();
-  const { selectedProject } = useProjectStore();
+  const { selectedProject, setProfit } = useProjectStore();
 
   const [expenses, setExpenses] = useState<string>("0");
   const [expenseNote, setExpenseNote] = useState<string>("");
@@ -54,6 +54,12 @@ export default function Expenses() {
         setExpenses("0");
         setExpenseNote("");
         toast.success("Expense added successfully");
+      }
+
+      if (res.projectData) {
+        setProfit(res.projectData.totalProfit ?? "0");
+      } else {
+        console.log("Error setting profit");
       }
     } else {
       console.error(res.error);

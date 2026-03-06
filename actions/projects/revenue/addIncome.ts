@@ -34,14 +34,18 @@ export async function addIncome(
 
     const currentTotal = Number(project.totalRevenue ?? 0);
 
-    await db
+    const [updatedProject] = await db
       .update(projects)
       .set({
         totalRevenue: (currentTotal + Number(revenue)).toFixed(2),
+        totalProfit: (
+          Number(project.totalProfit ?? 0) + Number(revenue)
+        ).toFixed(2),
       })
-      .where(eq(projects.id, projectId));
+      .where(eq(projects.id, projectId))
+      .returning();
 
-    return { success: true, data };
+    return { success: true, data, projectData: updatedProject };
   } catch (error) {
     console.error("Error adding revenue:", error);
     return { success: false, error: error as Error };
