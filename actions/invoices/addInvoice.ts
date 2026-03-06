@@ -21,16 +21,64 @@ export async function addInvoice(
   }
 
   try {
+    const normalizedIssueDate = new Date(issueDate);
+    const normalizedDueDate = new Date(dueDate);
+
+    // Idempotency guard: avoid inserting duplicate invoices for the same payload
+    const existingInvoice = await db.query.invoices.findFirst({
+      where: and(
+        eq(invoices.userId, userId),
+        eq(invoices.clientId, clientId),
+        eq(invoices.projectId, selectedProjectId),
+        eq(invoices.totalAmount, amount),
+        eq(invoices.issueDate, normalizedIssueDate),
+        eq(invoices.dueDate, normalizedDueDate),
+        eq(invoices.note, note),
+      ),
+    });
+
+    if (existingInvoice) {
+      const outstandingInvoicesRes =
+        await calculateOutstandingInvoices(clientId);
+      const overdueInvoices = await calculateOverdueInvoices(clientId);
+      const paidInvoices = await calculatePaidInvoices(clientId);
+
+      if (
+        outstandingInvoicesRes.success &&
+        overdueInvoices.success &&
+        paidInvoices.success &&
+        outstandingInvoicesRes.data &&
+        overdueInvoices.data &&
+        paidInvoices.data
+      ) {
+        return {
+          success: true,
+          data: existingInvoice,
+          outstandingInvoices: outstandingInvoicesRes.data,
+          overdueInvoices: {
+            data: overdueInvoices.data,
+            count: overdueInvoices.count,
+          },
+          paidInvoices: paidInvoices.data,
+        };
+      }
+
+      return {
+        success: true,
+        data: existingInvoice,
+      };
+    }
+
     const [data] = await db
       .insert(invoices)
       .values({
         userId,
         clientId,
         totalAmount: amount,
-        issueDate: new Date(issueDate),
-        dueDate: new Date(dueDate),
+        issueDate: normalizedIssueDate,
+        dueDate: normalizedDueDate,
         note,
-        status: new Date(dueDate) < new Date() ? "overdue" : "sent",
+        status: normalizedDueDate < new Date() ? "overdue" : "sent",
         projectId: selectedProjectId,
       })
       .returning();
@@ -40,8 +88,8 @@ export async function addInvoice(
         eq(invoices.status, "draft"),
         eq(invoices.clientId, clientId),
         eq(invoices.totalAmount, amount),
-        eq(invoices.issueDate, issueDate),
-        eq(invoices.dueDate, dueDate),
+        eq(invoices.issueDate, normalizedIssueDate),
+        eq(invoices.dueDate, normalizedDueDate),
         eq(invoices.note, note),
         eq(invoices.projectId, selectedProjectId),
       ),

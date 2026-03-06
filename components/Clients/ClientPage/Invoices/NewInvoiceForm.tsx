@@ -8,7 +8,7 @@ import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Project } from "@/types/types";
-import { FormEvent, MouseEvent, useEffect } from "react";
+import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function NewInvoiceForm() {
@@ -32,6 +32,8 @@ export default function NewInvoiceForm() {
     setPaidInvoices,
   } = useInvoiceStore();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     (async () => {
       if (!selectedClient || !user) return;
@@ -54,7 +56,15 @@ export default function NewInvoiceForm() {
       return;
     }
 
+    if (isSubmitting) {
+      console.log(
+        "Invoice submission already in progress. Ignoring duplicate submit.",
+      );
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       console.log("Calling addInvoice with values:", {
         amount,
         issueDate,
@@ -102,6 +112,8 @@ export default function NewInvoiceForm() {
       }
     } catch (error) {
       console.error("Error adding invoice:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -260,6 +272,7 @@ export default function NewInvoiceForm() {
       <div className="flex gap-2 md:gap-4 justify-between w-full">
         <button
           type="submit"
+          disabled={isSubmitting}
           className="rounded-lg background-elevated border w-full px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer primary-slate uppercase font-semibold hover:bg-(--accent-green)/40"
         >
           Create Invoice
