@@ -30,7 +30,9 @@ export async function addIncome(
       where: eq(projects.id, projectId),
     });
 
-    const currentTotal = Number(project?.totalRevenue ?? 0);
+    if (!project) return { success: false, error: "Project not found" };
+
+    const currentTotal = Number(project.totalRevenue ?? 0);
 
     await db
       .update(projects)

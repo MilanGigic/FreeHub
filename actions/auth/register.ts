@@ -18,7 +18,6 @@ export async function register(
   userName: string,
   password: string,
   country: string,
-  state: string | null,
   encryptedDEK: string,
 ): Promise<RegisterResult> {
   try {
@@ -61,7 +60,6 @@ export async function register(
         email,
         userName,
         country,
-        state,
         passwordHash,
         encryptedDEK: encryptedDEK,
       })
@@ -74,7 +72,7 @@ export async function register(
       email: newUser.email,
       userName: newUser.userName,
     });
-    
+
     // Set cookie directly in this server action
     const cookieStore = await cookies();
     cookieStore.set("session", token, {
@@ -95,11 +93,13 @@ export async function register(
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
-    const errorMessage = error instanceof Error ? error.message : "An error occurred during registration";
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "An error occurred during registration";
     return {
       success: false,
       error: errorMessage,
     };
   }
 }
-

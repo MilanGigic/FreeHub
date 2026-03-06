@@ -15,10 +15,12 @@ export default function ProjectsHeader() {
   const { user } = useAuth();
   const { projects, setProjects, totalRevenue, setTotalRevenue } =
     useDataStore();
-  const { isNewProjectModalLoading } = useUIStore();
+  const {
+    isNewProjectModalLoading,
+    setIsNewProjectModalOpen,
+    isNewProjectModalOpen,
+  } = useUIStore();
   const { setSelectedProject } = useProjectStore();
-  const [isNewProjectModalOpen, setIsNewProjectModalOpen] =
-    useState<boolean>(false);
 
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Project[]>([]);
@@ -126,11 +128,7 @@ export default function ProjectsHeader() {
             New Project
           </button>
         )}
-        {isNewProjectModalOpen && (
-          <NewProjectModal
-            setIsNewProjectModalOpen={setIsNewProjectModalOpen}
-          />
-        )}
+        {isNewProjectModalOpen && <NewProjectModal />}
       </div>
     </header>
   );

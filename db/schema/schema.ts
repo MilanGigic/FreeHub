@@ -51,7 +51,6 @@ export const users = pgTable("users", {
   email: text("email").unique().notNull(),
   userName: text("user_name").notNull().unique(),
   country: text("country").notNull(),
-  state: text("state"),
   passwordHash: text("password_hash").notNull(),
   encryptedDEK: text("encrypted_dek").notNull(), // Data Encryption Key encrypted with password-derived key
   createdAt: timestamp("created_at").defaultNow().notNull(),

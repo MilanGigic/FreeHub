@@ -6,6 +6,7 @@ import { calculatePaidInvoices } from "@/actions/invoices/calculatePaidInvoices"
 import { updateInvoiceStatus } from "@/actions/invoices/updateInvoiceStatus";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Invoice, InvoiceStatus } from "@/types/types";
 import { useMemo, useState } from "react";
@@ -38,6 +39,7 @@ export default function InvoicesTable() {
     setOverdueInvoices,
     setPaidInvoices,
   } = useInvoiceStore();
+  const { setProfit } = useProjectStore();
   const { selectedClient } = useClientStore();
   const [show, setShow] = useState<StatusFilter>("all");
 
@@ -48,13 +50,18 @@ export default function InvoicesTable() {
     [invoices, show],
   );
 
-  const handleStatusChange = async (id: string, status: InvoiceStatus) => {
+  const handleStatusChange = async (
+    id: string,
+    projectId: string,
+    status: InvoiceStatus,
+  ) => {
     if (!selectedClient || !user) return;
     const res = await updateInvoiceStatus(
       id,
       status,
       selectedClient.id,
       user.id,
+      projectId,
     );
     if (res.success) {
       if (res.data) {
@@ -85,6 +92,14 @@ export default function InvoicesTable() {
           setPaidInvoices(paidRes.data);
         } else if (!paidRes.success && paidRes.error) {
           toast.error(paidRes.error as string);
+        }
+      }
+
+      if (res.projectData) {
+        if (res.projectData.totalProfit) {
+          setProfit(res.projectData.totalProfit);
+        } else {
+          console.log("Error setting profit");
         }
       }
     } else {
@@ -221,6 +236,7 @@ export default function InvoicesTable() {
                     onChange={(e) =>
                       handleStatusChange(
                         invoice.id,
+                        invoice.projectId,
                         e.target.value as InvoiceStatus,
                       )
                     }
@@ -292,6 +308,7 @@ export default function InvoicesTable() {
                     onChange={(e) =>
                       handleStatusChange(
                         invoice.id,
+                        invoice.projectId,
                         e.target.value as InvoiceStatus,
                       )
                     }

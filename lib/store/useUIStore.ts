@@ -16,6 +16,8 @@ type UIStore = {
   setSelectedProjectTab: (tab: "Calendar" | "Revenue") => void;
   isRegisterWindowOpen: boolean;
   setIsRegisterWindowOpen: (open: boolean) => void;
+  isNewProjectModalOpen: boolean;
+  setIsNewProjectModalOpen: (open: boolean) => void;
 };
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -42,4 +44,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isRegisterWindowOpen: false,
   setIsRegisterWindowOpen: (open: boolean) =>
     set({ isRegisterWindowOpen: open }),
+  isNewProjectModalOpen: false,
+  setIsNewProjectModalOpen: (open: boolean) =>
+    set({ isNewProjectModalOpen: open }),
 }));

@@ -11,64 +11,44 @@ export async function calculateProfit(
   expenseList: ProjectRevenue[],
   paidInvoices: Invoice[],
 ) {
-  if (!projectId) {
-    return { success: false, error: "Project ID is required" };
-  }
-  if (!revenueList || !expenseList || !paidInvoices) {
-    return { success: false, error: "Revenue and expense lists are required" };
-  }
-
-  const totalRevenue = revenueList.reduce(
-    (acc, item) => acc + Number(item.amount),
-    0,
-  );
-
-  const totalPaidInvoices = paidInvoices.reduce(
-    (acc, item) => acc + Number(item.totalAmount),
-    0,
-  );
-  const totalExpenses = expenseList.reduce(
-    (acc, item) => acc + Number(item.amount),
-    0,
-  );
-
-  const totalProfit = totalRevenue + totalPaidInvoices - totalExpenses;
+  if (!projectId) return { success: false, error: "Project ID is required" };
 
   try {
-    const project = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, projectId));
+    const project = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
 
-    if (!project) {
-      return {
-        success: false,
-        error: "Project not found",
-      };
-    }
+    if (!project) return { success: false, error: "Project not found" };
+
+    const revenueAndInvoices =
+      revenueList.reduce((acc, revenue) => acc + Number(revenue.amount), 0) +
+      paidInvoices.reduce(
+        (acc, invoice) => acc + Number(invoice.totalAmount),
+        0,
+      );
+
+    const expenses = expenseList.reduce(
+      (acc, expense) => acc + Number(expense.amount),
+      0,
+    );
 
     const [updatedProject] = await db
       .update(projects)
       .set({
-        totalRevenue: (totalRevenue + totalPaidInvoices).toFixed(2),
-        totalExpenses: totalExpenses.toFixed(2),
-        totalProfit: totalProfit.toFixed(2),
+        totalProfit: (
+          Number(project.totalProfit ?? 0) +
+          revenueAndInvoices -
+          expenses
+        )
+          .toFixed(2)
+          .toString(),
       })
       .where(eq(projects.id, projectId))
       .returning();
 
-    return {
-      success: true,
-      data: updatedProject,
-    };
+    return { success: true, data: updatedProject };
   } catch (error) {
     console.error("Error calculating profit:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "An error occurred while calculating profit",
-    };
+    return { success: false, error: error as Error };
   }
 }

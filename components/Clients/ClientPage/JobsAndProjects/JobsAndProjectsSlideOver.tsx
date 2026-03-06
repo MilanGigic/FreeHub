@@ -3,6 +3,7 @@
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { X } from "lucide-react";
+import Link from "next/link";
 import { useMemo } from "react";
 
 export default function JobsAndProjectsSlideOver() {
@@ -43,10 +44,16 @@ export default function JobsAndProjectsSlideOver() {
             >
               <X
                 size={40}
-                className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:primary-red"
+                className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red)"
               />
             </button>
           </div>
+          <Link
+            className="primary-cyan text-sm uppercase font-semibold p-2 border background-border rounded-lg hover:border-(--accent-cyan) text-center transition-all duration-300 ease-out"
+            href={`/projects/${selectedProject.id}?tab=calendar`}
+          >
+            Go to project
+          </Link>
           <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
             <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border pb-2">
               Revenue

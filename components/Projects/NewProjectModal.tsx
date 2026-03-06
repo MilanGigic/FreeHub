@@ -9,15 +9,14 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/lib/useAuth";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { useClientStore } from "@/lib/store/useClientStore";
 
-export default function NewProjectModal({
-  setIsNewProjectModalOpen,
-}: {
-  setIsNewProjectModalOpen: (isOpen: boolean) => void;
-}) {
+export default function NewProjectModal() {
   const { user } = useAuth();
-  const { setIsNewProjectModalLoading } = useUIStore();
+  const { setIsNewProjectModalLoading, setIsNewProjectModalOpen } =
+    useUIStore();
   const { setProjects } = useDataStore();
+  const { setClientProjects } = useClientStore();
   const [error, setError] = useState<string | null>(null);
   const [projectForm, setProjectForm] = useState<ProjectForm>({
     name: "",
@@ -78,6 +77,10 @@ export default function NewProjectModal({
         });
         setSelectedClient(null);
         setIsNewProjectModalOpen(false);
+
+        if (res.clientProjects) {
+          setClientProjects(res.clientProjects);
+        }
       }
       if (!res.success) {
         toast.error(res.error);

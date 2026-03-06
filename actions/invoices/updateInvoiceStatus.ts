@@ -10,6 +10,7 @@ export async function updateInvoiceStatus(
   status: InvoiceStatus,
   clientId: string,
   userId: string,
+  projectId: string,
 ) {
   if (!id || !status || !clientId || !userId) {
     return { success: false, error: "All fields are required" };
@@ -19,21 +20,30 @@ export async function updateInvoiceStatus(
       const [updatedInvoice] = await db
         .update(invoices)
         .set({ status, paymentDate: new Date() })
-        .where(and(eq(invoices.id, id), eq(invoices.clientId, clientId)))
+        .where(
+          and(
+            eq(invoices.id, id),
+            eq(invoices.clientId, clientId),
+            eq(invoices.projectId, projectId),
+          ),
+        )
         .returning();
+
+      if (!updatedInvoice)
+        return { success: false, error: "Invoice not found" };
 
       await db
         .update(projectFinance)
         .set({
           userId,
-          projectId: updatedInvoice.projectId,
+          projectId,
           amount: updatedInvoice.totalAmount,
           type: "income",
           note: updatedInvoice.note || "Invoice paid",
         })
         .where(
           and(
-            eq(projectFinance.projectId, updatedInvoice.projectId),
+            eq(projectFinance.projectId, projectId),
             eq(projectFinance.userId, userId),
           ),
         );
@@ -46,14 +56,13 @@ export async function updateInvoiceStatus(
             eq(invoices.id, id),
             eq(invoices.clientId, clientId),
             eq(invoices.userId, userId),
+            eq(invoices.projectId, projectId),
           ),
         );
 
       if (!invoice) {
         return { success: false, error: "Invoice not found" };
       }
-
-      const projectId = invoice.projectId;
 
       const paidInvoices = await db
         .select()
@@ -71,19 +80,46 @@ export async function updateInvoiceStatus(
         .toFixed(2)
         .toString();
 
+      const [currentProject] = await db
+        .select()
+        .from(projects)
+        .where(
+          and(
+            eq(projects.clientId, clientId),
+            eq(projects.userId, userId),
+            eq(projects.id, projectId),
+          ),
+        );
+
       await db
         .update(projects)
         .set({
           totalRevenue,
+          totalProfit: (
+            Number(currentProject.totalProfit ?? 0) +
+            Number(updatedInvoice.totalAmount)
+          )
+            .toFixed(2)
+            .toString(),
         })
         .where(
-          and(eq(projects.clientId, clientId), eq(projects.userId, userId)),
+          and(
+            eq(projects.clientId, clientId),
+            eq(projects.userId, userId),
+            eq(projects.id, projectId),
+          ),
         );
     } else {
       await db
         .update(invoices)
         .set({ status })
-        .where(and(eq(invoices.id, id), eq(invoices.clientId, clientId)));
+        .where(
+          and(
+            eq(invoices.id, id),
+            eq(invoices.clientId, clientId),
+            eq(invoices.userId, userId),
+          ),
+        );
     }
 
     const data = await db
@@ -91,7 +127,15 @@ export async function updateInvoiceStatus(
       .from(invoices)
       .where(and(eq(invoices.clientId, clientId), eq(invoices.userId, userId)));
 
-    return { success: true, data };
+    const projectData = await db.query.projects.findFirst({
+      where: and(
+        eq(projects.clientId, clientId),
+        eq(projects.userId, userId),
+        eq(projects.id, projectId),
+      ),
+    });
+
+    return { success: true, data, projectData };
   } catch (error) {
     console.error("Error updating invoice status:", error);
     return { success: false, error: error as string };

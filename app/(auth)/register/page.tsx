@@ -12,7 +12,6 @@ export default function RegisterPage() {
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [country, setCountry] = useState<string>("");
-  const [state, setState] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -50,7 +49,6 @@ export default function RegisterPage() {
         userName,
         password,
         country,
-        state,
         encryptedDEKWithSalt,
       );
 
@@ -114,20 +112,6 @@ export default function RegisterPage() {
               required
               className={inputClass}
               placeholder="United States"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="state" className={labelClass}>
-              State - US only
-            </label>
-            <input
-              id="state"
-              type="text"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              className={inputClass}
-              placeholder="California"
             />
           </div>
 

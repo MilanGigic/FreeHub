@@ -29,8 +29,14 @@ export async function addNewProject(
       .select()
       .from(projects)
       .where(eq(projects.userId, user.id));
+
+    const clientProjects = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.clientId, client.id));
+
     console.log("New project added successfully:", data);
-    return { success: true, data };
+    return { success: true, data, clientProjects };
   } catch (error) {
     console.error("Error adding new project:", error);
     return {

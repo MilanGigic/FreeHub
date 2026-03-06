@@ -126,6 +126,7 @@ export interface Invoice {
   id: string;
   userId: string;
   clientId: string;
+  projectId: string;
   issueDate: Date;
   dueDate: Date;
   paymentDate: Date | null;
