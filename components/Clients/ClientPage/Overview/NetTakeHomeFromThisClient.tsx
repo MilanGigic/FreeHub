@@ -1,7 +1,7 @@
-import { useClientStore } from "@/lib/store/useClientStore";
+import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 
 export default function NetTakeHomeFromThisClient() {
-  const { clientProjects } = useClientStore();
+  const { profitAfterTaxes } = useTaxProfileStore();
   return (
     <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg">
       <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
@@ -9,15 +9,7 @@ export default function NetTakeHomeFromThisClient() {
           Net Take-Home from This Client
         </h1>
         <p className="text-2xl font-bold primary-cyan">
-          $
-          {clientProjects.length > 0 ? (
-            clientProjects.reduce(
-              (acc, project) => acc + Number(project.totalProfit || 0),
-              0,
-            )
-          ) : (
-            <span className="text-sm primary-slate">No projects found</span>
-          )}
+          ${profitAfterTaxes.toFixed(0)}
         </p>
         <p className="text-sm primary-slate">
           Net take-home from this client is the amount of money that is left

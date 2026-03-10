@@ -1,5 +1,64 @@
-const paymentReliabilityScore = 80;
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+
 export default function PaymentReliabilityScore() {
+  const { invoices } = useInvoiceStore();
+
+  const paidInvoices = invoices.filter((invoice) => invoice.status === "paid");
+  const overdueInvoicesCount = invoices.filter(
+    (invoice) => invoice.status === "overdue",
+  ).length;
+  const outstandingInvoicesCount = invoices.filter(
+    (invoice) => invoice.status !== "overdue" && invoice.status === "sent",
+  ).length;
+
+  let onTimePaidCount = 0;
+  let lateCount = 0;
+  let totalLateDays = 0;
+
+  paidInvoices.forEach((invoice) => {
+    if (!invoice.paymentDate) return;
+
+    const diffDays =
+      (invoice.paymentDate.getTime() - invoice.dueDate.getTime()) /
+      (1000 * 60 * 60 * 24);
+
+    if (diffDays <= 0) {
+      onTimePaidCount += 1;
+    } else {
+      lateCount += 1;
+      totalLateDays += diffDays;
+    }
+  });
+
+  const totalRelevantInvoices =
+    outstandingInvoicesCount + overdueInvoicesCount + paidInvoices.length;
+
+  const rawScore =
+    totalRelevantInvoices === 0
+      ? 100
+      : (onTimePaidCount / totalRelevantInvoices) * 100;
+
+  const paymentReliabilityScore = Math.max(
+    0,
+    Math.min(100, Math.round(rawScore)),
+  );
+
+  const averageDaysLate = lateCount > 0 ? totalLateDays / lateCount : 0;
+
+  const scoreColorClass =
+    paymentReliabilityScore >= 80
+      ? "primary-green"
+      : paymentReliabilityScore >= 60
+        ? "primary-amber"
+        : "primary-red";
+
+  const barColorClass =
+    paymentReliabilityScore >= 80
+      ? "bg-(--accent-green)"
+      : paymentReliabilityScore >= 60
+        ? "bg-(--accent-amber)"
+        : "bg-(--accent-red)";
+
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
       <h1 className="text-base primary-slate uppercase font-semibold">
@@ -7,25 +66,29 @@ export default function PaymentReliabilityScore() {
       </h1>
       <div className="flex flex-col gap-2">
         <div className="w-full flex items-center gap-2">
-          <p
-            className={`text-2xl font-bold ${paymentReliabilityScore >= 80 ? "primary-green" : paymentReliabilityScore >= 60 ? "primary-amber" : "primary-red"}`}
-          >
+          <p className={`text-2xl font-bold ${scoreColorClass}`}>
             {paymentReliabilityScore}%
           </p>
           <div className="w-full h-4 border-2 background-border rounded-full">
             <div
-              className={`h-full ${paymentReliabilityScore >= 80 ? "bg-(--accent-green)" : paymentReliabilityScore >= 60 ? "bg-(--accent-amber)" : "bg-(--accent-red)"} rounded-full transition-all duration-300`}
+              className={`h-full ${barColorClass} rounded-full transition-all duration-300`}
               style={{
-                width: `${paymentReliabilityScore.toString() + "%"}`,
+                width: `${paymentReliabilityScore}%`,
                 minWidth: "8px",
               }}
             ></div>
           </div>
         </div>
         <div>
-          <p className="text-sm primary-slate">Avg 4 days late</p>
+          <p className="text-sm primary-slate">
+            {lateCount > 0
+              ? `Avg ${averageDaysLate.toFixed(1)} days late`
+              : "Paid on time"}
+          </p>
           <p className="text-sm font-semibold primary-purple">
-            16 of 20 invoices paid on time
+            {totalRelevantInvoices > 0
+              ? `${onTimePaidCount} of ${totalRelevantInvoices} invoices paid on time`
+              : "No paid invoices yet"}
           </p>
         </div>
       </div>

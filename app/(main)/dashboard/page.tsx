@@ -1,9 +1,7 @@
 "use client";
 
-import Wizard from "@/components/Wizard/Wizard";
 import { useUIStore } from "@/lib/store/useUIStore";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 const tabs = [
   "Finances",

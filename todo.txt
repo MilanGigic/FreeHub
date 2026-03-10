@@ -2,3 +2,5 @@ Found a bug when I deployed to VERCEL
 Where when I add invoice, it counts it multiple times and stores bad data
 Probably because of multiple action functions
 Look into it
+
+Reporting: Dashboard could show a pie chart: Deductible vs. Non-Deductible Expenses.

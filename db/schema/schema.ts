@@ -174,6 +174,19 @@ export const invoices = pgTable("invoices", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const transactions = pgTable("transactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  type: projectFinanceTypeEnum("type").notNull().default("income"),
+  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  deductible: boolean("deductible").notNull().default(false),
+  note: text("note"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const clientRelations = relations(clients, ({ many }) => ({
   projects: many(projects),
 }));

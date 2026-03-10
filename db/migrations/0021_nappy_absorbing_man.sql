@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "deductible" boolean DEFAULT false NOT NULL;

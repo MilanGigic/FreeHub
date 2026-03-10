@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { projectFinance, projects } from "@/db/schema";
+import { projectFinance, projects, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function addExpense(
@@ -9,6 +9,7 @@ export async function addExpense(
   projectId: string,
   expense: string,
   note: string,
+  deductible: boolean,
 ) {
   if (!projectId || !expense || !note) {
     return { success: false, error: "Project ID and expense are required" };
@@ -26,6 +27,17 @@ export async function addExpense(
     const [newExpense] = await db
       .insert(projectFinance)
       .values({ userId, projectId, type: "expense", amount: expense, note })
+      .returning();
+
+    await db
+      .insert(transactions)
+      .values({
+        userId,
+        amount: expense,
+        type: "expense",
+        note,
+        deductible,
+      })
       .returning();
 
     const newTotalExpenses = (

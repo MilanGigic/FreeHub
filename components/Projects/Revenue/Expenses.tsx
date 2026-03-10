@@ -2,6 +2,7 @@
 
 import { addExpense } from "@/actions/projects/revenue/addExpense";
 import { fetchExpenseData } from "@/actions/projects/revenue/fetchExpenseData";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { ProjectRevenue } from "@/types/types";
@@ -14,6 +15,7 @@ export default function Expenses() {
 
   const [expenses, setExpenses] = useState<string>("0");
   const [expenseNote, setExpenseNote] = useState<string>("");
+  const [deductible, setDeductible] = useState<boolean>(false);
 
   const [expenseList, setExpenseList] = useState<ProjectRevenue[]>([]);
 
@@ -46,6 +48,7 @@ export default function Expenses() {
       selectedProject.id,
       expenses,
       expenseNote,
+      deductible,
     );
 
     if (res.success) {
@@ -79,7 +82,12 @@ export default function Expenses() {
         </p>
 
         <div>
-          <label htmlFor="expenses">Expenses</label>
+          <label
+            htmlFor="expenses"
+            className="text-lg font-semibold uppercase primary-slate"
+          >
+            Expenses
+          </label>
           <input
             type="number"
             id="expenses"
@@ -90,7 +98,12 @@ export default function Expenses() {
         </div>
 
         <div>
-          <label htmlFor="note">Note:</label>
+          <label
+            htmlFor="note"
+            className="text-lg font-semibold uppercase primary-slate"
+          >
+            Note:
+          </label>
 
           <input
             type="text"
@@ -99,6 +112,25 @@ export default function Expenses() {
             onChange={(e) => setExpenseNote(e.target.value)}
             className="w-full p-2 border background-border rounded-lg focus:outline focus:outline-(--accent-cyan) text-primary"
           />
+        </div>
+        <div className="flex flex-col gap-2 items-start">
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="deductible"
+              className="text-lg font-semibold uppercase primary-slate"
+            >
+              Deductible:
+            </label>
+            <Checkbox
+              id="deductible"
+              checked={deductible}
+              onCheckedChange={(checked) => setDeductible(checked === true)}
+            />
+          </div>
+          <p className="text-xs primary-slate">
+            Only check if this qualifies as a business expense per IRS rules
+            (e.g., home office, mileage).
+          </p>
         </div>
         <button
           type="submit"

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { invoices, projectFinance, projects } from "@/db/schema";
+import { invoices, projectFinance, projects, transactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { InvoiceStatus } from "@/types/types";
 
@@ -47,6 +47,17 @@ export async function updateInvoiceStatus(
             eq(projectFinance.userId, userId),
           ),
         );
+
+      await db
+        .insert(transactions)
+        .values({
+          userId,
+          amount: updatedInvoice.totalAmount,
+          type: "income",
+          note: updatedInvoice.note || "Invoice paid",
+          deductible: false,
+        })
+        .returning();
 
       const [invoice] = await db
         .select()

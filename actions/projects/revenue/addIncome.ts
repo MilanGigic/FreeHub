@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { projectFinance, projects } from "@/db/schema";
+import { projectFinance, projects, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function addIncome(
@@ -22,6 +22,16 @@ export async function addIncome(
         projectId,
         type: "income",
         amount: revenue,
+        note,
+      })
+      .returning();
+
+    await db
+      .insert(transactions)
+      .values({
+        userId,
+        amount: revenue,
+        type: "income",
         note,
       })
       .returning();

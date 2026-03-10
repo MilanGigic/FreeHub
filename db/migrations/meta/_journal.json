@@ -141,6 +141,20 @@
       "when": 1772751835146,
       "tag": "0019_material_ultron",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1773072352444,
+      "tag": "0020_secret_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1773142889759,
+      "tag": "0021_nappy_absorbing_man",
+      "breakpoints": true
     }
   ]
 }

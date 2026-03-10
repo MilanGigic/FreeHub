@@ -5,6 +5,7 @@ import useFetchAllInvoices from "@/components/Clients/hooks/(invoices)/useFetchA
 import Header from "@/components/Header";
 import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects";
 import Sidebar from "@/components/Sidebar";
+import { TaxProvider } from "@/components/TaxProvider";
 import Wizard from "@/components/Wizard/Wizard";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -26,16 +27,18 @@ function MainLayoutContent({
   useBootstrapAppData();
 
   return (
-    <div className="w-full min-h-screen h-full flex flex-col background relative">
-      {isWizard ? <Wizard /> : null}
-      <Header />
-      <div className="w-full flex items-stretch flex-1">
-        <div className="sticky top-16 h-[calc(100vh-4rem)] z-20">
-          <Sidebar />
+    <TaxProvider>
+      <div className="w-full min-h-screen h-full flex flex-col background relative">
+        {isWizard ? <Wizard /> : null}
+        <Header />
+        <div className="w-full flex items-stretch flex-1">
+          <div className="sticky top-16 h-[calc(100vh-4rem)] z-20">
+            <Sidebar />
+          </div>
+          <main className="flex-1 p-4">{children}</main>
         </div>
-        <main className="flex-1 p-4">{children}</main>
       </div>
-    </div>
+    </TaxProvider>
   );
 }
 
