@@ -18,6 +18,8 @@ type ProjectStore = {
   setExpenseList: (expenseList: ProjectRevenue[]) => void;
   paidInvoices: Invoice[];
   setPaidInvoices: (paidInvoices: Invoice[]) => void;
+  activeProjects: Project[];
+  setActiveProjects: (activeProjects: Project[]) => void;
 };
 
 export const useProjectStore = create<ProjectStore>((set) => ({
@@ -38,4 +40,6 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   setExpenseList: (expenseList: ProjectRevenue[]) => set({ expenseList }),
   paidInvoices: [],
   setPaidInvoices: (paidInvoices: Invoice[]) => set({ paidInvoices }),
+  activeProjects: [],
+  setActiveProjects: (activeProjects: Project[]) => set({ activeProjects }),
 }));

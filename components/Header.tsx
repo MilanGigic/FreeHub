@@ -5,8 +5,11 @@ import { Bell, ChevronDown, List, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/lib/useAuth";
 
 export default function Header() {
+  const { user } = useAuth();
+
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -37,7 +40,7 @@ export default function Header() {
                   setSelected(project);
                   setOpen(false);
                 }}
-                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
+                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-(--border-default) cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
               >
                 {project}
               </button>
@@ -73,7 +76,7 @@ export default function Header() {
                   setSelected(project);
                   setOpen(false);
                 }}
-                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
+                className="w-full px-4 py-2 text-xs text-left text-primary hover:bg-(--border-default) cursor-pointer hover:rounded-lg focus-border-accent transition-all outline-none"
               >
                 {project}
               </button>
@@ -91,7 +94,7 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search"
-            className="w-64 md:w-md h-8 rounded-md background-elevated border background-border px-4 py-2 outline-none text-sm text-primary placeholder:text-tertiary focus-border-accent transition-all"
+            className="w-64 md:w-md h-8 rounded-md background-elevated border background-border px-4 py-2 outline-none text-sm text-primary placeholder:text-(--text-tertiary) focus-border-accent transition-all"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -99,12 +102,21 @@ export default function Header() {
             size={40}
             className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
           />
-          <Link href="/profile">
-            <User
-              size={40}
-              className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
-            />
-          </Link>
+          {user ? (
+            <Link href="/profile">
+              <User
+                size={40}
+                className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
+              />
+            </Link>
+          ) : (
+            <Link
+              href="/register"
+              className="text-primary underline hover:text-(--accent-cyan) transition-all uppercase font-semibold text-lg"
+            >
+              Register
+            </Link>
+          )}
           <ChevronDown
             size={40}
             className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"

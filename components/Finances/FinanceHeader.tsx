@@ -10,8 +10,8 @@ import { toast } from "react-toastify";
 export default function FinanceHeader() {
   const { user } = useAuth();
   const { taxReserved, safeToSpend, computeSafeToSpend } = useTaxProfileStore();
-  const [balance, setBalance] = useState<string>("0");
   const [unpaidInvoices, setUnpaidInvoices] = useState<string>("0");
+  const [balance, setBalance] = useState<string>("0");
 
   useEffect(() => {
     (async () => {

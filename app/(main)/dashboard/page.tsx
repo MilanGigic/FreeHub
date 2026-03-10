@@ -1,16 +1,13 @@
 "use client";
 
+import ClientsCard from "@/components/Dashboard/ClientsCard";
+import FinancesCard from "@/components/Dashboard/FinancesCard";
+import MessagesCard from "@/components/Dashboard/MessagesCard";
+import ProjectsCard from "@/components/Dashboard/ProjectsCard";
+import ReportsCard from "@/components/Dashboard/ReportsCard";
+import TasksCard from "@/components/Dashboard/TasksCard";
 import { useUIStore } from "@/lib/store/useUIStore";
 import Link from "next/link";
-
-const tabs = [
-  "Finances",
-  "Clients",
-  "Projects",
-  "Tasks",
-  "Reports",
-  "Messages",
-];
 
 export default function DashboardPage() {
   const { setIsRegisterWindowOpen, isRegisterWindowOpen } = useUIStore();
@@ -45,15 +42,25 @@ export default function DashboardPage() {
         </div>
       ) : null}
 
-      <div className="w-full h-full grid grid-cols-3 gap-4">
-        {tabs.map((tab) => (
+      <div className="w-full h-full flex flex-col gap-4 primary-slate">
+        <div className="flex flex-col md:flex-row gap-4 h-[550px]">
+          <FinancesCard />
+          <ClientsCard />
+          <ProjectsCard />
+        </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          <TasksCard />
+          <ReportsCard />
+          <MessagesCard />
+        </div>
+        {/* {tabs.map((tab) => (
           <div
             key={tab}
             className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/60 transition-all duration-50 cursor-pointer text-primary"
           >
             <h1>{tab}</h1>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );

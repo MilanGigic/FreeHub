@@ -28,6 +28,11 @@ type InvoiceStore = {
     data: string;
     count: number;
   }) => void;
+  allOverdueInvoices: { data: string; count: number };
+  setAllOverdueInvoices: (allOverdueInvoices: {
+    data: string;
+    count: number;
+  }) => void;
   selectedProjectId: string | null;
   setSelectedProjectId: (projectId: string | null) => void;
 };
@@ -59,6 +64,11 @@ export const useInvoiceStore = create<InvoiceStore>((set) => ({
     data: string;
     count: number;
   }) => set({ allOutstandingInvoices }),
+  allOverdueInvoices: { data: "", count: 0 },
+  setAllOverdueInvoices: (allOverdueInvoices: {
+    data: string;
+    count: number;
+  }) => set({ allOverdueInvoices }),
   selectedProjectId: null,
   setSelectedProjectId: (projectId: string | null) =>
     set({ selectedProjectId: projectId }),
