@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
+  const [country, setCountry] = useState<string>("United States");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -108,11 +108,22 @@ export default function RegisterPage() {
               id="country"
               type="text"
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              required
+              // onChange={(e) => setCountry(e.target.value)}
+              disabled
+              // required
               className={inputClass}
               placeholder="United States"
             />
+            <p className="text-xs text-tertiary mt-1">
+              We currently only support the United States for tax purposes.
+              <br />
+              If you need to register for a different country, please contact us
+              at freehubsupport@gmail.com.
+              <br />
+              We are working on adding more countries soon.
+              <br />
+              Thank you for your understanding.
+            </p>
           </div>
 
           <div>
