@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { projectFinance, projects } from "@/db/schema";
+import { projects, transactions } from "@/db/schema";
 import { Project } from "@/types/types";
 import { and, eq, inArray } from "drizzle-orm";
 
@@ -28,11 +28,11 @@ export async function calculateTotalExpenses(
       return { success: false, error: "Projects not found" };
     }
 
-    const projectExpenses = await db.query.projectFinance.findMany({
+    const projectExpenses = await db.query.transactions.findMany({
       where: and(
-        inArray(projectFinance.projectId, projectIds),
-        eq(projectFinance.userId, userId),
-        eq(projectFinance.type, "expense"),
+        inArray(transactions.projectId, projectIds),
+        eq(transactions.userId, userId),
+        eq(transactions.type, "expense"),
       ),
     });
 

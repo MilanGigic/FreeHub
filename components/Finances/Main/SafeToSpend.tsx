@@ -15,8 +15,9 @@ import { toast } from "react-toastify";
 
 export default function SafeToSpend() {
   const { user } = useAuth();
-  const { balance } = useDataStore();
-  const { safeToSpend, taxReserved, computeSafeToSpend } = useTaxProfileStore();
+  const { balance, projects } = useDataStore();
+  const { safeToSpend, taxReserved, computeSafeToSpend, computeTaxes } =
+    useTaxProfileStore();
 
   const [price, setPrice] = useState<string>("");
   const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
@@ -35,18 +36,24 @@ export default function SafeToSpend() {
     })();
   }, [user]);
 
-  // Auto-compute using your preferred simple logic (balance * 0.2)
   useEffect(() => {
-    if (balance) {
-      computeSafeToSpend({
-        currentBalance: Number(balance),
-        avgMonthlyExpenses: upcomingExpenses, // only used for burn rate
-        bufferMultiplier: 0.2, // keeps your original 45-day behavior
-      });
-    }
-  }, [balance, upcomingExpenses, computeSafeToSpend]);
+    if (!balance) return;
 
-  // === Safely evaluate mathematical expressions (your original function) ===
+    const currentBalance = Number(balance);
+
+    const netProfit = projects.reduce(
+      (acc, p) => acc + Number(p.totalProfit ?? 0),
+      0,
+    );
+    computeTaxes(netProfit);
+
+    computeSafeToSpend({
+      currentBalance,
+      avgMonthlyExpenses: upcomingExpenses,
+      bufferMultiplier: 1.5,
+    });
+  }, [balance, upcomingExpenses, computeTaxes, computeSafeToSpend, projects]);
+
   const evaluateExpression = (expression: string): number | null => {
     if (!expression.trim()) return null;
     try {

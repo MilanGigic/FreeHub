@@ -13,11 +13,6 @@ export default async function FinancesPage() {
       </div>
     );
 
-  // const [goalsData, transactions] = await Promise.all([
-  //   getGoals(user.id),
-  //   fetchRecentTransactions(user.id),
-  // ]);
-
   if (!user)
     return (
       <div className="text-center text-primary font-semibold">

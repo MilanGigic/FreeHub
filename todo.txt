@@ -2,18 +2,5 @@ Clients page:
   - Revenue this month shows 3 times the actual revenue -- Profit displays good data tho
   - Expenses this month are not showing at all
   - Safe to spend number is bad as well
-  - When I try to select a client on mobile view, it goes to the selected client url, but not to /overview page, and when I try to select overview page it throws this:
-  >>>>  Application error: a client-side exception has occurred while loading efficio-tswn-m9x8hlj16-extychs-projects.vercel.app (see the browser console for more information).
 
-Dashboard page:
-  - Finances chart is not showing
-  - Not mobile responsive
-
-Finances page:
-  - Recent transactions mobile responsiveness needs work
-
-Projects page:
-  - New project modal goes through the height and shows white background at the bottom -- ON MOBILE
-  - Selected project page is not mobile responsive at all
-
-Mostly frontend bugs, and some math backend bugs.
+Only backend math bugs left

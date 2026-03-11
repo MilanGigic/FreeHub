@@ -179,6 +179,9 @@ export const transactions = pgTable("transactions", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, {
+    onDelete: "set null",
+  }),
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
   deductible: boolean("deductible").notNull().default(false),

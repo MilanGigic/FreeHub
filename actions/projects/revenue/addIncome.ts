@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { projectFinance, projects, transactions } from "@/db/schema";
+import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 import { eq } from "drizzle-orm";
 
 export async function addIncome(
@@ -26,34 +27,19 @@ export async function addIncome(
       })
       .returning();
 
-    await db
-      .insert(transactions)
-      .values({
-        userId,
-        amount: revenue,
-        type: "income",
-        note,
-      })
-      .returning();
-
-    const project = await db.query.projects.findFirst({
-      where: eq(projects.id, projectId),
+    await db.insert(transactions).values({
+      userId,
+      projectId,
+      amount: revenue,
+      type: "income",
+      note,
     });
 
-    if (!project) return { success: false, error: "Project not found" };
+    const totals = await recalculateProjectTotals(userId, projectId);
 
-    const currentTotal = Number(project.totalRevenue ?? 0);
-
-    const [updatedProject] = await db
-      .update(projects)
-      .set({
-        totalRevenue: (currentTotal + Number(revenue)).toFixed(2),
-        totalProfit: (
-          Number(project.totalProfit ?? 0) + Number(revenue)
-        ).toFixed(2),
-      })
-      .where(eq(projects.id, projectId))
-      .returning();
+    const updatedProject = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
 
     return { success: true, data, projectData: updatedProject };
   } catch (error) {

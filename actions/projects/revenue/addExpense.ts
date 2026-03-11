@@ -33,6 +33,7 @@ export async function addExpense(
       .insert(transactions)
       .values({
         userId,
+        projectId,
         amount: expense,
         type: "expense",
         note,

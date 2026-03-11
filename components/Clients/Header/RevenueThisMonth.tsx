@@ -1,6 +1,5 @@
 "use client";
 
-import { useDataStore } from "@/lib/store/useDataStore";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/useAuth";
 import { calculateTotalRevenue } from "@/actions/calculateTotalRevenue";
@@ -8,27 +7,19 @@ import { toast } from "react-toastify";
 
 export default function RevenueThisMonth() {
   const { user } = useAuth();
-  const { projects } = useDataStore();
   const [revenue, setRevenue] = useState<string>("0");
 
   useEffect(() => {
     (async () => {
       if (!user) return;
-      const res = await calculateTotalRevenue(user.id, projects);
-      if (res.success) {
-        if (res.data) {
-          // Sum all project totals into one number
-          const totalRevenue = res.data
-            .reduce((acc, item) => acc + parseFloat(item.total), 0)
-            .toFixed(2);
-
-          setRevenue(totalRevenue);
-        }
+      const res = await calculateTotalRevenue(user.id);
+      if (res.success && res.data) {
+        setRevenue(res.data);
       } else {
         toast.error(res.error);
       }
     })();
-  }, [user, projects]);
+  }, [user]);
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4">

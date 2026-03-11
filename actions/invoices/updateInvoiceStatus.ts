@@ -1,9 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { invoices, projectFinance, projects, transactions } from "@/db/schema";
+import { invoices, projects, transactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { InvoiceStatus } from "@/types/types";
+import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 
 export async function updateInvoiceStatus(
   id: string,
@@ -33,93 +34,18 @@ export async function updateInvoiceStatus(
         return { success: false, error: "Invoice not found" };
 
       await db
-        .update(projectFinance)
-        .set({
-          userId,
-          projectId,
-          amount: updatedInvoice.totalAmount,
-          type: "income",
-          note: updatedInvoice.note || "Invoice paid",
-        })
-        .where(
-          and(
-            eq(projectFinance.projectId, projectId),
-            eq(projectFinance.userId, userId),
-          ),
-        );
-
-      await db
         .insert(transactions)
         .values({
           userId,
           amount: updatedInvoice.totalAmount,
+          projectId,
           type: "income",
           note: updatedInvoice.note || "Invoice paid",
           deductible: false,
         })
         .returning();
 
-      const [invoice] = await db
-        .select()
-        .from(invoices)
-        .where(
-          and(
-            eq(invoices.id, id),
-            eq(invoices.clientId, clientId),
-            eq(invoices.userId, userId),
-            eq(invoices.projectId, projectId),
-          ),
-        );
-
-      if (!invoice) {
-        return { success: false, error: "Invoice not found" };
-      }
-
-      const paidInvoices = await db
-        .select()
-        .from(invoices)
-        .where(
-          and(
-            eq(invoices.projectId, projectId),
-            eq(invoices.userId, userId),
-            eq(invoices.status, "paid"),
-          ),
-        );
-
-      const totalRevenue = paidInvoices
-        .reduce((acc, invoice) => acc + Number(invoice.totalAmount), 0)
-        .toFixed(2)
-        .toString();
-
-      const [currentProject] = await db
-        .select()
-        .from(projects)
-        .where(
-          and(
-            eq(projects.clientId, clientId),
-            eq(projects.userId, userId),
-            eq(projects.id, projectId),
-          ),
-        );
-
-      await db
-        .update(projects)
-        .set({
-          totalRevenue,
-          totalProfit: (
-            Number(currentProject.totalProfit ?? 0) +
-            Number(updatedInvoice.totalAmount)
-          )
-            .toFixed(2)
-            .toString(),
-        })
-        .where(
-          and(
-            eq(projects.clientId, clientId),
-            eq(projects.userId, userId),
-            eq(projects.id, projectId),
-          ),
-        );
+      await recalculateProjectTotals(userId, projectId);
     } else {
       await db
         .update(invoices)
