@@ -74,14 +74,24 @@ export interface Transaction {
   id: string;
   userId: string;
   type: "income" | "expense";
-  title: string;
   amount: string;
-  categoryId: string | null;
-  description: string | null;
-  date: Date;
+  deductible: boolean;
+  note: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type Conservativeness = "conservative" | "moderate" | "aggressive";
+
+export type Goal = {
+  id: string;
+  userId: string;
+  name: string;
+  targetAmount: string;
+  deadline: Date | null;
+  conservativeness: Conservativeness;
+  createdAt: Date;
+};
 
 export interface Project {
   id: string;

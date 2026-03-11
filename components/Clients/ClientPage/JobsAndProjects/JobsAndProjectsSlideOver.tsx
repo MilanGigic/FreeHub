@@ -23,6 +23,16 @@ export default function JobsAndProjectsSlideOver() {
       : 0;
   }, [selectedProject]);
 
+  const totalRevenue = selectedProject?.totalRevenue
+    ? Number(selectedProject.totalRevenue)
+    : 0;
+
+  const profit = selectedProject?.totalProfit
+    ? Number(selectedProject.totalProfit)
+    : 0;
+
+  const profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
+
   if (!selectedProject) return null;
 
   return (
@@ -79,13 +89,9 @@ export default function JobsAndProjectsSlideOver() {
             <p className="primary-slate text-sm uppercase font-semibold">
               Margin:{" "}
               <span
-                className={`${selectedProject.totalMargin && Number(selectedProject.totalMargin) >= 40 ? "primary-green" : selectedProject.totalMargin && Number(selectedProject.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
+                className={`${profitMargin >= 40 ? "primary-green" : profitMargin >= 25 ? "primary-slate" : "primary-red"}`}
               >
-                To be added...
-                {/* $
-                {selectedProject.totalMargin &&
-                  Number(selectedProject.totalMargin)}
-                % */}
+                {profitMargin.toFixed(2)}%
               </span>
             </p>
           </div>
@@ -118,7 +124,10 @@ export default function JobsAndProjectsSlideOver() {
               Planned Hours: <span className="primary-cyan">12 hours</span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Hours Left: <span className="primary-cyan">2 hours</span>
+              Hours Left:{" "}
+              <span className="primary-cyan">
+                {12 - (selectedProject.totalHoursWorked ?? 0)} hours
+              </span>
             </p>
           </div>
           {selectedProject.status === "completed" ? (

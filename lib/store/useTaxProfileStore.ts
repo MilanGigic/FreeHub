@@ -30,6 +30,8 @@ type ExtendedTaxProfile = TaxProfile & {
   profitAfterTaxes: number; // New
   taxReserved: number; // New
   safeToSpend: number; // New
+  safetyBuffer: number;
+  cashBufferDays: number;
   update: (updates: Partial<ExtendedTaxProfile>) => void;
   computeTaxes: (newNetProfit: number) => void;
   computeSafeToSpend: (inputs: SafeToSpendInputs) => void;
@@ -40,7 +42,6 @@ type SafeToSpendInputs = {
   expectedIncomeNext30Days?: number;
   avgMonthlyExpenses?: number;
   bufferMultiplier?: number;
-  timeHorizonDays?: number;
 };
 
 export const useTaxProfileStore = create<ExtendedTaxProfile>((set, get) => ({
@@ -62,6 +63,8 @@ export const useTaxProfileStore = create<ExtendedTaxProfile>((set, get) => ({
   profitAfterTaxes: 0,
   taxReserved: 0,
   safeToSpend: 0,
+  safetyBuffer: 0,
+  cashBufferDays: 0,
 
   update: (updates) => set(updates),
   computeTaxes: (newNetProfit) => {
@@ -87,25 +90,43 @@ export const useTaxProfileStore = create<ExtendedTaxProfile>((set, get) => ({
       profitAfterTaxes,
     });
   },
-  computeSafeToSpend: (inputs) => {
-    // From our earlier formula (copy-paste this func)
+  computeSafeToSpend: (inputs: SafeToSpendInputs) => {
     const {
       currentBalance = 0,
       expectedIncomeNext30Days = 0,
       avgMonthlyExpenses = 0,
-      bufferMultiplier = 0.2,
-      timeHorizonDays = 30,
+      bufferMultiplier = 1.5, // ← changed to 1.5 months (most popular)
     } = inputs;
-    const proratedExpenses = avgMonthlyExpenses * (timeHorizonDays / 30);
-    const taxReserved = get().taxReserved; // Pull from store
-    const safetyBuffer = proratedExpenses * bufferMultiplier;
 
+    const taxReserved = get().taxReserved;
+
+    // Smart safety buffer (what you actually want)
+    let safetyBuffer = avgMonthlyExpenses * bufferMultiplier;
+
+    // Fallback to your original 20% if expenses are zero
+    if (safetyBuffer === 0) {
+      safetyBuffer = currentBalance * 0.2;
+    }
+
+    // Main safe to spend calculation (exactly what freelancers expect)
     const safeAmount =
       currentBalance +
-      expectedIncomeNext30Days * 0.8 -
-      proratedExpenses -
+      expectedIncomeNext30Days * 0.8 - // conservative 80% of expected income
       taxReserved -
       safetyBuffer;
-    set({ safeToSpend: Math.max(0, Math.floor(safeAmount)) });
+
+    // Cash buffer days
+    const dailyBurnRate = avgMonthlyExpenses > 0 ? avgMonthlyExpenses / 30 : 1;
+    const cashBufferDays = Math.max(
+      0,
+      Math.floor(safetyBuffer / dailyBurnRate),
+    );
+
+    set({
+      safeToSpend: Math.max(0, Math.floor(safeAmount)),
+      // Optional: store these too so you can use them anywhere
+      safetyBuffer: Math.floor(safetyBuffer),
+      cashBufferDays,
+    });
   },
 }));

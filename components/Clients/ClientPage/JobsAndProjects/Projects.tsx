@@ -5,7 +5,17 @@ import NewProjectModal from "@/components/Projects/NewProjectModal";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
+import { Project } from "@/types/types";
 import { useEffect } from "react";
+
+function calculateProfitMargin(project: Project) {
+  const totalRevenue = project?.totalRevenue ? Number(project.totalRevenue) : 0;
+
+  const profit = project?.totalProfit ? Number(project.totalProfit) : 0;
+
+  const profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
+  return profitMargin.toFixed(2);
+}
 
 export default function Projects() {
   const {
@@ -69,7 +79,7 @@ export default function Projects() {
               <span
                 className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
               >
-                {project.totalMargin && Number(project.totalMargin)}%
+                {calculateProfitMargin(project)}%
               </span>
             </p>
             <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">

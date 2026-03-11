@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { fetchCashFlowData } from "@/actions/taxProfile/fetchCashFlowData";
+import { useDataStore } from "@/lib/store/useDataStore";
+import { useAuth } from "@/lib/useAuth";
+import { useEffect, useMemo, useState } from "react";
 import {
   ComposedChart,
   Bar,
@@ -14,6 +17,7 @@ import {
 
 interface CashFlowData {
   date: string;
+  dateLabel: string;
   inflow: number;
   outflow: number;
   balance: number;
@@ -44,8 +48,8 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="background-elevated border background-border rounded-lg p-3 shadow-lg">
-        <p className="text-secondary text-sm mb-2">
-          {payload[0]?.payload?.date}
+        <p className="primary-slate text-sm mb-2">
+          {payload[0]?.payload?.dateLabel}
         </p>
         {payload.map((entry, index: number) => {
           if (entry.dataKey === "inflow" && entry.value > 0) {
@@ -77,60 +81,56 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
   return null;
 };
 
-// Helper function to generate sample data deterministically
-function generateSampleData(days: number): CashFlowData[] {
-  const data: CashFlowData[] = [];
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
-
-  let runningBalance = 62000; // Starting balance
-
-  // Predefined patterns for realistic cash flow
-  const inflowPattern = [
-    0, 0, 45000, 0, 0, 32000, 0, 0, 28000, 0, 0, 50000, 0, 0, 35000, 0, 0,
-    40000, 0, 0, 38000, 0, 0, 42000, 0, 0, 30000, 0, 0, 48000,
-  ];
-  const outflowPattern = [
-    12000, 0, 0, 15000, 0, 0, 18000, 0, 0, 14000, 0, 0, 16000, 0, 0, 13000, 0,
-    0, 17000, 0, 0, 15000, 0, 0, 14000, 0, 0, 16000, 0, 0,
-  ];
-
-  for (let i = 0; i < days; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
-
-    const inflow = inflowPattern[i % inflowPattern.length] || 0;
-    const outflow = outflowPattern[i % outflowPattern.length] || 0;
-
-    runningBalance = runningBalance + inflow - outflow;
-
-    data.push({
-      date: date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-      inflow: Math.round(inflow),
-      outflow: Math.round(outflow),
-      balance: Math.round(runningBalance),
-    });
-  }
-
-  return data;
-}
-
 export default function CashFlow() {
-  const [timeRange, setTimeRange] = useState<"30" | "29">("29");
+  const { user } = useAuth();
+  const { balance } = useDataStore();
+  const [timeRange, setTimeRange] = useState<"30" | "365">("30");
+  const [rawData, setRawData] = useState<
+    Awaited<ReturnType<typeof fetchCashFlowData>>["data"]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample data - replace with actual data from your backend
-  const chartData = useMemo(() => {
-    const days = timeRange === "30" ? 30 : 29;
-    return generateSampleData(days);
-  }, [timeRange]);
+  useEffect(() => {
+    if (!user) {
+      queueMicrotask(() => {
+        setRawData([]);
+        setLoading(false);
+      });
+      return;
+    }
+    let cancelled = false;
+    queueMicrotask(() => setLoading(true));
+    const days = timeRange === "30" ? 30 : 365;
+    fetchCashFlowData(user.id, days).then((res) => {
+      if (cancelled) return;
+      if (res.success && res.data) {
+        setRawData(res.data);
+      }
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, timeRange]);
+
+  const chartData = useMemo((): CashFlowData[] => {
+    if (!rawData.length) return [];
+    const currentBalance = Number(balance || 0);
+    const netChange = rawData.reduce((sum, d) => sum + d.inflow - d.outflow, 0);
+    let runningBalance = currentBalance - netChange;
+    return rawData.map((d) => {
+      runningBalance += d.inflow - d.outflow;
+      return {
+        ...d,
+        balance: Math.round(runningBalance * 100) / 100,
+      };
+    });
+  }, [rawData, balance]);
 
   return (
     <div className="col-span-2 w-full flex flex-col border background-border rounded-lg p-4 background-elevated gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-secondary uppercase">
+        <h1 className="text-lg font-semibold primary-slate uppercase">
           Cash Flow Forecast
         </h1>
         <div className="flex gap-2">
@@ -138,72 +138,82 @@ export default function CashFlow() {
             onClick={() => setTimeRange("30")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
               timeRange === "30"
-                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
-                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
+                ? "bg-(--border-default) primary-cyan border border-(--accent-cyan)"
+                : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
             30 Days
           </button>
           <button
-            onClick={() => setTimeRange("29")}
+            onClick={() => setTimeRange("365")}
             className={`px-3 py-1 text-sm rounded-lg transition-all ${
-              timeRange === "29"
-                ? "bg-[var(--border-default)] primary-cyan border border-[var(--accent-cyan)]"
-                : "background-elevated text-secondary border background-border hover:border-[var(--border-interactive)]"
+              timeRange === "365"
+                ? "bg-(--border-default) primary-cyan border border-(--accent-cyan)"
+                : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
-            29 Days
+            365 Days
           </button>
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={150}>
-        <ComposedChart
-          data={chartData}
-          margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#21262d"
-            vertical={false}
-          />
-          <XAxis
-            dataKey="date"
-            tick={{ fill: "#8b949e", fontSize: 12 }}
-            axisLine={{ stroke: "#21262d" }}
-            tickLine={{ stroke: "#21262d" }}
-            interval="preserveStartEnd"
-          />
-          <YAxis
-            tick={{ fill: "#8b949e", fontSize: 12 }}
-            axisLine={{ stroke: "#21262d" }}
-            tickLine={{ stroke: "#21262d" }}
-            tickFormatter={formatCurrency}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar
-            dataKey="inflow"
-            fill="#2ea043"
-            radius={[4, 4, 0, 0]}
-            name="Inflow"
-          />
-          <Bar
-            dataKey="outflow"
-            fill="#f85149"
-            radius={[4, 4, 0, 0]}
-            name="Outflow"
-          />
-          <Line
-            type="linear"
-            dataKey="balance"
-            stroke="#2dd4bf"
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            dot={{ fill: "#2dd4bf", r: 2 }}
-            activeDot={{ r: 4 }}
-            name="Balance"
-          />
-        </ComposedChart>
+        {loading ? (
+          <div className="w-full h-full flex items-center justify-center primary-slate text-sm">
+            Loading…
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="w-full h-full flex items-center justify-center primary-slate text-sm">
+            No transaction data for this period
+          </div>
+        ) : (
+          <ComposedChart
+            data={chartData}
+            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#21262d"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="dateLabel"
+              tick={{ fill: "#8b949e", fontSize: 12 }}
+              axisLine={{ stroke: "#21262d" }}
+              tickLine={{ stroke: "#21262d" }}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              tick={{ fill: "#8b949e", fontSize: 12 }}
+              axisLine={{ stroke: "#21262d" }}
+              tickLine={{ stroke: "#21262d" }}
+              tickFormatter={formatCurrency}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar
+              dataKey="inflow"
+              fill="#2ea043"
+              radius={[4, 4, 0, 0]}
+              name="Inflow"
+            />
+            <Bar
+              dataKey="outflow"
+              fill="#f85149"
+              radius={[4, 4, 0, 0]}
+              name="Outflow"
+            />
+            <Line
+              type="linear"
+              dataKey="balance"
+              stroke="#2dd4bf"
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              dot={{ fill: "#2dd4bf", r: 2 }}
+              activeDot={{ r: 4 }}
+              name="Balance"
+            />
+          </ComposedChart>
+        )}
       </ResponsiveContainer>
     </div>
   );

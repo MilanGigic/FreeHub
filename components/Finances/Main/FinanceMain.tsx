@@ -2,7 +2,7 @@ import CashFlow from "./CashFlow";
 import ProjectProfitability from "./ProjectProfitability";
 import RecentTransactions from "./RecentTransactions";
 import SafeToSpend from "./SafeToSpend";
-import TaxAutopilot from "./TaxAutopilot";
+import GoalsCardClient from "./GoalsCardClient";
 import TransactionSimulator from "./TransactionSimulator";
 
 export default function FinanceMain() {
@@ -14,7 +14,7 @@ export default function FinanceMain() {
           <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
             <CashFlow />
             <div className="flex gap-2 md:gap-4 w-full h-full md:flex-row flex-col">
-              <TaxAutopilot />
+              <GoalsCardClient />
               <TransactionSimulator />
             </div>
           </div>

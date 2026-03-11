@@ -2,16 +2,24 @@
 
 import { calculateUnpaidInvoices } from "@/actions/finances/calculateUnpaidInvoices";
 import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
+import { fetchUserTransactions } from "@/actions/taxProfile/fetchUserTransactions";
+import { useDataStore } from "@/lib/store/useDataStore";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { useAuth } from "@/lib/useAuth";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import useFetchAllClients from "../Clients/hooks/(clients)/useFetchAllClients";
+import useFetchAllProjects from "../Projects/hooks/useFetchAllProjects";
 
 export default function FinanceHeader() {
   const { user } = useAuth();
+  const { avgMonthlyExpenses, setAvgMonthlyExpenses, balance, setBalance } =
+    useDataStore();
   const { taxReserved, safeToSpend, computeSafeToSpend } = useTaxProfileStore();
   const [unpaidInvoices, setUnpaidInvoices] = useState<string>("0");
-  const [balance, setBalance] = useState<string>("0");
+
+  useFetchAllClients();
+  useFetchAllProjects();
 
   useEffect(() => {
     (async () => {
@@ -31,7 +39,22 @@ export default function FinanceHeader() {
         toast.error(res.error as string);
       }
     })();
-  }, [user]);
+  }, [user, setBalance]);
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+      const res = await fetchUserTransactions(user.id, "expense");
+      if (res.success) {
+        if (res.total !== undefined) {
+          const avgMonthlyExpenses = res.total;
+          setAvgMonthlyExpenses(avgMonthlyExpenses.toFixed(2));
+        }
+      } else {
+        toast.error(res.error as string);
+      }
+    })();
+  }, [user, setAvgMonthlyExpenses]);
 
   useEffect(() => {
     const currentBalance = Number(balance) || 0;
@@ -40,8 +63,9 @@ export default function FinanceHeader() {
     computeSafeToSpend({
       currentBalance,
       expectedIncomeNext30Days,
+      avgMonthlyExpenses: Number(avgMonthlyExpenses) || 0,
     });
-  }, [balance, unpaidInvoices, computeSafeToSpend]);
+  }, [balance, unpaidInvoices, computeSafeToSpend, avgMonthlyExpenses]);
 
   useEffect(() => {
     (async () => {

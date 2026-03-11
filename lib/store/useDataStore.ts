@@ -8,6 +8,10 @@ type DataStore = {
   setTotalRevenue: (totalRevenue: string) => void;
   projectCalendarItem: ProjectCalendar | null;
   setProjectCalendarItem: (projectCalendarItem: ProjectCalendar | null) => void;
+  avgMonthlyExpenses: string;
+  setAvgMonthlyExpenses: (avgMonthlyExpenses: string) => void;
+  balance: string;
+  setBalance: (balance: string) => void;
 };
 
 export const useDataStore = create<DataStore>((set) => ({
@@ -18,4 +22,9 @@ export const useDataStore = create<DataStore>((set) => ({
   projectCalendarItem: null,
   setProjectCalendarItem: (projectCalendarItem: ProjectCalendar | null) =>
     set({ projectCalendarItem }),
+  avgMonthlyExpenses: "0",
+  setAvgMonthlyExpenses: (avgMonthlyExpenses: string) =>
+    set({ avgMonthlyExpenses }),
+  balance: "0",
+  setBalance: (balance: string) => set({ balance }),
 }));

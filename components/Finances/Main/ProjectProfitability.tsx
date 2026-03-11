@@ -37,14 +37,16 @@ export default function ProjectProfitability() {
             All Projects <ChevronDown className="w-4 h-4 primary-slate" />
           </button>
           {openDropdown ? (
-            <div className="flex flex-col gap-2 absolute mt-1 w-full h-full bg-black/50">
+            <div className="flex flex-col gap-2 absolute mt-1 w-full h-full bg-black/50 rounded-lg">
               <div className="flex flex-col items-center gap-2 background-elevated p-2 rounded-lg border background-border">
-                <h1 className="text-sm font-semibold primary-slate py-2 px-4 hover:bg-(--border-default) transition-all cursor-pointer w-full text-center rounded-lg">
-                  Project 1
-                </h1>
-                <h1 className="text-sm font-semibold primary-slate py-2 px-4 hover:bg-(--border-default) transition-all cursor-pointer w-full text-center rounded-lg">
-                  Project 2
-                </h1>
+                {projects.map((project) => (
+                  <h1
+                    key={project.id}
+                    className="text-sm font-semibold primary-slate py-2 px-4 hover:bg-(--border-default) transition-all cursor-pointer w-full text-center rounded-lg"
+                  >
+                    {project.name}
+                  </h1>
+                ))}
               </div>
             </div>
           ) : null}

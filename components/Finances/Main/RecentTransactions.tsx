@@ -1,72 +1,56 @@
+"use client";
+
+import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
+import { useAuth } from "@/lib/useAuth";
+import { Transaction } from "@/types/types";
 import { List } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
-const transactionTypes = ["Income", "Expense", "Recurring", "Other"];
+const transactionTypes = ["All", "Income", "Expense"];
 
-const transactionData = [
-  {
-    name: "Client Invoice #1",
-    type: "Income",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Rent",
-    type: "Expense",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Subscription",
-    type: "Recurring",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Food",
-    type: "Other",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Transport",
-    type: "Other",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Entertainment",
-    type: "Expense",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Entertainment",
-    type: "Expense",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Entertainment",
-    type: "Expense",
-    amount: 100,
-    date: "2024-01-01",
-  },
-  {
-    name: "Entertainment",
-    type: "Expense",
-    amount: 100,
-    date: "2024-01-01",
-  },
-];
+function filterTransactions(
+  transactions: Transaction[],
+  type: "all" | "income" | "expense",
+): Transaction[] {
+  if (type === "all") return transactions;
+  return transactions.filter((transaction) => transaction.type === type);
+}
 
 export default function RecentTransactions() {
+  const { user } = useAuth();
+
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
+  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
+    [],
+  );
+  const [transactionType, setTransactionType] = useState<
+    "all" | "income" | "expense"
+  >("all");
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+      const res = await fetchRecentTransactions(user.id);
+      if (res.success) {
+        if (res.data) {
+          setRecentTransactions(res.data);
+        }
+      } else {
+        toast.error(res.error?.message || "An error occurred");
+      }
+    })();
+  }, [user]);
+
+  const filteredTransactions = useMemo(
+    () => filterTransactions(recentTransactions, transactionType),
+    [recentTransactions, transactionType],
+  );
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 w-full h-full flex flex-col">
       <header className="flex items-center justify-between w-full border-b background-border pb-4">
-        <h1 className="text-secondary uppercase font-semibold text-lg">
+        <h1 className="primary-slate uppercase font-semibold text-lg">
           Recent Transactions
         </h1>
 
@@ -74,7 +58,16 @@ export default function RecentTransactions() {
           {transactionTypes.map((type) => (
             <li
               key={type}
-              className="text-secondary text-sm font-semibold cursor-pointer background-elevated border background-border rounded-lg p-2"
+              className={`text-sm font-semibold cursor-pointer background-elevated border background-border rounded-lg p-2 ${transactionType === type.toLowerCase() ? "border-(--accent-cyan) bg-(--accent-cyan)/10 text-primary" : "background-border primary-slate hover:border-(--accent-cyan)"} transition-all`}
+              onClick={() =>
+                setTransactionType(
+                  type === "All"
+                    ? "all"
+                    : type === "Income"
+                      ? "income"
+                      : "expense",
+                )
+              }
             >
               {type}
             </li>
@@ -93,12 +86,15 @@ export default function RecentTransactions() {
           {openDropdown ? (
             <div className="absolute mt-1 w-full rounded-lg background-elevated border background-border shadow-lg z-10">
               {transactionTypes.map((type) => (
-                <h1
+                <button
                   key={type}
-                  className="text-secondary text-sm font-semibold p-2 hover:bg-[var(--border-default)] cursor-pointer hover:rounded-lg focus-border-accent transition-all"
+                  className="text-secondary text-sm font-semibold p-2 hover:bg-(--border-interactive) cursor-pointer hover:rounded-lg focus-border-accent transition-all"
+                  onClick={() =>
+                    setTransactionType(type as "all" | "income" | "expense")
+                  }
                 >
                   {type}
-                </h1>
+                </button>
               ))}
             </div>
           ) : null}
@@ -106,24 +102,28 @@ export default function RecentTransactions() {
       </header>
 
       <main className="flex flex-col gap-2 max-h-[210px] overflow-y-auto">
-        {transactionData.map((transaction, index) => (
+        {filteredTransactions.map((transaction, index) => (
           <div
             key={index}
             className="flex items-center justify-between border-b background-border py-2"
           >
             <h1 className="text-primary text-sm font-medium w-full text-center">
-              {transaction.name}{" "}
-              <span className="text-secondary text-xs font-semibold background-elevated border background-border rounded-lg p-1">
-                {transaction.type}
+              {transaction.note || "No note"}{" "}
+              <span className="primary-slate text-xs font-semibold background-elevated border background-border rounded-lg p-1">
+                {transaction.type === "income" ? "Income" : "Expense"}
               </span>
             </h1>
             <h1
-              className={`text-sm font-semibold w-full text-center ${transaction.type === "Income" ? "primary-green" : transaction.type === "Expense" ? "primary-red" : transaction.type === "Recurring" ? "primary-cyan" : "primary-amber"}`}
+              className={`text-sm font-semibold w-full text-center ${transaction.type === "income" ? "primary-green" : "primary-red"}`}
             >
               ${transaction.amount}
             </h1>
-            <h1 className="text-secondary text-sm font-semibold w-full text-center">
-              {transaction.date}
+            <h1 className="text-primary text-sm font-semibold w-full text-center">
+              {transaction.createdAt.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </h1>
           </div>
         ))}

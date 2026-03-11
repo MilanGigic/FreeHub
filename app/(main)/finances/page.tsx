@@ -1,22 +1,23 @@
-"use client";
-
-import useFetchAllClients from "@/components/Clients/hooks/(clients)/useFetchAllClients";
+import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 import FinanceHeader from "@/components/Finances/FinanceHeader";
 import FinanceMain from "@/components/Finances/Main/FinanceMain";
-import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects";
-import { useAuth } from "@/lib/useAuth";
 import Link from "next/link";
 
-export default function FinancesPage() {
-  const { user, loading } = useAuth();
+export default async function FinancesPage() {
+  const user = await getCurrentUser();
 
-  useFetchAllClients();
-  useFetchAllProjects();
-
-  if (loading)
+  if (!user)
     return (
-      <div className="text-center text-primary font-semibold">Loading...</div>
+      <div className="text-center text-primary font-semibold">
+        You must be logged in to access this page
+      </div>
     );
+
+  // const [goalsData, transactions] = await Promise.all([
+  //   getGoals(user.id),
+  //   fetchRecentTransactions(user.id),
+  // ]);
+
   if (!user)
     return (
       <div className="text-center text-primary font-semibold">

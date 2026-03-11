@@ -187,6 +187,26 @@ export const transactions = pgTable("transactions", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const conservativenessEnum = pgEnum("conservativeness", [
+  "conservative",
+  "moderate",
+  "aggressive",
+]);
+
+export const goals = pgTable("goals", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  targetAmount: decimal("target_amount", { precision: 12, scale: 2 }).notNull(),
+  deadline: timestamp("deadline"),
+  conservativeness: conservativenessEnum("conservativeness")
+    .default("moderate")
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const clientRelations = relations(clients, ({ many }) => ({
   projects: many(projects),
 }));

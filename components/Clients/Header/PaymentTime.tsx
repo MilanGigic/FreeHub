@@ -14,7 +14,9 @@ export default function PaymentTime() {
         Average Payment Time
       </h1>
       <p className="text-2xl font-bold flex items-center gap-2 primary-cyan">
-        {averagePaymentTime ? averagePaymentTime + " days" : "No invoices paid"}
+        {averagePaymentTime !== "0"
+          ? averagePaymentTime + " days"
+          : "No invoices paid"}
       </p>
     </div>
   );
