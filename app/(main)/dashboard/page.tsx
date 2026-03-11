@@ -43,7 +43,7 @@ export default function DashboardPage() {
       ) : null}
 
       <div className="w-full h-full flex flex-col gap-4 primary-slate">
-        <div className="flex flex-col md:flex-row gap-4 h-[550px]">
+        <div className="flex flex-col md:flex-row gap-4 md:h-[550px]">
           <FinancesCard />
           <ClientsCard />
           <ProjectsCard />
@@ -53,14 +53,6 @@ export default function DashboardPage() {
           <ReportsCard />
           <MessagesCard />
         </div>
-        {/* {tabs.map((tab) => (
-          <div
-            key={tab}
-            className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2 shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/60 transition-all duration-50 cursor-pointer text-primary"
-          >
-            <h1>{tab}</h1>
-          </div>
-        ))} */}
       </div>
     </div>
   );

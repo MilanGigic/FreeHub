@@ -103,7 +103,7 @@ export default function NewProjectModal() {
 
   return (
     <form
-      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-25 right-0 primary-slate"
+      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-20 md:top-25 right-0 primary-slate"
       onSubmit={(e) => handleSubmit(e)}
     >
       <button onClick={() => setIsNewProjectModalOpen(false)}>

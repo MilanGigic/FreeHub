@@ -12,9 +12,9 @@ export default function SelectedProjectHeader() {
         {selectedProject.name}
       </h1>
 
-      <div className="flex gap-2 md:gap-4 w-full justify-between border-b-2 background-border p-2 items-center">
-        <div>
-          <div className="flex items-center gap-2 px-4">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full justify-center md:justify-between border-b-2 background-border p-2 items-center">
+        <div className="flex flex-row md:flex-col gap-2 md:gap-4">
+          <div className="flex items-center gap-2 px-4 justify-center md:justify-start">
             <div className="w-4 h-4 bg-(--accent-cyan) rounded-full" />
             <h1 className="text-sm text-primary uppercase font-semibold">
               Start Date

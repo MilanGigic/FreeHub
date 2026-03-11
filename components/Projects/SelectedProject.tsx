@@ -78,7 +78,7 @@ export default function SelectedProject() {
         </div>
 
         {activeTab === "calendar" ? (
-          <div className="flex w-full justify-center items-center gap-2 md:gap-4">
+          <div className="flex flex-col md:flex-row w-full justify-center items-center gap-2 md:gap-4">
             <ProjectCalendar key={selectedProject.id} />
             <div className="h-full border background-border" />
             <CalendarEntries key={selectedDate?.getTime() ?? "no-date"} />

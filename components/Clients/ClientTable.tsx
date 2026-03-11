@@ -1,7 +1,6 @@
 "use client";
 
 import { useClientStore } from "@/lib/store/useClientStore";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -63,27 +62,26 @@ export default function ClientTable() {
           <div
             key={client.id}
             className="rounded-lg border background-border background-elevated p-4"
+            onClick={() => {
+              setSelectedClient(client);
+              router.push(`/clients/${client.id}/overview`);
+            }}
           >
-            <Link
-              href={`/clients/${client.id}`}
-              className="hover:cursor-pointer"
-            >
-              <div className="text-primary font-medium text-base mb-3 border-b background-border pb-2">
-                {client.firstName} {client.lastName}
-              </div>
-              <dl className="grid gap-2">
-                {tableLists.slice(1).map((label) => {
-                  return (
-                    <div
-                      key={label}
-                      className="flex justify-between items-center text-sm"
-                    >
-                      <dt className="text-primary">{label}</dt>
-                    </div>
-                  );
-                })}
-              </dl>
-            </Link>
+            <div className="text-primary font-medium text-base mb-3 border-b background-border pb-2">
+              {client.firstName} {client.lastName}
+            </div>
+            <dl className="grid gap-2">
+              {tableLists.slice(1).map((label) => {
+                return (
+                  <div
+                    key={label}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <dt className="text-primary">{label}</dt>
+                  </div>
+                );
+              })}
+            </dl>
           </div>
         ))}
       </div>

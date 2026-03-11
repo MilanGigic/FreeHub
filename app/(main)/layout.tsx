@@ -35,7 +35,7 @@ function MainLayoutContent({
           <div className="sticky top-16 h-[calc(100vh-4rem)] z-20">
             <Sidebar />
           </div>
-          <main className="flex-1 p-4">{children}</main>
+          <main className="flex-1 md:p-4">{children}</main>
         </div>
       </div>
     </TaxProvider>

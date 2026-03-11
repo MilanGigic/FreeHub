@@ -6,7 +6,7 @@ import HoursWorked from "./Revenue/HoursWorked";
 
 export default function Revenue() {
   return (
-    <div className="w-full flex gap-2 md:gap-4 justify-between h-full">
+    <div className="w-full flex flex-col md:flex-row gap-2 md:gap-4 justify-between h-full">
       <Income />
       <Expenses />
       <div className="w-full flex flex-col gap-2 md:gap-4 h-full">
