@@ -126,14 +126,13 @@ export default function GoalsCardClient() {
     });
   };
 
-
   return (
     <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg">
       <div className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-3 h-full">
         <header className="flex items-center justify-between border-b-2 background-border pb-3">
           <div className="flex items-center gap-2">
             <Target size={14} className="primary-cyan" />
-            <h1 className="primary-slate uppercase font-semibold text-lg">
+            <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
               Savings Goals
             </h1>
           </div>
@@ -144,7 +143,7 @@ export default function GoalsCardClient() {
             <Plus size={12} /> Add Goal
           </button>
         </header>
-  
+
         {/* Add goal form */}
         {showForm && (
           <div className="flex flex-col gap-2 p-3 rounded-md bg-white/5 border border-white/10 text-xs">
@@ -198,94 +197,98 @@ export default function GoalsCardClient() {
             </button>
           </div>
         )}
-      {isPending ? (
-        <div className="flex justify-center items-center h-full w-full">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-(--accent-green)" />
-        </div>
-      ) : (
-        // Goals list
-        <div className="flex flex-col gap-3 overflow-y-auto max-h-72">
-          {goals.length === 0 && (
-            <p className="text-xs primary-slate text-center py-4">
-              No goals yet — add one above.
-            </p>
-          )}
-          {goals.map((goal) => {
-            const target = Number(goal.targetAmount);
-            const saved = calculateSavedAmount(
-              transactions,
-              goal.conservativeness,
-            );
-            const percent = Math.min(100, (saved / target) * 100);
-            const weekly = calculateWeeklyTarget(target, saved, goal.deadline);
-            
-            return (
-              <div
-                key={goal.id}
-                className="flex flex-col gap-1.5 p-3 rounded-md background-elevated border background-border"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-primary">
-                    {goal.name}
-                  </span>
-                  <button
-                    onClick={() => handleDelete(goal.id)}
-                    className="primary-slate hover:text-(--accent-red) transition-colors"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                </div>
+        {isPending ? (
+          <div className="flex justify-center items-center h-full w-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-(--accent-green)" />
+          </div>
+        ) : (
+          // Goals list
+          <div className="flex flex-col gap-3 overflow-y-auto max-h-72">
+            {goals.length === 0 && (
+              <p className="text-xs primary-slate text-center py-4">
+                No goals yet — add one above.
+              </p>
+            )}
+            {goals.map((goal) => {
+              const target = Number(goal.targetAmount);
+              const saved = calculateSavedAmount(
+                transactions,
+                goal.conservativeness,
+              );
+              const percent = Math.min(100, (saved / target) * 100);
+              const weekly = calculateWeeklyTarget(
+                target,
+                saved,
+                goal.deadline,
+              );
 
-                {/* Progress bar */}
-                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-(--accent-cyan) rounded-full transition-all duration-500"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span className="primary-cyan font-medium">
-                    ${saved.toLocaleString()}
-                  </span>
-                  <span>
-                    of ${target.toLocaleString()} ({percent.toFixed(0)}%)
-                  </span>
-                </div>
-
-                {weekly && (
-                  <p className="text-xs primary-slate">
-                    Save{" "}
-                    <span className="primary-amber">
-                      ${weekly.toFixed(0)}/wk
-                    </span>{" "}
-                    to hit deadline
-                  </p>
-                )}
-
-                {/* Conservativeness toggle */}
-                <div className="flex gap-1 mt-1">
-                  {(
-                    Object.keys(CONSERVATIVENESS_LABELS) as Conservativeness[]
-                  ).map((k) => (
+              return (
+                <div
+                  key={goal.id}
+                  className="flex flex-col gap-1.5 p-3 rounded-md background-elevated border background-border"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-primary">
+                      {goal.name}
+                    </span>
                     <button
-                    key={k}
-                    onClick={() => handleConservativeness(goal.id, k)}
-                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
-                        goal.conservativeness === k
-                          ? "border-(--accent-cyan) text-primary bg-(--accent-cyan)/10"
-                          : "border-white/10 primary-slate hover:border-white/20"
-                          }`}
+                      onClick={() => handleDelete(goal.id)}
+                      className="primary-slate hover:text-(--accent-red) transition-colors"
                     >
-                      {k.charAt(0).toUpperCase() + k.slice(1)}
+                      <Trash2 size={12} />
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-(--accent-cyan) rounded-full transition-all duration-500"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-xs text-gray-400">
+                    <span className="primary-cyan font-medium">
+                      ${saved.toLocaleString()}
+                    </span>
+                    <span>
+                      of ${target.toLocaleString()} ({percent.toFixed(0)}%)
+                    </span>
+                  </div>
+
+                  {weekly && (
+                    <p className="text-xs primary-slate">
+                      Save{" "}
+                      <span className="primary-amber">
+                        ${weekly.toFixed(0)}/wk
+                      </span>{" "}
+                      to hit deadline
+                    </p>
+                  )}
+
+                  {/* Conservativeness toggle */}
+                  <div className="flex gap-1 mt-1">
+                    {(
+                      Object.keys(CONSERVATIVENESS_LABELS) as Conservativeness[]
+                    ).map((k) => (
+                      <button
+                        key={k}
+                        onClick={() => handleConservativeness(goal.id, k)}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                          goal.conservativeness === k
+                            ? "border-(--accent-cyan) text-primary bg-(--accent-cyan)/10"
+                            : "border-white/10 primary-slate hover:border-white/20"
+                        }`}
+                      >
+                        {k.charAt(0).toUpperCase() + k.slice(1)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

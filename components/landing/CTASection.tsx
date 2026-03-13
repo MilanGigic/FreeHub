@@ -81,7 +81,7 @@ export default function CTASection() {
           </div>
         </div>
       </div>
-      <p className="primary-red mt-4 text-center font-semibold text-sm">
+      <p className="text-red-500 mt-4 text-center font-semibold text-sm">
         This is a high-level overview based on official IRS rules as of March
         2026 (tax year 2025/2026). Tax laws change annually (wage base,
         brackets, etc.). This is NOT tax advice. <br />

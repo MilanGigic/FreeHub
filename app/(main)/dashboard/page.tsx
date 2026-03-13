@@ -43,12 +43,12 @@ export default function DashboardPage() {
       ) : null}
 
       <div className="w-full h-full flex flex-col gap-4 primary-slate">
-        <div className="flex flex-col md:flex-row gap-4 md:h-[550px]">
+        <div className="flex flex-col xl:flex-row gap-4 xl:h-[550px]">
           <FinancesCard />
           <ClientsCard />
           <ProjectsCard />
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col xl:flex-row gap-4">
           <TasksCard />
           <ReportsCard />
           <MessagesCard />

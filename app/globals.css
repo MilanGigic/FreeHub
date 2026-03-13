@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "tailwindcss-animated";
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -49,62 +49,61 @@
 }
 @layer base {
   :root {
-    /* Light mode (default) */
+    /* Light mode */
     --bg-main: #ffffff;
-    --bg-elevated: #f6f8fa;
-    --bg-sidebar: #fafbfc;
-    --border-default: #d0d7de;
-    --border-interactive: #b1bac4;
+    --bg-elevated: #f9fafb;
+    --bg-sidebar: #f3f4f6;
+    --border-default: #e5e7eb;
+    --border-interactive: #d1d5db;
 
-    --text-primary: #1f2328;
-    --text-secondary: #656d76;
-    --text-tertiary: #8c959f;
-    --text-disabled: #d0d7de;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-tertiary: #6b7280;
+    --text-disabled: #d1d5db;
 
-    --accent-green: #1a7f37;
-    --accent-red: #d1242f;
-    --accent-cyan: #0969da;
-    --accent-amber: #bf8700;
-    --accent-purple: #8250df;
-    --accent-slate: #57606a;
+    --accent-green: #16a34a;
+    --accent-red: #dc2626;
+    --accent-cyan: #0891b2;
+    --accent-amber: #d97706;
+    --accent-purple: #7c3aed;
+    --accent-slate: #374151; /* ← was too grey, now readable dark */
 
-    --tag-income-bg: #dafbe1;
-    --tag-income-text: #1a7f37;
-    --tag-expense-bg: #ffebe9;
-    --tag-expense-text: #d1242f;
-    --tag-recurring-bg: #fff8c5;
-    --tag-recurring-text: #bf8700;
+    --tag-income-bg: #f0fdf4;
+    --tag-income-text: #16a34a;
+    --tag-expense-bg: #fef2f2;
+    --tag-expense-text: #dc2626;
+    --tag-recurring-bg: #fffbeb;
+    --tag-recurring-text: #d97706;
   }
 
   .dark {
     /* Dark mode */
-    --bg-main: #0a0e14;
-    --bg-elevated: #161b22;
-    --bg-sidebar: #0d1117;
-    --border-default: #21262d;
-    --border-interactive: #30363d;
+    --bg-main: #09090b;
+    --bg-elevated: #18181b;
+    --bg-sidebar: #09090b;
+    --border-default: #27272a;
+    --border-interactive: #3f3f46;
 
-    --text-primary: #e6edf3;
-    --text-secondary: #8b949e;
-    --text-tertiary: #6e7681;
-    --text-disabled: #484f58;
+    --text-primary: #fafafa;
+    --text-secondary: #d4d4d8;
+    --text-tertiary: #71717a;
+    --text-disabled: #3f3f46;
 
-    --accent-green: #34d399;
-    --accent-red: #f85149;
-    --accent-cyan: #2dd4bf;
-    --accent-amber: #d29922;
-    --accent-purple: #6366f1;
-    --accent-slate: #64748b;
+    --accent-green: #4ade80;
+    --accent-red: #f87171;
+    --accent-cyan: #22d3ee;
+    --accent-amber: #fbbf24;
+    --accent-purple: #a78bfa;
+    --accent-slate: #d4d4d8; /* ← light enough to read on dark bg */
 
-    --tag-income-bg: #2ea043;
-    --tag-income-text: #3fb950;
-    --tag-expense-bg: #a40e26;
-    --tag-expense-text: #f85149;
-    --tag-recurring-bg: #7d4e00;
-    --tag-recurring-text: #d29922;
+    --tag-income-bg: #052e16;
+    --tag-income-text: #4ade80;
+    --tag-expense-bg: #450a0a;
+    --tag-expense-text: #f87171;
+    --tag-recurring-bg: #451a03;
+    --tag-recurring-text: #fbbf24;
   }
 }
-
 @layer components {
   /* BACKGROUNDS */
   .background {

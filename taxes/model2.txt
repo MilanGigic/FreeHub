@@ -1,0 +1,35 @@
+The Model 2 Calculation (The "Double Deduction")
+
+To find your Taxable Base (the amount they actually tax), you do this:
+
+    Start with Total Income: 200,000 RSD.
+
+    Subtract 34% (Standard Expenses): 200,000×0.34=68,000 RSD.
+
+    Subtract the Fixed Tax-Free Amount: ≈66,733 RSD.
+
+    The Result: 200,000−68,000−66,733= 65,267 RSD.
+
+Only that 65,267 RSD gets taxed.
+
+From that remaining amount, the government takes:
+
+    10% for Income Tax.
+
+    24% for Pension (PIO).
+
+    10.3% for Health Insurance (unless you already have a job elsewhere).
+
+2. Comparison: Model 1 vs. Model 2
+
+Is Model 2 actually better for 200k? Let’s look at Model 1 for the same 200k:
+Feature	Model 1 (The "Safety Net") |	Model 2 (The "High Roller")
+Gross Income	200,000 RSD |	200,000 RSD
+Tax-Free Part	110,647 RSD |	66,733 RSD
+Expense Deduction	0  RSD |	68,000 RSD (34%)
+Amount to be Taxed	89,353 RSD |	65,267 RSD
+Income Tax Rate	20% |	10%
+
+The Minimum Health Fee: Even if your math says you owe 0 RSD in taxes because you earned very little, if you are unemployed, you must pay a minimum for health insurance (about 4,800 RSD per quarter in 2026) to keep your health card active.
+
+If you are already employed (you have a "Day Job"), you pay 0 RSD for health insurance on your freelance income. Your app needs a toggle: "Are you already employed?"

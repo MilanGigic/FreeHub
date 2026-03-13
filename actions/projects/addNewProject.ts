@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { projects } from "@/db/schema/schema";
+import { clients, projects } from "@/db/schema/schema";
 import { Client, ProjectForm, ProjectStatus, User } from "@/types/types";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export async function addNewProject(
   projectForm: ProjectForm,
@@ -26,14 +26,46 @@ export async function addNewProject(
     });
 
     const data = await db
-      .select()
+      .select({
+        id: projects.id,
+        userId: projects.userId,
+        clientId: projects.clientId,
+        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        name: projects.name,
+        description: projects.description,
+        totalRevenue: projects.totalRevenue,
+        totalExpenses: projects.totalExpenses,
+        totalProfit: projects.totalProfit,
+        totalMargin: projects.totalMargin,
+        totalHoursWorked: projects.totalHoursWorked,
+        status: projects.status,
+        createdAt: projects.createdAt,
+        updatedAt: projects.updatedAt,
+      })
       .from(projects)
-      .where(eq(projects.userId, user.id));
+      .where(eq(projects.userId, user.id))
+      .innerJoin(clients, eq(projects.clientId, clients.id));
 
     const clientProjects = await db
-      .select()
+      .select({
+        id: projects.id,
+        userId: projects.userId,
+        clientId: projects.clientId,
+        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        name: projects.name,
+        description: projects.description,
+        totalRevenue: projects.totalRevenue,
+        totalExpenses: projects.totalExpenses,
+        totalProfit: projects.totalProfit,
+        totalMargin: projects.totalMargin,
+        totalHoursWorked: projects.totalHoursWorked,
+        status: projects.status,
+        createdAt: projects.createdAt,
+        updatedAt: projects.updatedAt,
+      })
       .from(projects)
-      .where(eq(projects.clientId, client.id));
+      .where(eq(projects.clientId, client.id))
+      .innerJoin(clients, eq(projects.clientId, clients.id));
 
     console.log("New project added successfully:", data);
     return { success: true, data, clientProjects };

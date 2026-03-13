@@ -103,13 +103,13 @@ export default function NewProjectModal() {
 
   return (
     <form
-      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-20 md:top-25 right-0 primary-slate"
+      className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-12 right-0 primary-slate animate-flip-down animate-duration-1500 animate-ease-out"
       onSubmit={(e) => handleSubmit(e)}
     >
       <button onClick={() => setIsNewProjectModalOpen(false)}>
         <X
           size={40}
-          className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:primary-red"
+          className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red)"
         />
       </button>
       <div className="flex flex-col gap-2 md:gap-4 w-full border-b-2 background-border pb-4 background-elevated">

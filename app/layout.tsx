@@ -16,9 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Efficio",
+  title: "Freehub",
   description:
-    "Efficio — Run your freelance work and finances without the chaos.",
+    "Freehub — Run your freelance work and finances without the chaos.",
   icons: {
     icon: "/efficio-logo.png",
   },

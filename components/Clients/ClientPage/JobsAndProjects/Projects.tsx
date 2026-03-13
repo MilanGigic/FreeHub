@@ -77,7 +77,7 @@ export default function Projects() {
             <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
               Margin:
               <span
-                className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
+                className={`${Number(calculateProfitMargin(project)) >= 40 ? "primary-green" : Number(calculateProfitMargin(project)) >= 25 ? "primary-slate" : "primary-red"}`}
               >
                 {calculateProfitMargin(project)}%
               </span>

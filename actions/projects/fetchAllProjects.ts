@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { projects } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { clients, projects } from "@/db/schema";
+import { desc, eq, sql } from "drizzle-orm";
 
 export async function fetchAllProjects(userId: string) {
   if (!userId) {
@@ -11,9 +11,26 @@ export async function fetchAllProjects(userId: string) {
 
   try {
     const data = await db
-      .select()
+      .select({
+        id: projects.id,
+        userId: projects.userId,
+        clientId: projects.clientId,
+        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        name: projects.name,
+        description: projects.description,
+        totalRevenue: projects.totalRevenue,
+        totalExpenses: projects.totalExpenses,
+        totalProfit: projects.totalProfit,
+        totalMargin: projects.totalMargin,
+        totalHoursWorked: projects.totalHoursWorked,
+        status: projects.status,
+        createdAt: projects.createdAt,
+        updatedAt: projects.updatedAt,
+      })
       .from(projects)
-      .where(eq(projects.userId, userId));
+      .where(eq(projects.userId, userId))
+      .innerJoin(clients, eq(projects.clientId, clients.id))
+      .orderBy(desc(projects.createdAt));
     return { success: true, data };
   } catch (error) {
     console.error("Error fetching all projects:", error);

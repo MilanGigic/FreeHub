@@ -26,7 +26,7 @@ export default function ProjectProfitability() {
   return (
     <div className="w-full h-full flex flex-col gap-4 items-center border background-border rounded-lg background-elevated p-4">
       <header className="flex w-full justify-between items-center">
-        <h1 className="text-lg font-semibold primary-slate uppercase">
+        <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
           Project Profitability
         </h1>
         <div className="relative">

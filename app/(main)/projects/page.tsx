@@ -1,13 +1,51 @@
-import ProjectsHeader from "@/components/Projects/ProjectsHeader";
+"use client";
+
+import { useEffect } from "react";
+import { useAuth } from "@/lib/useAuth";
+import { useDataStore } from "@/lib/store/useDataStore";
+import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
+import { toast } from "react-toastify";
+// import { useUIStore } from "@/lib/store/useUIStore";
 import ProjectsMain from "@/components/Projects/ProjectsMain";
+import ProjectsHeader from "@/components/Projects/ProjectsHeader";
 
 export default function ProjectsPage() {
-  return (
-    <div className="w-full h-full flex flex-col gap-2 md:gap-4 relative">
-      <header>
-        <ProjectsHeader />
-      </header>
+  const { user } = useAuth();
+  const { projects, setProjects, totalRevenue, setTotalRevenue } =
+    useDataStore();
 
+  useEffect(() => {
+    if (projects.length === 0) return;
+    setTotalRevenue(
+      projects
+        .reduce((acc, project) => acc + Number(project.totalRevenue || 0), 0)
+        .toFixed(2)
+        .toString(),
+    );
+  }, [projects, setTotalRevenue]);
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+
+      const res = await fetchAllProjects(user.id);
+
+      if (!res.success) {
+        toast.error(res.error);
+      }
+
+      if (res.data) {
+        if (res.data.length > 0) {
+          setProjects(res.data);
+        }
+      }
+    })();
+  }, [setProjects, user]);
+
+  return (
+    <div className="background min-h-screen p-6 font-sans flex flex-col gap-8">
+      <ProjectsHeader projects={projects} totalRevenue={totalRevenue} />
+      {/* <ProjectsSearch /> */}
       <main>
         <ProjectsMain />
       </main>

@@ -1,0 +1,29 @@
+The Model 1 Calculation (The "Safety Net")
+
+To find your Taxable Base (the amount they actually tax), you do this:
+
+    Start with Total Income: 200,000 RSD.
+
+    Subtract 0% (Standard Expenses): 0 RSD. (Model 1 does not allow this deduction).
+
+    Subtract the Fixed Tax-Free Amount: ≈110,647 RSD.
+
+    The Result: 200,000−110,647= 89,353 RSD.
+
+Only that 89,353 RSD gets taxed.
+
+From that remaining amount, the government takes:
+
+    20% for Income Tax.
+
+    24% for Pension (PIO).
+
+    10.3% for Health Insurance (unless you already have a job elsewhere).
+
+What about "Zero" income?
+
+If a user enters 0 RSD for a quarter:
+
+    If they have a day job: They owe 0 RSD. They don't even have to file a report.
+
+    If they are unemployed: They still owe the Health Insurance minimum (approx 4,800 RSD) for that quarter to keep their medical insurance active. Many freelancers miss this and end up with "hidden" debt!

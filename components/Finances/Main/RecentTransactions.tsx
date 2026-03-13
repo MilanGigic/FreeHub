@@ -49,8 +49,8 @@ export default function RecentTransactions() {
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 w-full h-full flex flex-col">
-      <header className="flex items-center justify-between w-full border-b background-border pb-4">
-        <h1 className="primary-slate uppercase font-semibold text-lg">
+      <header className="flex flex-col gap-2 items-start justify-between w-full border-b background-border pb-4">
+        <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
           Recent Transactions
         </h1>
 

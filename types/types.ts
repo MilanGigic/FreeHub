@@ -97,6 +97,7 @@ export interface Project {
   id: string;
   userId: string;
   clientId: string;
+  clientName: string;
   name: string;
   description: string | null;
   totalRevenue: string | null;

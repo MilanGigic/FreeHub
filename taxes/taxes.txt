@@ -1,0 +1,151 @@
+The Model 1 Calculation (The "Safety Net")
+
+To find your Taxable Base (the amount they actually tax), you do this:
+
+    Start with Total Income: 200,000 RSD.
+
+    Subtract 0% (Standard Expenses): 0 RSD. (Model 1 does not allow this deduction).
+
+    Subtract the Fixed Tax-Free Amount: ≈110,647 RSD.
+
+    The Result: 200,000−110,647= 89,353 RSD.
+
+Only that 89,353 RSD gets taxed.
+
+From that remaining amount, the government takes:
+
+    20% for Income Tax.
+
+    24% for Pension (PIO).
+
+    10.3% for Health Insurance (unless you already have a job elsewhere).
+
+What about "Zero" income?
+
+If a user enters 0 RSD for a quarter:
+
+    If they have a day job: They owe 0 RSD. They don't even have to file a report.
+
+    If they are unemployed: They still owe the Health Insurance minimum (approx 4,800 RSD) for that quarter to keep their medical insurance active. Many freelancers miss this and end up with "hidden" debt!
+
+The Model 2 Calculation (The "Double Deduction")
+
+To find your Taxable Base (the amount they actually tax), you do this:
+
+    Start with Total Income: 200,000 RSD.
+
+    Subtract 34% (Standard Expenses): 200,000×0.34=68,000 RSD.
+
+    Subtract the Fixed Tax-Free Amount: ≈66,733 RSD.
+
+    The Result: 200,000−68,000−66,733= 65,267 RSD.
+
+Only that 65,267 RSD gets taxed.
+
+From that remaining amount, the government takes:
+
+    10% for Income Tax.
+
+    24% for Pension (PIO).
+
+    10.3% for Health Insurance (unless you already have a job elsewhere).
+
+2. Comparison: Model 1 vs. Model 2
+
+Is Model 2 actually better for 200k? Let’s look at Model 1 for the same 200k:
+Feature	Model 1 (The "Safety Net") |	Model 2 (The "High Roller")
+Gross Income	200,000 RSD |	200,000 RSD
+Tax-Free Part	110,647 RSD |	66,733 RSD
+Expense Deduction	0  RSD |	68,000 RSD (34%)
+Amount to be Taxed	89,353 RSD |	65,267 RSD
+Income Tax Rate	20% |	10%
+
+The Minimum Health Fee: Even if your math says you owe 0 RSD in taxes because you earned very little, if you are unemployed, you must pay a minimum for health insurance (about 4,800 RSD per quarter in 2026) to keep your health card active.
+
+If you are already employed (you have a "Day Job"), you pay 0 RSD for health insurance on your freelance income. Your app needs a toggle: "Are you already employed?"
+
+
+The "Magic Number" (The Break-even Point)
+
+As a developer, you can hardcode a logic trigger. In 2026, the "break-even" point is approximately 133,000 RSD per quarter.
+
+    If a user earns LESS than ~133,000 RSD: Model 1 is almost always cheaper because the high tax-free threshold covers most of their income.
+
+    If a user earns MORE than ~133,000 RSD: Model 2 becomes significantly cheaper because the 34% expense deduction starts saving them more than the higher threshold of Model 1.
+
+One nuance to remember for your code:
+
+In Model 1, the 20% tax rate is quite high. In Model 2, the tax rate is only 10%. This is why as soon as you start earning decent money, Model 2 becomes the "pro" choice.
+
+| Feature              | Model 1 (The "Safety Net") | Model 2 (The "High Roller") |
+|----------------------|----------------------------|-----------------------------|
+| Gross Income         | 200,000 RSD                | 200,000 RSD                 |
+| Tax-Free Part        | 110,647 RSD                | 66,733 RSD                  |
+| Expense Deduction    | 0 RSD                      | 68,000 RSD (34%)            |
+| Amount to be Taxed   | 89,353 RSD                 | 65,267 RSD                  |
+| Income Tax Rate      | 20%                        | 10%                         |
+
+-------------------------------------------------------------------------------------------
+
+1. Paušalac (The "Fixed Fee" Model)
+
+This is the most popular choice for Serbian freelancers who earn between 200,000 RSD and 500,000 RSD per month.
+The Logic:
+
+Instead of looking at what you actually earned, the government "guesses" your income based on your location and industry (e.g., an IT consultant in Belgrade is "guessed" to earn more than one in a smaller town). They give you a fixed monthly bill.
+The Math Example:
+
+Imagine you earn 300,000 RSD every month.
+
+    Fixed Bill: The government sends you a "Rešenje" (Decision) saying your monthly tax + contributions are, let's say, 35,000 RSD.
+
+    Your Income: Whether you earn 100,000 RSD or 450,000 RSD that month, you pay exactly 35,000 RSD.
+
+    The Result: If you earn a lot, your effective tax rate is tiny (e.g., only ~11%).
+
+Pay attention to:
+
+    The 6 Million Limit: If you earn more than 6,000,000 RSD in a calendar year (Jan–Dec), you are kicked out of Paušal and forced to become a Knjigaš.
+
+    The 8 Million Limit: If you earn more than 8,000,000 RSD in any 12-month rolling window, you must join the VAT (PDV) system.
+
+2. Knjigaš (The "Real Profit" Model)
+
+This is for the "high-level" freelancers or those who have lots of expenses (like buying expensive hardware, renting an office, or hiring others).
+The Logic:
+
+You pay tax only on your Profit (Income−Expenses). You must hire a bookkeeper (knjigovođa) to track every receipt.
+The Math Example (2026 Rules):
+
+Let's say you earn 600,000 RSD in a month.
+
+    Expenses: You spend 100,000 RSD on office rent, equipment, and software.
+
+    Personal Salary (Lična Zarada): You decide to pay yourself a "salary" of 52,000 RSD (the 2026 minimum base). You pay about 18,000 RSD in taxes on that salary.
+
+    The Profit: Your remaining profit is 600,000−100,000−52,000=448,000 RSD.
+
+    Profit Tax: You pay a flat 10% on that profit (44,800 RSD).
+
+    The Result: You only pay for what you actually "keep."
+
+What people often miss (The "Path B" Gotchas)
+
+1. The Independence Test (Test Samostalnosti)
+
+This is only for Path B. If you have only one big client (like a US company) and you work for them 40 hours a week, the tax office might say: "You aren't a business, you're an employee trying to avoid high taxes." * App Feature Idea: Create a "Checklist" in your app where users can tick off the 9 criteria to see if they are "safe."
+2. The "Hidden" ECO Tax
+
+Every registered Preduzetnik (Paušalac or Knjigaš) must file a "Nature Protection" tax return by April 30th. It’s only 5,000 RSD/year for most, but if you don't file the form (online at the LPA portal), the fines are huge.
+3. Virtual Office Costs
+
+If you live in a high-tax municipality (like Vračar, Belgrade), your Paušal bill will be very high. Many freelancers pay for a "Virtual Office" in a cheaper town to lower their monthly fixed bill legally.
+
+
+
+| Feature          | Paušalac                            | Knjigaš                          |
+|------------------|-------------------------------------|----------------------------------|
+| Best for         | High income / Low expenses          | Very high income / High expenses |
+| Bookkeeper?      | Not required (but helpful)          | Mandatory                        |
+| Limit            | 6m RSD/year                         | No limit                         |
+| Income tracking  | Keep a "KPO book" (list of invoices)| Full accounting required         |   

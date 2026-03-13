@@ -1,4 +1,3 @@
-// components/finances/CashFlowSimulator.tsx
 "use client";
 import { useState, useTransition, useMemo, useEffect } from "react";
 import { commitTransaction } from "@/actions/finances/commitTransaction";
@@ -54,7 +53,7 @@ function deriveTaxRate(entityType: string | null): number {
   return 0.3; // sole proprietor default (SE tax + income tax)
 }
 
-export default function CashFlowSimulator() {
+export default function TransactionSimulator() {
   const { user } = useAuth();
   const [form, setForm] = useState<SimulationInput>(EMPTY_FORM);
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -134,7 +133,7 @@ export default function CashFlowSimulator() {
         <header className="flex items-center justify-between border-b-2 background-border pb-3">
           <div className="flex items-center gap-2">
             <Zap size={14} className="text-(--accent-cyan)" />
-            <h1 className="primary-slate uppercase font-semibold text-lg">
+            <h1 className="text-lg font-semibold tracking-wider text-primary uppercase">
               Cash Flow Impact Simulator
             </h1>
           </div>

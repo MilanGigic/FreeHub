@@ -1,6 +1,7 @@
-Clients page:
-  - Revenue this month shows 3 times the actual revenue -- Profit displays good data tho
-  - Expenses this month are not showing at all
-  - Safe to spend number is bad as well
-
-Only backend math bugs left
+TODO:
+  - Switch from USA market being main market to Serbia market being main market
+  - Implement Serbian language, and the switcher where user can choose between english and serbian language
+  - Change Finances page look, its not very readable at the moment, users can find it confusing --- Look for some template to use as starting point, focus on analytics/dashboard/admin dashboard templates.
+  - Work on caching - gonna have to watch some youtube videos and tutorials on this because I still don't quite understand the concept of caching
+  - Implement loading states
+  - Pagination doesn't work, user can click on next page even tho there is 0 or 1 page, and can keep clicking after

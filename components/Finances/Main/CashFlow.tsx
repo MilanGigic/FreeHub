@@ -130,7 +130,7 @@ export default function CashFlow() {
   return (
     <div className="col-span-2 w-full flex flex-col border background-border rounded-lg p-4 background-elevated gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold primary-slate uppercase">
+        <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
           Cash Flow Forecast
         </h1>
         <div className="flex gap-2">
