@@ -37,7 +37,7 @@ export default function JobsAndProjectsSlideOver() {
 
   return (
     <div
-      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 ${selectedProject.status === "completed" ? "border-(--accent-green)" : selectedProject.status === "in_progress" ? "border-(--accent-amber)" : selectedProject.status === "cancelled" ? "border-(--accent-red)" : selectedProject.status === "on_hold" ? "border-(--accent-slate)" : selectedProject.status === "not_started" ? "border-(--accent-slate)" : selectedProject.status === "active" ? "border-(--accent-purple)" : "border-(--accent-red)"} p-4`}
+      className={`fixed top-14 right-0 h-full w-full max-w-sm background-elevated z-100 border-l-2 animate-fade-left animate-duration-500 animate-ease-out ${selectedProject.status === "completed" ? "border-(--accent-green)" : selectedProject.status === "in_progress" ? "border-(--accent-amber)" : selectedProject.status === "cancelled" ? "border-(--accent-red)" : selectedProject.status === "on_hold" ? "border-(--accent-slate)" : selectedProject.status === "not_started" ? "border-(--accent-slate)" : selectedProject.status === "active" ? "border-(--accent-purple)" : "border-(--accent-red)"} p-4`}
     >
       {isJobsAndProjectsSlideOverOpen ? (
         <div className="flex flex-col h-full">

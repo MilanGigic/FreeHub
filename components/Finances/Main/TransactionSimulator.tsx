@@ -13,11 +13,11 @@ import {
   CheckCircle,
   RotateCcw,
 } from "lucide-react";
-import type { Transaction } from "@/types/types";
 import { toast } from "react-toastify";
 import { useAuth } from "@/lib/useAuth";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
+import { useDataStore } from "@/lib/store/useDataStore";
 
 const EMPTY_FORM: SimulationInput = {
   type: "expense",
@@ -59,7 +59,7 @@ export default function TransactionSimulator() {
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [committed, setCommitted] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { transactions, setTransactions } = useDataStore();
 
   useEffect(() => {
     (async () => {
@@ -73,7 +73,7 @@ export default function TransactionSimulator() {
         toast.error(res.error?.message || "An error occurred");
       }
     })();
-  }, [user]);
+  }, [user, setTransactions]);
 
   const { safeToSpend, netProfit, entityType } = useTaxProfileStore();
   const taxRate = deriveTaxRate(entityType);

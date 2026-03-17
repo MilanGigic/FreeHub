@@ -4,11 +4,12 @@ import { addNewClient } from "@/actions/clients/addNewClient";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useAuth } from "@/lib/useAuth";
 import { ClientForm } from "@/types/types";
+import { X } from "lucide-react";
 import { redirect } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 
-export default function NewClientModal() {
+export default function NewClientModal({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const { setClients } = useClientStore();
   const [clientForm, setClientForm] = useState<ClientForm>({
@@ -76,8 +77,11 @@ export default function NewClientModal() {
   }
 
   return (
-    <div className="max-w-2xl w-full h-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4">
-      <div className="w-full h-full flex flex-col gap-2 md:gap-4">
+    <div className="w-full flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 absolute top-12 right-0 primary-slate animate-flip-down animate-duration-1500 animate-ease-out z-50 max-h-[calc(100vh-6rem)] overflow-y-auto">
+      <button onClick={onClose}>
+        <X size={20} className="text-primary hover:cursor-pointer" />
+      </button>
+      <div className="w-full flex flex-col gap-2 md:gap-4">
         <div className="w-full flex justify-center items-center">
           <h1 className="text-2xl font-bold uppercase text-primary">
             Add New Client

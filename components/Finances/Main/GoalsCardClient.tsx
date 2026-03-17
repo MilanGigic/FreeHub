@@ -12,10 +12,11 @@ import {
   calculateWeeklyTarget,
 } from "@/utils/calculateGoalProgress";
 import { Trash2, Plus, Target } from "lucide-react";
-import { Conservativeness, Goal, Transaction } from "@/types/types";
+import { Conservativeness, Goal } from "@/types/types";
 import { useAuth } from "@/lib/useAuth";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
 import { toast } from "react-toastify";
+import { useDataStore } from "@/lib/store/useDataStore";
 
 const CONSERVATIVENESS_LABELS: Record<Conservativeness, string> = {
   conservative: "Conservative (50%)",
@@ -25,11 +26,10 @@ const CONSERVATIVENESS_LABELS: Record<Conservativeness, string> = {
 
 export default function GoalsCardClient() {
   const { user } = useAuth();
-
+  const { transactions, setTransactions } = useDataStore();
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [form, setForm] = useState({
     name: "",
     targetAmount: "",
@@ -57,7 +57,7 @@ export default function GoalsCardClient() {
         toast.error(transactionsRes.error?.message || "An error occurred");
       }
     })();
-  }, [user]);
+  }, [user, setTransactions]);
 
   const handleCreate = () => {
     if (!form.name || !form.targetAmount) return;

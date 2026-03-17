@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { projectFinance, projects, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 
 export async function addExpense(
   userId: string,
@@ -58,6 +59,8 @@ export async function addExpense(
       .where(eq(projects.id, projectId))
       .returning();
 
+    revalidateTag("clients-page-metrics", "max");
+    revalidateTag("dashboard-data", "max");
     return { success: true, data: newExpense, projectData: updatedProject };
   } catch (error) {
     console.error("Error adding expense:", error);

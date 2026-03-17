@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { projectFinance, projects, transactions } from "@/db/schema";
 import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 
 export async function addIncome(
   userId: string,
@@ -41,6 +42,8 @@ export async function addIncome(
       where: eq(projects.id, projectId),
     });
 
+    revalidateTag("clients-page-metrics", "max");
+    revalidateTag("dashboard-data", "max");
     return { success: true, data, projectData: updatedProject };
   } catch (error) {
     console.error("Error adding revenue:", error);

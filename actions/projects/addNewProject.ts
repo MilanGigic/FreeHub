@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { clients, projects } from "@/db/schema/schema";
 import { Client, ProjectForm, ProjectStatus, User } from "@/types/types";
 import { eq, sql } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 
 export async function addNewProject(
   projectForm: ProjectForm,
@@ -68,6 +69,7 @@ export async function addNewProject(
       .innerJoin(clients, eq(projects.clientId, clients.id));
 
     console.log("New project added successfully:", data);
+    revalidateTag("dashboard-data", "max");
     return { success: true, data, clientProjects };
   } catch (error) {
     console.error("Error adding new project:", error);

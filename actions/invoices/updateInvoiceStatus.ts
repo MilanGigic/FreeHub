@@ -5,6 +5,7 @@ import { invoices, projects, transactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { InvoiceStatus } from "@/types/types";
 import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
+import { revalidateTag } from "next/cache";
 
 export async function updateInvoiceStatus(
   id: string,
@@ -72,6 +73,8 @@ export async function updateInvoiceStatus(
       ),
     });
 
+    revalidateTag("clients-page-metrics", "max");
+    revalidateTag("dashboard-data", "max");
     return { success: true, data, projectData };
   } catch (error) {
     console.error("Error updating invoice status:", error);

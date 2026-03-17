@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { clients } from "@/db/schema";
 import { ClientForm } from "@/types/types";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 
 export async function addNewClient(clientForm: ClientForm, userId: string) {
   const { firstName, lastName, email, currency, status, startDate, endDate } =
@@ -34,6 +35,7 @@ export async function addNewClient(clientForm: ClientForm, userId: string) {
       .from(clients)
       .where(eq(clients.userId, userId));
 
+    revalidateTag("dashboard-data", "max");
     return { success: true, data };
   } catch (error) {
     console.error("Error adding new client:", error);

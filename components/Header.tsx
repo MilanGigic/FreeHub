@@ -98,10 +98,6 @@ export default function Header() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Bell
-            size={40}
-            className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
-          />
           {user ? (
             <Link href="/profile">
               <User
@@ -117,10 +113,6 @@ export default function Header() {
               Register
             </Link>
           )}
-          <ChevronDown
-            size={40}
-            className="px-2 text-primary cursor-pointer hover:primary-cyan transition-all"
-          />
         </div>
 
         <ThemeToggle />

@@ -92,11 +92,6 @@ export default function ProjectProfitability() {
           ))}
         </div>
       </section>
-      <footer className="flex w-full">
-        <button className="font-semibold text-sm flex items-center primary-slate gap-2 hover:underline transition-all cursor-pointer">
-          <Pen className="w-4 h-4" /> Add New Project
-        </button>
-      </footer>
     </div>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Clock } from "lucide-react";
 import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useAuth } from "@/lib/useAuth";
+import { fetchCalendarEntriesForMonth } from "@/actions/projects/calendar/fetchCalendarEntriesForMonth";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -48,7 +50,34 @@ function getCalendarDays(year: number, month: number) {
   return days;
 }
 
+/** Map from "year-month-day" to total hours for that day */
+function buildHoursByDay(
+  entries: { date: Date; hoursWorked: number }[],
+  year: number,
+  month: number,
+): { hoursByDay: Record<string, number>; monthlyTotal: number } {
+  const hoursByDay: Record<string, number> = {};
+  let monthlyTotal = 0;
+  for (const e of entries) {
+    const d = e.date instanceof Date ? e.date : new Date(e.date);
+    if (d.getFullYear() !== year || d.getMonth() !== month) continue;
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    hoursByDay[key] = (hoursByDay[key] ?? 0) + e.hoursWorked;
+    monthlyTotal += e.hoursWorked;
+  }
+  return { hoursByDay, monthlyTotal };
+}
+
+const DOT_COLORS = [
+  "bg-[#3b82f6]", // blue
+  "bg-[var(--accent-green)]",
+  "bg-teal-400",
+  "bg-[var(--accent-purple)]",
+  "bg-zinc-500",
+];
+
 export default function ProjectCalendar() {
+  const { user } = useAuth();
   const { selectedProject, selectedDate, setSelectedDate } = useProjectStore();
 
   const projectCreatedAt = useMemo(() => {
@@ -63,17 +92,55 @@ export default function ProjectCalendar() {
       : new Date(),
   );
   const [today, setToday] = useState<Date | null>(null);
+  const [monthEntries, setMonthEntries] = useState<
+    { date: Date; hoursWorked: number }[]
+  >([]);
 
   useEffect(() => {
-    // Defer client-only "today" to after paint to avoid server/client date mismatch (hydration)
     const id = requestAnimationFrame(() => setToday(new Date()));
     return () => cancelAnimationFrame(id);
   }, []);
 
-  if (!selectedProject) return null;
-
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
+
+  useEffect(() => {
+    if (!selectedProject || !user) {
+      void Promise.resolve().then(() => setMonthEntries([]));
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const result = await fetchCalendarEntriesForMonth(
+        user.id,
+        selectedProject.id,
+        year,
+        month,
+      );
+      if (cancelled) return;
+      if (result.success && result.data?.length) {
+        setMonthEntries(
+          result.data.map((e) => ({
+            date: e.date instanceof Date ? e.date : new Date(e.date),
+            hoursWorked: e.hoursWorked,
+          })),
+        );
+      } else {
+        setMonthEntries([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedProject, user, year, month]);
+
+  const { hoursByDay, monthlyTotal } = useMemo(
+    () => buildHoursByDay(monthEntries, year, month),
+    [monthEntries, year, month],
+  );
+
+  if (!selectedProject) return null;
+
   const calendarDays = getCalendarDays(year, month);
 
   const goPrev = () =>
@@ -82,33 +149,35 @@ export default function ProjectCalendar() {
     setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
 
   return (
-    <div className="p-4 rounded-lg w-full h-full mr-3 flex flex-col gap-2">
-      <h1 className="text-sm primary-slate text-center uppercase font-semibold">
-        Click on the calendar to pick a date
-      </h1>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          type="button"
-          onClick={goPrev}
-          className="p-2 rounded-lg border-interactive border hover:background-elevated text-primary transition-colors"
-          aria-label="Previous month"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
-        <span className="text-lg font-semibold text-primary">
+    <div className="p-4 rounded-lg w-full h-full flex flex-col gap-3 background-elevated border background-border">
+      {/* Header: Month year + nav (left, 1, right) */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-primary">
           {MONTHS[month]} {year}
-        </span>
-        <button
-          type="button"
-          onClick={goNext}
-          className="p-2 rounded-lg border-interactive border hover:background-elevated text-primary transition-colors"
-          aria-label="Next month"
-        >
-          <ChevronRightIcon size={20} />
-        </button>
+        </h2>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
+            aria-label="Previous month"
+          >
+            <ChevronLeftIcon size={18} />
+          </button>
+          <span className="text-xs text-tertiary px-2">{month + 1}</span>
+          <button
+            type="button"
+            onClick={goNext}
+            className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
+            aria-label="Next month"
+          >
+            <ChevronRightIcon size={18} />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      {/* Weekday row */}
+      <div className="grid grid-cols-7 gap-px">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
@@ -117,34 +186,65 @@ export default function ProjectCalendar() {
             {day}
           </div>
         ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-px flex-1 min-h-0 auto-rows-fr">
         {calendarDays.map((day, i) => {
           if (day === null) {
-            return <div key={`empty-${i}`} className="aspect-square" />;
+            return <div key={`empty-${i}`} className="min-h-[64px]" />;
           }
           const cellDate = new Date(year, month, day);
+          const dayKey = `${year}-${month}-${day}`;
+          const hours = hoursByDay[dayKey] ?? 0;
+          const isSelected = selectedDate
+            ? isSameDay(cellDate, selectedDate)
+            : false;
           const isToday = today ? isSameDay(cellDate, today) : false;
-          const isProjectStart =
-            projectCreatedAt && isSameDay(cellDate, projectCreatedAt);
+          const dotColor = DOT_COLORS[day % DOT_COLORS.length];
+
           return (
-            <div
+            <button
+              type="button"
               key={`${year}-${month}-${day}`}
               onClick={() =>
-                selectedDate?.getDay() === day
+                selectedDate && isSameDay(cellDate, selectedDate)
                   ? setSelectedDate(null)
                   : setSelectedDate(cellDate)
               }
               className={`
-                h-36 flex items-center justify-center rounded-lg text-sm font-medium border
-                ${isProjectStart ? "bg-(--accent-cyan) text-white" : ""}
-                ${!isProjectStart && isToday ? "border-2 bg-(--accent-green) text-white" : ""}
-                ${!isProjectStart && !isToday ? "text-primary hover:background-elevated" : ""}
-                ${selectedDate?.getDate() === cellDate.getDate() ? "bg-(--accent-purple) text-white" : ""}
-                `}
+                min-h-[64px] flex flex-col items-center justify-start pt-1.5 pb-1 rounded border background-border
+                text-sm font-medium transition-colors
+                ${isSelected ? "bg-zinc-600/40 dark:bg-zinc-500/30 text-primary" : ""}
+                ${!isSelected ? "background hover:background-elevated text-primary" : ""}
+              `}
             >
-              {day}
-            </div>
+              <span
+                className={
+                  isToday && !isSelected ? "text-(--accent-green)" : ""
+                }
+              >
+                {day}
+              </span>
+              {hours > 0 && (
+                <div className="flex flex-col items-center mt-auto gap-0.5">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}
+                  />
+                  <span className="text-xs text-tertiary">{hours}h</span>
+                </div>
+              )}
+            </button>
           );
         })}
+      </div>
+
+      {/* Monthly total */}
+      <div className="flex items-center gap-2 pt-2 border-t background-border">
+        <Clock className="w-4 h-4 text-tertiary" />
+        <span className="text-sm font-medium text-primary">
+          {monthlyTotal}h
+        </span>
       </div>
     </div>
   );

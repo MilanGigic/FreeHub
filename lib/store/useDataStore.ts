@@ -1,4 +1,4 @@
-import { Project, ProjectCalendar } from "@/types/types";
+import { Project, ProjectCalendar, Transaction } from "@/types/types";
 import { create } from "zustand";
 
 type DataStore = {
@@ -12,6 +12,8 @@ type DataStore = {
   setAvgMonthlyExpenses: (avgMonthlyExpenses: string) => void;
   balance: string;
   setBalance: (balance: string) => void;
+  transactions: Transaction[];
+  setTransactions: (transactions: Transaction[]) => void;
 };
 
 export const useDataStore = create<DataStore>((set) => ({
@@ -27,4 +29,6 @@ export const useDataStore = create<DataStore>((set) => ({
     set({ avgMonthlyExpenses }),
   balance: "0",
   setBalance: (balance: string) => set({ balance }),
+  transactions: [],
+  setTransactions: (transactions: Transaction[]) => set({ transactions }),
 }));

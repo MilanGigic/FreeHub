@@ -1,6 +1,5 @@
 import ClientsHeader from "@/components/Clients/Header/ClientsHeader";
 import ClientsMain from "@/components/Clients/ClientsMain";
-import NewClientModal from "@/components/Clients/NewClientModal";
 
 export const dynamic = "force-dynamic";
 
@@ -10,14 +9,13 @@ export default function ClientsPage() {
       <header>
         <ClientsHeader />
       </header>
-
-      <main className="w-full flex justify-center items-center">
-        <NewClientModal />
+      <main className="w-full">
+        <ClientsMain />
       </main>
 
-      <footer className="w-full">
-        <ClientsMain />
-      </footer>
+      {/* <main className="w-full flex justify-center items-center">
+        <NewClientModal />
+      </main> */}
     </div>
   );
 }

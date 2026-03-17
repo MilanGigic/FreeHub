@@ -5,14 +5,44 @@ import { fetchExistingEntries } from "@/actions/projects/calendar/fetchExistingE
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { ProjectCalendar } from "@/types/types";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+function isToday(d: Date) {
+  const t = new Date();
+  return (
+    d.getFullYear() === t.getFullYear() &&
+    d.getMonth() === t.getMonth() &&
+    d.getDate() === t.getDate()
+  );
+}
+
+function formatHeaderDate(d: Date) {
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+}
 
 export default function CalendarEntries() {
   const { user } = useAuth();
   const {
     selectedProject,
     selectedDate,
+    setSelectedDate,
     note,
     setNote,
     hoursWorked,
@@ -22,140 +52,166 @@ export default function CalendarEntries() {
   const [existingEntries, setExistingEntries] = useState<ProjectCalendar[]>([]);
 
   useEffect(() => {
-    if (!selectedProject || !selectedDate || !user) return;
+    if (!selectedProject || !selectedDate || !user) {
+      void Promise.resolve().then(() => setExistingEntries([]));
+      return;
+    }
+    let cancelled = false;
     (async () => {
       const entries = await fetchExistingEntries(
         user.id,
         selectedProject.id,
         selectedDate,
       );
-      if (entries.success) {
-        if (entries.data) {
-          setExistingEntries(entries.data);
-        }
+      if (cancelled) return;
+      if (entries.success && entries.data) {
+        setExistingEntries(entries.data);
       } else {
-        toast.error(
-          entries.error || "An error occurred while fetching existing entries",
-        );
+        setExistingEntries([]);
+        if (entries.success === false && entries.error) {
+          const msg =
+            typeof entries.error === "string"
+              ? entries.error
+              : "Failed to load entries";
+          toast.error(msg);
+        }
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedProject, selectedDate, user]);
 
   if (!selectedProject) return null;
 
-  const dateValue = selectedDate
-    ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`
-    : "";
+  const totalHours = existingEntries.reduce((sum, e) => sum + e.hoursWorked, 0);
+  const entryLabel =
+    existingEntries.length === 1
+      ? "1 entry"
+      : `${existingEntries.length} entries`;
+
+  const goPrevDay = () => {
+    if (!selectedDate) return;
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() - 1);
+    setSelectedDate(d);
+  };
+  const goNextDay = () => {
+    if (!selectedDate) return;
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + 1);
+    setSelectedDate(d);
+  };
 
   const handleAddEntry = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!selectedProject || !selectedDate || !hoursWorked || !user) return;
+    if (
+      !selectedProject ||
+      !selectedDate ||
+      hoursWorked == null ||
+      hoursWorked <= 0 ||
+      !user
+    )
+      return;
 
     const result = await addEntryToCalendar(
       user.id,
       selectedProject.id,
       selectedDate,
-      note,
+      note.trim() || "No description",
       hoursWorked,
     );
 
-    if (!result.newEntries) return;
-    setExistingEntries(result.newEntries.data || []);
-
+    if (result.newEntries) {
+      setExistingEntries(result.newEntries.data || []);
+    }
     if (result.success) {
-      toast.success("Entry added successfully");
+      toast.success("Entry added");
       setNote("");
       setHoursWorked(null);
     } else {
-      toast.error(result.error || "An error occurred while adding entry");
+      const errMsg =
+        result.error instanceof Error
+          ? result.error.message
+          : (result.error as string) || "Failed to add entry";
+      toast.error(errMsg);
       setNote("");
       setHoursWorked(null);
-      return;
     }
   };
 
-  return (
-    <div className="w-full h-full flex flex-col gap-2 md:gap-4">
-      <header className="flex flex-col gap-2 md:gap-4 px-4">
-        <h1 className="text-primary font-semibold text-center md:text-left uppercase">
-          Existing Entries: {existingEntries.length}
-        </h1>
+  if (!selectedDate) {
+    return (
+      <div className="w-full h-full flex flex-col gap-3 p-4 background-elevated border background-border rounded-lg items-center justify-center text-tertiary">
+        <p className="text-sm">Select a day on the calendar</p>
+      </div>
+    );
+  }
 
-        <div className="w-full max-w-[800px] mx-auto overflow-x-auto">
-          <div className="flex gap-2 md:gap-4 flex-nowrap min-h-0 pb-2">
-            {existingEntries.map((entry) => (
-              <div
-                key={entry.id}
-                onClick={() => {
-                  if (
-                    note === entry.note &&
-                    hoursWorked === entry.hoursWorked
-                  ) {
-                    setNote("");
-                    setHoursWorked(null);
-                  } else {
-                    setNote(entry.note);
-                    setHoursWorked(entry.hoursWorked);
-                  }
-                }}
-                className={`flex flex-col gap-2 md:gap-4 border background-border background-elevated p-4 rounded-lg justify-between cursor-pointer hover:bg-(--accent-green)/20 transition-all shrink-0 min-w-[200px] w-[200px] ${
-                  note === entry.note && hoursWorked === entry.hoursWorked
-                    ? "bg-(--accent-green)/20"
-                    : ""
-                }`}
-              >
-                <h2 className="primary-slate">
-                  Date:{" "}
-                  <span className="text-primary font-semibold">
-                    {entry.date.toLocaleDateString()}
-                  </span>
-                </h2>
-                <p className="primary-slate">
-                  Note: <span className="text-primary">{entry.note}</span>
-                </p>
-                <p className="primary-slate">
-                  Hours Worked:{" "}
-                  <span className="text-primary font-semibold">
-                    {entry.hoursWorked}
-                  </span>
-                </p>
-              </div>
-            ))}
+  return (
+    <div className="w-full h-full flex flex-col gap-4 p-4 background-elevated border background-border rounded-lg min-h-0">
+      {/* Header: "Today March 13" + nav arrows + list icon */}
+      <div className="flex items-center justify-between gap-2 shrink-0">
+        <h2 className="text-primary font-semibold">
+          {isToday(selectedDate) ? "Today " : ""}
+          {formatHeaderDate(selectedDate)}
+        </h2>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={goPrevDay}
+            className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
+            aria-label="Previous day"
+          >
+            <ChevronLeftIcon size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={goNextDay}
+            className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
+            aria-label="Next day"
+          >
+            <ChevronRightIcon size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Summary pill: "3h logged • 1 entry" */}
+      <div className="flex items-center gap-2 flex-wrap shrink-0">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-(--accent-green)/20 text-(--accent-green) px-2.5 py-1 text-sm font-medium">
+          {totalHours}h
+        </span>
+        <span className="text-sm text-tertiary">logged • {entryLabel}</span>
+      </div>
+
+      {/* Entry list: description left, hours right */}
+      <div className="flex flex-col gap-1 min-h-0 overflow-auto">
+        {existingEntries.map((entry) => (
+          <div
+            key={entry.id}
+            className="flex items-center justify-between py-2 px-2 rounded border background-border text-primary text-sm"
+          >
+            <span className="truncate">{entry.note || "No description"}</span>
+            <span className="font-medium shrink-0 ml-2">
+              {entry.hoursWorked}h
+            </span>
           </div>
-        </div>
-      </header>
+        ))}
+      </div>
+
+      {/* Add form */}
       <form
-        onSubmit={(e) => handleAddEntry(e)}
-        className="w-full h-full background-border p-4 rounded-lg gap-2 md:gap-4 flex flex-col"
+        onSubmit={handleAddEntry}
+        className="flex flex-col gap-3 shrink-0 mt-auto pt-2 border-t background-border"
       >
-        <div className="flex flex-col gap-2 md:gap-4 border background-border background-elevated p-4 rounded-lg">
-          <label htmlFor="date" className="text-primary font-semibold">
-            Date
-          </label>
-          <input
-            type="date"
-            id="date"
-            value={dateValue}
-            disabled={true}
-            className="p-2 rounded-lg w-full border background-border outline-[#0969da] text-primary"
-          />
-        </div>
-        <div className="flex flex-col gap-2 md:gap-4 border background-border background-elevated p-4 rounded-lg">
-          <label htmlFor="note" className="text-primary font-semibold">
-            Note
-          </label>
-          <textarea
-            id="note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            className="p-2 rounded-lg w-full border background-border outline-[#0969da] text-primary"
-          />
-        </div>
-        <div className="flex flex-col gap-2 md:gap-4 border background-border background-elevated p-4 rounded-lg">
-          <label htmlFor="hoursWorked" className="text-primary font-semibold">
-            Hours Worked
-          </label>
+        <input
+          type="text"
+          placeholder="What did you work on?"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="w-full p-2.5 rounded-lg border background-border background text-primary placeholder:text-tertiary outline-none focus:ring-2 focus:ring-(--accent-cyan) text-sm"
+        />
+        <div className="flex gap-2">
           <input
             type="number"
             id="hoursWorked"
@@ -163,9 +219,10 @@ export default function CalendarEntries() {
             max={24}
             step="0.25"
             inputMode="decimal"
-            value={hoursWorked !== null ? hoursWorked : ""}
+            placeholder="Hours (eg, 2.5)"
+            value={hoursWorked !== null && hoursWorked > 0 ? hoursWorked : ""}
             onKeyDown={(e) => {
-              const allowedKeys = [
+              const allowed = [
                 "Backspace",
                 "Delete",
                 "Tab",
@@ -181,8 +238,7 @@ export default function CalendarEntries() {
               const isDigit =
                 e.key.length === 1 && e.key >= "0" && e.key <= "9";
               const isDecimal = e.key === ".";
-              const isAllowedKey = allowedKeys.includes(e.key);
-              if (!isDigit && !isDecimal && !isAllowedKey) {
+              if (!isDigit && !isDecimal && !allowed.includes(e.key)) {
                 e.preventDefault();
               }
             }}
@@ -198,9 +254,8 @@ export default function CalendarEntries() {
                   : raw;
               if (numeric === "" || numeric === ".") return;
               const n = Number(numeric);
-              if (!Number.isNaN(n)) {
+              if (!Number.isNaN(n))
                 setHoursWorked(Math.min(24, Math.max(0, n)));
-              }
             }}
             onChange={(e) => {
               const raw = e.target.value;
@@ -209,20 +264,16 @@ export default function CalendarEntries() {
                 return;
               }
               const n = Number(raw);
-              if (!Number.isNaN(n)) {
+              if (!Number.isNaN(n))
                 setHoursWorked(Math.min(24, Math.max(0, n)));
-              }
             }}
-            className="p-2 rounded-lg w-full border background-border outline-(--accent-cyan) text-primary"
+            className="flex-1 p-2.5 rounded-lg border background-border background text-primary placeholder:text-tertiary outline-none focus:ring-2 focus:ring-(--accent-cyan) text-sm"
           />
-        </div>
-
-        <div className="w-full flex">
           <button
             type="submit"
-            className="rounded-lg w-full background-elevated border px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer text-primary font-semibold hover:bg-(--accent-green)/20"
+            className="px-4 py-2.5 rounded-lg font-semibold text-white bg-linear-to-r from-(--accent-green) to-(--accent-cyan) hover:opacity-90 transition-opacity shrink-0"
           >
-            Add Entry
+            Add
           </button>
         </div>
       </form>

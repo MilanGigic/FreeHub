@@ -1,7 +1,5 @@
 "use client";
 
-import { fetchActiveProjects } from "@/actions/projects/fetchActiveProjects";
-import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
@@ -154,33 +152,10 @@ export default function ProjectsCard() {
   const router = useRouter();
 
   const { user } = useAuth();
-  const { setActiveProjects, activeProjects, setSelectedProject } =
-    useProjectStore();
-  const { projects, setProjects } = useDataStore();
+  const { activeProjects, setSelectedProject } = useProjectStore();
+  const { projects } = useDataStore();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-      const res = await fetchActiveProjects(user.id);
-      if (res.success) {
-        if (res.data) {
-          setActiveProjects(res.data);
-        }
-      }
-    })();
-  }, [user, setActiveProjects]);
-
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const res = await fetchAllProjects(user.id);
-      if (res.success) {
-        if (res.data) {
-          setProjects(res.data);
-        }
-      }
-    })();
-  }, [setProjects, user]);
+  // `activeProjects` and `projects` are hydrated from the dashboard server payload.
 
   const projectRevenueData = useMemo(
     () =>

@@ -1,8 +1,5 @@
 "use client";
 
-import { calculateOutstandingInvoices } from "@/actions/invoices/calculateOutstandingInvoices";
-import { calculateOverdueInvoices } from "@/actions/invoices/calculateOverdueInvoice";
-import { calculatePaidInvoices } from "@/actions/invoices/calculatePaidInvoices";
 import { updateInvoiceStatus } from "@/actions/invoices/updateInvoiceStatus";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
@@ -67,32 +64,25 @@ export default function InvoicesTable() {
       if (res.data) {
         setInvoices(res.data);
 
-        const [outstandingRes, overdueRes, paidRes] = await Promise.all([
-          calculateOutstandingInvoices(selectedClient.id),
-          calculateOverdueInvoices(selectedClient.id),
-          calculatePaidInvoices(selectedClient.id),
-        ]);
+        const outstandingTotal = res.data
+          .filter((inv) => inv.status === "sent" || inv.status === "overdue")
+          .reduce((acc, inv) => acc + Number(inv.totalAmount || 0), 0);
+        setOutstandingInvoices(outstandingTotal.toFixed(2));
 
-        if (outstandingRes.success && outstandingRes.data) {
-          setOutstandingInvoices(outstandingRes.data);
-        } else if (!outstandingRes.success && outstandingRes.error) {
-          toast.error(outstandingRes.error as string);
-        }
+        const overdueList = res.data.filter((inv) => inv.status === "overdue");
+        const overdueTotal = overdueList.reduce(
+          (acc, inv) => acc + Number(inv.totalAmount || 0),
+          0,
+        );
+        setOverdueInvoices({
+          data: overdueTotal.toFixed(2),
+          count: overdueList.length,
+        });
 
-        if (overdueRes.success && overdueRes.data !== undefined) {
-          setOverdueInvoices({
-            data: overdueRes.data,
-            count: overdueRes.count,
-          });
-        } else if (!overdueRes.success && overdueRes.error) {
-          toast.error(overdueRes.error as string);
-        }
-
-        if (paidRes.success && paidRes.data) {
-          setPaidInvoices(paidRes.data);
-        } else if (!paidRes.success && paidRes.error) {
-          toast.error(paidRes.error as string);
-        }
+        const paidTotal = res.data
+          .filter((inv) => inv.status === "paid")
+          .reduce((acc, inv) => acc + Number(inv.totalAmount || 0), 0);
+        setPaidInvoices(paidTotal.toFixed(2));
       }
 
       if (res.projectData) {

@@ -1,13 +1,8 @@
-import { fetchAllClients } from "@/actions/clients/fetchAllClients";
-import { calculateAllOverdueInvoices } from "@/actions/clients/calculateAllOverdueInvoices";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useAuth } from "@/lib/useAuth";
 import { useEffect, useMemo, useRef } from "react";
-import { toast } from "react-toastify";
-import useCalculateAllOutstandingInvoices from "../Clients/hooks/(invoices)/useCalculateAllOutstandingInvoices";
-import useCalculateOverdueInvoices from "../Clients/hooks/(invoices)/useCalculateOverdueInvoices";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -144,44 +139,11 @@ const COLORS = ["#4ade80", "#fb923c", "#38bdf8", "#a855f7", "#facc15"];
 
 export default function ClientsCard() {
   const { user } = useAuth();
-  const { clients, setClients } = useClientStore();
+  const { clients } = useClientStore();
   const { projects } = useDataStore();
-  const { allOutstandingInvoices, allOverdueInvoices, setAllOverdueInvoices } =
-    useInvoiceStore();
+  const { allOutstandingInvoices, allOverdueInvoices } = useInvoiceStore();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-
-      const res = await fetchAllClients(user.id);
-      if (res.success) {
-        if (res.data) {
-          setClients(res.data);
-        }
-      } else {
-        toast.error(res.error as string);
-      }
-    })();
-  }, [user, setClients]);
-
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-      const res = await calculateAllOverdueInvoices(user.id);
-      if (res.success) {
-        if (res.data) {
-          setAllOverdueInvoices({ data: res.data, count: res.count });
-        }
-      } else {
-        toast.error(res.error as string);
-      }
-    })();
-  }, [user, setAllOverdueInvoices]);
-
-  useCalculateAllOutstandingInvoices();
-  useCalculateOverdueInvoices();
 
   const clientContributionData = useMemo(() => {
     if (!clients.length || !projects.length) return [];

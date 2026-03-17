@@ -6,6 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { calculateOutstandingInvoices } from "./calculateOutstandingInvoices";
 import { calculateOverdueInvoices } from "./calculateOverdueInvoice";
 import { calculatePaidInvoices } from "./calculatePaidInvoices";
+import { revalidateTag } from "next/cache";
 
 export async function addInvoice(
   amount: string,
@@ -97,6 +98,8 @@ export async function addInvoice(
 
     if (draftedInvoice) {
       await db.delete(invoices).where(eq(invoices.id, draftedInvoice.id));
+      revalidateTag("clients-page-metrics", "max");
+      revalidateTag("dashboard-data", "max");
 
       const draftedInvoices = await db
         .select()
@@ -125,6 +128,8 @@ export async function addInvoice(
         overdueInvoices.data &&
         paidInvoices.data
       ) {
+        revalidateTag("clients-page-metrics", "max");
+        revalidateTag("dashboard-data", "max");
         return {
           success: true,
           data,
@@ -192,6 +197,8 @@ export async function addToDrafts(
         projectId: selectedProjectId,
       })
       .returning();
+    revalidateTag("clients-page-metrics", "max");
+    revalidateTag("dashboard-data", "max");
     return { success: true, data };
   } catch (error) {
     console.error("Error adding invoice:", error);

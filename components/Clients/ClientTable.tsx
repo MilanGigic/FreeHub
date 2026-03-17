@@ -1,28 +1,21 @@
 "use client";
 
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useAuth } from "@/lib/useAuth";
+import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-
-const tableLists = [
-  "Client Name",
-  "Status",
-  "Revenue (MTD)",
-  "Revenue (YTD)",
-  "Outstanding",
-  "Avg Payment Time",
-  "Profitability %",
-  "Last Payment Date",
-  "Safe-to-Spend Contribution",
-];
+import NewClientModal from "./NewClientModal";
 
 const maxMobileClients = 5;
 
 export default function ClientTable() {
   const router = useRouter();
 
-  const { clients, setSelectedClient } = useClientStore();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  useAuth();
+  const { clients, setSelectedClient, selectedClient } = useClientStore();
+  const [currentPage] = useState<number>(1);
+  const [newClientModalOpen, setNewClientModalOpen] = useState<boolean>(false);
 
   const currentClients = useMemo(() => {
     return clients.slice(
@@ -31,83 +24,91 @@ export default function ClientTable() {
     );
   }, [currentPage, clients]);
 
-  const totalPages = useMemo(() => {
-    return Math.ceil(clients.length / maxMobileClients);
-  }, [clients]);
-
   return (
-    <>
-      {/* Mobile: card layout */}
-      <div className="md:hidden space-y-3">
-        <div className="flex w-64 mx-auto justify-between items-center">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="primary-slate hover:cursor-pointer disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-primary">
-            {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="text-secondary hover:cursor-pointer disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+    <div className="w-full h-full flex gap-2 md:gap-4">
+      <div className="flex items-start gap-2 relative max-w-2xl w-full">
+        <button
+          className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out flex items-center justify-center gap-2"
+          onClick={() => setNewClientModalOpen(true)}
+        >
+          <PlusIcon size={20} /> New Client
+        </button>
+        {newClientModalOpen ? (
+          <NewClientModal onClose={() => setNewClientModalOpen(false)} />
+        ) : null}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {currentClients.map((client) => (
           <div
             key={client.id}
-            className="rounded-lg border background-border background-elevated p-4"
+            className={`p-px bg-linear-to-b cursor-pointer ${
+              client.status === "active"
+                ? "from-(--accent-green) via-[#21262d] to-[#0a0e14]"
+                : client.status === "paused"
+                  ? "from-(--accent-amber) via-[#21262d] to-[#0a0e14]"
+                  : client.status === "archived"
+                    ? "from-(--accent-red) via-[#21262d] to-[#0a0e14]"
+                    : "from-[#21262d] via-[#21262d] to-[#0a0e14]"
+            } rounded-lg ${
+              selectedClient
+                ? selectedClient.id === client.id
+                  ? "scale-105 shadow-xl shadow-[#2dd4bf]/20"
+                  : "hover:scale-105 transition-all duration-300 ease-out hover:cursor-pointer hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer"
+                : "hover:scale-105 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-[#2dd4bf]/20 cursor-pointer"
+            }`}
             onClick={() => {
               setSelectedClient(client);
               router.push(`/clients/${client.id}/overview`);
             }}
           >
-            <div className="text-primary font-medium text-base mb-3 border-b background-border pb-2">
-              {client.firstName} {client.lastName}
+            <div className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2">
+              <div className="flex flex-col gap-1 border-b-2 background-border pb-2">
+                <h1 className="text-lg text-primary uppercase font-bold">
+                  {client.firstName} {client.lastName}
+                </h1>
+                <p className="primary-slate font-semibold">{client.email}</p>
+              </div>
+
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Status:
+                <span
+                  className={`${
+                    client.status === "active"
+                      ? "primary-green"
+                      : client.status === "paused"
+                        ? "primary-amber"
+                        : client.status === "archived"
+                          ? "primary-red"
+                          : "primary-slate"
+                  }`}
+                >
+                  {client.status}
+                </span>
+              </p>
+
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Revenue MTD:
+                <span className="primary-slate">—</span>
+              </p>
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Revenue YTD:
+                <span className="primary-slate">—</span>
+              </p>
+
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Outstanding:
+                <span className="primary-slate">To be added</span>
+              </p>
+
+              <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
+                Avg payment time:
+                <span className="primary-slate">To be added</span>
+              </p>
             </div>
-            <dl className="grid gap-2">
-              {tableLists.slice(1).map((label) => {
-                return (
-                  <div
-                    key={label}
-                    className="flex justify-between items-center text-sm"
-                  >
-                    <dt className="text-primary">{label}</dt>
-                  </div>
-                );
-              })}
-            </dl>
           </div>
         ))}
       </div>
-
-      {/* Desktop: table */}
-      <div className="hidden md:block overflow-x-auto">
-        <div className="flex w-64 mx-auto justify-between items-center">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="text-primary hover:cursor-pointer disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-primary">
-            {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="text-primary hover:cursor-pointer disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-        <table className="w-full min-w-[720px]">
+      {/* <table className="w-full min-w-[720px]">
           <thead>
             <tr>
               {tableLists.map((list) => (
@@ -120,8 +121,15 @@ export default function ClientTable() {
               ))}
             </tr>
           </thead>
+          const tableLists = [
+  "Client",
+  "Status",
+  "Revenue MTD",
+  "Revenue YTD",
+  "Outstanding",
+  "Avg Payment Time",
+]; 
           <tbody className="max-h-[500px] overflow-y-auto">
-            {/* TODO: Add input search and filter */}
             {currentClients.map((client) => (
               <tr
                 key={client.id}
@@ -138,19 +146,10 @@ export default function ClientTable() {
                   {client.status}
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
+                  ${mtdRevenue}
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
+                  ${ytdRevenue}
                 </td>
                 <td className="text-sm primary-slate text-center px-2 py-3">
                   To be added
@@ -161,9 +160,8 @@ export default function ClientTable() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-    </>
+        </table> */}
+    </div>
   );
 }
 

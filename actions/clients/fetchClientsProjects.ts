@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { clients, projects } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export async function fetchClientsProjects(clientId: string) {
   if (!clientId) {
@@ -19,9 +19,25 @@ export async function fetchClientsProjects(clientId: string) {
 
   try {
     const data = await db
-      .select()
+      .select({
+        id: projects.id,
+        userId: projects.userId,
+        clientId: projects.clientId,
+        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        name: projects.name,
+        description: projects.description,
+        totalRevenue: projects.totalRevenue,
+        totalExpenses: projects.totalExpenses,
+        totalProfit: projects.totalProfit,
+        totalMargin: projects.totalMargin,
+        totalHoursWorked: projects.totalHoursWorked,
+        status: projects.status,
+        createdAt: projects.createdAt,
+        updatedAt: projects.updatedAt,
+      })
       .from(projects)
-      .where(eq(projects.clientId, client.id));
+      .where(eq(projects.clientId, client.id))
+      .innerJoin(clients, eq(projects.clientId, clients.id));
     return { success: true, data };
   } catch (error) {
     console.error("Error fetching clients projects:", error);

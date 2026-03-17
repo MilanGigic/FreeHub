@@ -1,14 +1,12 @@
 "use client";
 
-import { calculateUnpaidInvoices } from "@/actions/finances/calculateUnpaidInvoices";
-import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { useAuth } from "@/lib/useAuth";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useMemo, useRef } from "react";
 
 type PieSlice = {
   startAngle: number;
@@ -140,57 +138,23 @@ const COLORS = ["#4ade80", "#fb923c", "#38bdf8"];
 export default function FinancesCard() {
   const { projects } = useDataStore();
   const { user } = useAuth();
+  const { allOutstandingInvoices } = useInvoiceStore();
   const { netProfit, taxReserved, safeToSpend, computeSafeToSpend } =
     useTaxProfileStore(); // Extend store with income/expenses
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [unpaidInvoices, setUnpaidInvoices] = useState<string>("0");
-  const [balance, setBalance] = useState<string>("0");
-
   useEffect(() => {
-    (async () => {
-      if (!user) return;
-      const res = await fetchAllProjects(user.id);
-
-      if (res.success) {
-        if (res.data) {
-          const totalProfit = res.data
-            .reduce((acc, project) => acc + Number(project.totalProfit || 0), 0)
-            .toFixed(2)
-            .toString();
-          setBalance(totalProfit);
-        }
-      } else {
-        toast.error(res.error as string);
-      }
-    })();
-  }, [user]);
-
-  useEffect(() => {
-    const currentBalance = Number(balance) || 0;
-    const expectedIncomeNext30Days = Number(unpaidInvoices) || 0;
+    const currentBalance = projects.reduce(
+      (acc, project) => acc + Number(project.totalProfit || 0),
+      0,
+    );
+    const expectedIncomeNext30Days = Number(allOutstandingInvoices.data || 0);
 
     computeSafeToSpend({
       currentBalance,
       expectedIncomeNext30Days,
     });
-  }, [balance, unpaidInvoices, computeSafeToSpend]);
-
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-
-      const res = await calculateUnpaidInvoices(user.id);
-
-      if (res.success) {
-        if (res.data) {
-          setUnpaidInvoices(res.data);
-        }
-      } else {
-        toast.error(res.error as string);
-      }
-    })();
-  }, [user]);
+  }, [projects, allOutstandingInvoices.data, computeSafeToSpend]);
 
   const numericTotalIncome = projects.reduce(
     (acc, p) => acc + Number(p.totalRevenue || 0),

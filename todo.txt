@@ -5,3 +5,8 @@ TODO:
   - Work on caching - gonna have to watch some youtube videos and tutorials on this because I still don't quite understand the concept of caching
   - Implement loading states
   - Pagination doesn't work, user can click on next page even tho there is 0 or 1 page, and can keep clicking after
+
+
+Projects page
+  - Refactor both calendar and revenue pages
+  - There is an image of what it should look like in downloads folder

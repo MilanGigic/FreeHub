@@ -9,39 +9,26 @@ import TaxReservedFromThisClient from "./TaxReservedFromThisClient";
 import ProjectBreakdown from "./ProjectBreakdown";
 import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
 import { useClientStore } from "@/lib/store/useClientStore";
-import { fetchClientsProjects } from "@/actions/clients/fetchClientsProjects";
-import { useEffect } from "react";
-import useFetchAllInvoices from "@/components/Clients/hooks/(invoices)/useFetchAllInvoices";
-import useCalculateOutstandingInvoices from "../../hooks/(invoices)/useCalculateOutstandingInvoices";
-import useCalculateOverdueInvoices from "../../hooks/(invoices)/useCalculateOverdueInvoices";
 
 export default function OverviewClient() {
-  const { setClientProjects, selectedClient } = useClientStore();
-
-  // Ensure invoices are loaded for this client so overview components can use real data
-  useFetchAllInvoices();
-  useCalculateOutstandingInvoices();
-  useCalculateOverdueInvoices();
-
-  useEffect(() => {
-    (async () => {
-      if (!selectedClient) {
-        return;
-      }
-
-      const res = await fetchClientsProjects(selectedClient.id);
-      if (res.success) {
-        if (res.data) {
-          setClientProjects(res.data);
-        }
-      }
-    })();
-  }, [selectedClient, setClientProjects]);
+  const { selectedClient } = useClientStore();
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
       <header className="text-sm primary-slate font-semibold text-center">
         Status:{" "}
-        <span className="primary-green uppercase font-semibold">Active</span>
+        <span
+          className={`uppercase font-semibold ${
+            selectedClient?.status === "active"
+              ? "primary-green"
+              : selectedClient?.status === "paused"
+                ? "primary-amber"
+                : selectedClient?.status === "archived"
+                  ? "primary-red"
+                  : "primary-slate"
+          }`}
+        >
+          {selectedClient?.status ?? "—"}
+        </span>
       </header>
 
       <main className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 w-full h-full">

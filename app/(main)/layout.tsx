@@ -1,20 +1,21 @@
 "use client";
 
 import useFetchAllClients from "@/components/Clients/hooks/(clients)/useFetchAllClients";
-import useFetchAllInvoices from "@/components/Clients/hooks/(invoices)/useFetchAllInvoices";
 import Header from "@/components/Header";
 import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects";
 import Sidebar from "@/components/Sidebar";
 import { TaxProvider } from "@/components/TaxProvider";
 import Wizard from "@/components/Wizard/Wizard";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-function useBootstrapAppData() {
+function useBootstrapAppData(pathname: string) {
   // Place app-wide data fetching and side-effect hooks here.
+  // Dashboard now hydrates stores from a server payload; skip global bootstraps there
+  // to avoid duplicate fetching and render storms.
+  if (pathname === "/dashboard") return;
   useFetchAllClients();
   useFetchAllProjects();
-  useFetchAllInvoices();
 }
 
 function MainLayoutContent({
@@ -23,8 +24,9 @@ function MainLayoutContent({
   children: React.ReactNode;
 }>) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const isWizard = searchParams.get("wizard") === "true";
-  useBootstrapAppData();
+  useBootstrapAppData(pathname);
 
   return (
     <TaxProvider>
