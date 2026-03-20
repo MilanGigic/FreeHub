@@ -2,6 +2,7 @@
 
 import { updateInvoiceStatus } from "@/actions/invoices/updateInvoiceStatus";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
@@ -36,6 +37,7 @@ export default function InvoicesTable() {
     setOverdueInvoices,
     setPaidInvoices,
   } = useInvoiceStore();
+  const { projects, setProjects } = useDataStore();
   const { setProfit } = useProjectStore();
   const { selectedClient } = useClientStore();
   const [show, setShow] = useState<StatusFilter>("all");
@@ -91,6 +93,17 @@ export default function InvoicesTable() {
         } else {
           console.log("Error setting profit");
         }
+        setProjects(
+          projects.map((project) =>
+            project.id === res.projectData?.id
+              ? {
+                  ...project,
+                  ...res.projectData,
+                  clientName: project.clientName,
+                }
+              : project,
+          ),
+        );
       }
     } else {
       toast.error(res.error);

@@ -13,9 +13,9 @@ function useBootstrapAppData(pathname: string) {
   // Place app-wide data fetching and side-effect hooks here.
   // Dashboard now hydrates stores from a server payload; skip global bootstraps there
   // to avoid duplicate fetching and render storms.
-  if (pathname === "/dashboard") return;
-  useFetchAllClients();
-  useFetchAllProjects();
+  const shouldBootstrap = pathname !== "/dashboard";
+  useFetchAllClients(shouldBootstrap);
+  useFetchAllProjects(shouldBootstrap);
 }
 
 function MainLayoutContent({

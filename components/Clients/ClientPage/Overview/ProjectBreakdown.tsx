@@ -37,8 +37,7 @@ export default function ProjectBreakdown() {
               <td
                 className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
               >
-                {/* {project.totalMargin && Number(project.totalMargin)}% */}
-                To be added...
+                {project.totalMargin ? `${Number(project.totalMargin).toFixed(2)}%` : "0.00%"}
               </td>
             </tr>
           ))}

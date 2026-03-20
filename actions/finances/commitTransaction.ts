@@ -1,7 +1,8 @@
 "use server";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { projectFinance, transactions } from "@/db/schema";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 
 export async function commitTransaction(
   userId: string,
@@ -10,6 +11,7 @@ export async function commitTransaction(
     amount: number;
     note: string;
     deductible: boolean;
+    projectId: string;
   },
 ) {
   try {
@@ -17,12 +19,25 @@ export async function commitTransaction(
       .insert(transactions)
       .values({
         userId,
+        projectId: data.projectId,
         type: data.type,
         amount: String(data.amount),
         note: data.note,
         deductible: data.deductible,
       })
       .returning();
+
+    if (data.projectId) {
+      await db.insert(projectFinance).values({
+        userId,
+        projectId: data.projectId,
+        type: data.type,
+        amount: String(data.amount),
+        note: data.note || "",
+      });
+      await recalculateProjectTotals(userId, data.projectId);
+    }
+
     revalidatePath("/finances");
     revalidateTag("clients-page-metrics", "max");
     revalidateTag("dashboard-data", "max");

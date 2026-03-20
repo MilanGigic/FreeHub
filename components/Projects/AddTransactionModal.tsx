@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 
 export default function AddTransactionModal({
   onClose,
@@ -15,6 +16,7 @@ export default function AddTransactionModal({
 }) {
   const { user } = useAuth();
   const { transactions, setTransactions } = useDataStore();
+  const { selectedProject } = useProjectStore();
 
   const [form, setForm] = useState<
     Omit<Transaction, "id" | "userId" | "createdAt" | "updatedAt">
@@ -29,11 +31,13 @@ export default function AddTransactionModal({
     e.preventDefault();
 
     if (!user) return;
+    if (!selectedProject) return;
     const res = await commitTransaction(user.id, {
       type: form.type,
       amount: Number(form.amount),
       note: form.note || "",
       deductible: form.deductible,
+      projectId: selectedProject.id,
     });
     if (res.success) {
       onClose();

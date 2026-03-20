@@ -1,12 +1,37 @@
 TODO:
   - Switch from USA market being main market to Serbia market being main market
   - Implement Serbian language, and the switcher where user can choose between english and serbian language
-  - Change Finances page look, its not very readable at the moment, users can find it confusing --- Look for some template to use as starting point, focus on analytics/dashboard/admin dashboard templates.
-  - Work on caching - gonna have to watch some youtube videos and tutorials on this because I still don't quite understand the concept of caching
-  - Implement loading states
-  - Pagination doesn't work, user can click on next page even tho there is 0 or 1 page, and can keep clicking after
 
+BUGS:
+  * Finances page *
+  - Sometimes drops "React has detected a change in the order of Hooks called by MainLayoutContent. This will lead to bugs and errors if not fixed." bug
+  - Unpaid invoices are not synced
+  - Total cash balance is not synced
+  - Project profitability table doesn't display correct expenses data
+  - Safe to spend is always 0
 
-Projects page
-  - Refactor both calendar and revenue pages
-  - There is an image of what it should look like in downloads folder
+  * Projects page *
+  - Expenses always show 0
+  - Avg Margin is always 0%
+
+  * Clients page *
+  - Sometimes drops "React has detected a change in the order of Hooks called by MainLayoutContent. This will lead to bugs and errors if not fixed" bug
+  - Revenue MTD and revenue YTD show no data
+   / Selected client page
+   * Overview *
+   - Total revenue doesn't include income data but only invoices data
+   - Expenses don't show in project breakdown table
+
+   * Jobs and projects *
+   - Profit doesn't include income data
+   - Expenses are not showing
+
+  * Dashboard page *
+  - Sometimes it drops a "Rendered fewer hooks than expected. This may be caused by an accidental early return statement."
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Next thing to do:
+  - Work on the BUGS
+  - Implement caching on finances page
+  - Work on selectedClient/overview invoices page

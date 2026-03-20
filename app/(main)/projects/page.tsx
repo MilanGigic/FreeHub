@@ -8,11 +8,14 @@ import { toast } from "react-toastify";
 // import { useUIStore } from "@/lib/store/useUIStore";
 import ProjectsMain from "@/components/Projects/ProjectsMain";
 import ProjectsHeader from "@/components/Projects/ProjectsHeader";
+import ProjectsPageSkeleton from "@/components/Projects/ProjectsPageSkeleton";
+import { useState } from "react";
 
 export default function ProjectsPage() {
   const { user } = useAuth();
   const { projects, setProjects, totalRevenue, setTotalRevenue } =
     useDataStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (projects.length === 0) return;
@@ -28,19 +31,25 @@ export default function ProjectsPage() {
     (async () => {
       if (!user) return;
 
-      const res = await fetchAllProjects(user.id);
+      try {
+        const res = await fetchAllProjects(user.id);
 
-      if (!res.success) {
-        toast.error(res.error);
-      }
-
-      if (res.data) {
-        if (res.data.length > 0) {
-          setProjects(res.data);
+        if (!res.success) {
+          toast.error(res.error);
         }
+
+        if (res.data) {
+          if (res.data.length > 0) {
+            setProjects(res.data);
+          }
+        }
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [setProjects, user]);
+
+  if (isLoading) return <ProjectsPageSkeleton />;
 
   return (
     <div className="background min-h-screen p-6 font-sans flex flex-col gap-8">

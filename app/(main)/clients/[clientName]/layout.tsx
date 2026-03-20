@@ -2,6 +2,7 @@
 
 import { fetchClientOverviewData } from "@/actions/clients/fetchClientOverviewData";
 import ClientPageHeader from "@/components/Clients/ClientPage/ClientPageHeader";
+import ClientPageSkeleton from "@/components/Clients/ClientPage/ClientPageSkeleton";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { usePathname } from "next/navigation";
@@ -63,11 +64,7 @@ export default function ClientLayout({
   ]);
 
   if (!selectedClient) {
-    return (
-      <div className="flex flex-col gap-2 md:gap-4 w-full items-center justify-center min-h-[200px] text-primary">
-        Loading client...
-      </div>
-    );
+    return <ClientPageSkeleton />;
   }
 
   return (

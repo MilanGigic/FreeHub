@@ -5,10 +5,11 @@ import { useDataStore } from "@/lib/store/useDataStore";
 import { useAuth } from "@/lib/useAuth";
 import { useEffect } from "react";
 
-export default function useFetchAllProjects() {
+export default function useFetchAllProjects(enabled = true) {
   const { user } = useAuth();
   const { setProjects } = useDataStore();
   useEffect(() => {
+    if (!enabled) return;
     if (!user) return;
     (async () => {
       const res = await fetchAllProjects(user.id);
@@ -18,5 +19,5 @@ export default function useFetchAllProjects() {
         }
       }
     })();
-  }, [user, setProjects]);
+  }, [enabled, user, setProjects]);
 }

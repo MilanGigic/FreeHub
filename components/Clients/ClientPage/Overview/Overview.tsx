@@ -54,25 +54,3 @@ export default function OverviewClient() {
     </div>
   );
 }
-
-{
-  /*
-Overview
-
-Total revenue
-
-Revenue trend graph
-
-Payment reliability score
-
-Outstanding invoices
-
-Profit margin
-
-Project breakdown
-
-Tax reserved from this client
-
-Net take-home from this client  
-*/
-}

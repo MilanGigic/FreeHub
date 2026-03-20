@@ -1,0 +1,85 @@
+PROJECT TOTALS BUG — ROOT CAUSE ANALYSIS & FIX
+================================================
+
+SYMPTOMS:
+  - projects.totalRevenue only reflected paid invoice amounts
+  - projects.totalExpenses was always 0
+  - projects.totalMargin was always 0%
+  - Project Breakdown table and Project Profitability table showed incorrect data
+
+ROOT CAUSE:
+  The project totals calculation system had two independent data paths that
+  were not kept in sync: the `transactions` table (general financial ledger)
+  and the `projectFinance` table (project-specific financial tracking).
+
+  The `recalculateProjectTotals` function queried the `transactions` table,
+  but not all entry points wrote to it with a valid projectId. Meanwhile,
+  the `projectFinance` table — which is purpose-built for project-level
+  tracking and has a required (non-nullable) projectId — was being written
+  to inconsistently.
+
+  Specifically:
+
+  1. recalculateProjectTotals queried `transactions` instead of `projectFinance`
+     - The transactions table has a NULLABLE projectId (designed as a general ledger)
+     - The projectFinance table has a REQUIRED projectId (designed for project tracking)
+     - Querying the wrong table meant project totals depended on a nullable FK
+
+  2. commitTransaction (Finances page) had no projectId support
+     - Transactions added from the Finances page were inserted with projectId = null
+     - These were invisible to recalculateProjectTotals
+     - No entry was created in projectFinance at all
+
+  3. updateInvoiceStatus did not insert into projectFinance
+     - When an invoice was marked "paid", the amount was only recorded in `transactions`
+     - The projectFinance table had no record of the paid invoice
+     - Once recalculateProjectTotals was switched to query projectFinance,
+       paid invoice revenue would be lost
+
+  4. addExpense used fragile manual math instead of recalculateProjectTotals
+     - It manually incremented totalExpenses and decremented totalProfit
+     - It did not recalculate from source data, leading to drift
+     - It never updated totalMargin
+
+  5. recalculateProjectTotals did not compute totalMargin
+     - The margin field was never set, so it stayed at the default 0
+
+FIXES APPLIED (5 files):
+
+  utils/recalculateProjectTotals.ts
+    - Changed data source from `transactions` table to `projectFinance` table
+    - Added totalMargin calculation: (totalProfit / totalRevenue) * 100
+    - Now updates all 4 project fields: totalRevenue, totalExpenses, totalProfit, totalMargin
+
+  actions/finances/commitTransaction.ts
+    - Added optional `projectId` field to the data parameter
+    - When projectId is provided: inserts into projectFinance + calls recalculateProjectTotals
+    - Transactions from the Finances page now correctly update project totals
+
+  actions/invoices/updateInvoiceStatus.ts
+    - Added projectFinance insert when invoice status is set to "paid"
+    - The paid invoice amount is now recorded in projectFinance as type "income"
+    - recalculateProjectTotals (which was already called) now picks up this entry
+
+  actions/projects/revenue/addExpense.ts
+    - Replaced manual math (incrementing totalExpenses / decrementing totalProfit)
+      with a call to recalculateProjectTotals
+    - Project totals are now recalculated from source data, not incremental estimates
+    - Returns the recalculated totals in the response
+
+  actions/projects/revenue/addIncome.ts
+    - Added recalculated `totals` to the return value for UI consistency
+    - (This file was already correct — it inserted into both tables and called
+      recalculateProjectTotals)
+
+DATA FLOW AFTER FIX:
+  Every function that creates a financial entry for a project now:
+    1. Inserts into `transactions` (general ledger)
+    2. Inserts into `projectFinance` (project-specific ledger)
+    3. Calls recalculateProjectTotals which:
+       - Queries ALL projectFinance rows for the project
+       - Sums income entries → totalRevenue
+       - Sums expense entries → totalExpenses
+       - Computes totalProfit = totalRevenue - totalExpenses
+       - Computes totalMargin = (totalProfit / totalRevenue) * 100
+       - Writes all 4 values to the projects table

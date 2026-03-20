@@ -1,10 +1,13 @@
+"use server";
+
 import { getCurrentUser } from "@/actions/auth/getCurrentUser";
-import FinancesHero from "@/components/Finances/FinancesHero";
-import CashFlow from "@/components/Finances/Main/CashFlow";
-import GoalsCardClient from "@/components/Finances/Main/GoalsCardClient";
-import ProjectProfitability from "@/components/Finances/Main/ProjectProfitability";
-import RecentTransactions from "@/components/Finances/Main/RecentTransactions";
-import TransactionSimulator from "@/components/Finances/Main/TransactionSimulator";
+import { getFinancesSnapshot } from "@/actions/finances";
+import { getTaxProfile } from "@/actions/taxProfile";
+import FinancesClient from "@/components/Finances/FinancesClient";
+import { db } from "@/db";
+import { transactions } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
+
 import Link from "next/link";
 
 export default async function FinancesPage() {
@@ -16,6 +19,19 @@ export default async function FinancesPage() {
         You must be logged in to access this page
       </div>
     );
+
+  const [snapshot, profile] = await Promise.all([
+    getFinancesSnapshot(),
+    getTaxProfile(),
+  ]);
+
+  const currentBalance = await db
+    .select({
+      total: sql<number>`coalesce(sum(case when type = 'income' then amount else -amount end), 0)`,
+    })
+    .from(transactions)
+    .where(eq(transactions.userId, user.id))
+    .then((res) => Number(res[0]?.total ?? 0));
 
   if (!user)
     return (
@@ -40,39 +56,10 @@ export default async function FinancesPage() {
     );
 
   return (
-    // <div className="flex flex-col gap-2 md:gap-4 w-full">
-    <div className="w-full min-h-screen background p-6 flex flex-col gap-6">
-      <FinancesHero />
-
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
-        {/* Left column */}
-        <div className="flex flex-col gap-6">
-          {/* Cash Flow chart — primary visual */}
-          <CashFlow />
-
-          {/* Zone 3: Project profitability — detail on demand */}
-          <ProjectProfitability />
-        </div>
-
-        {/* Right sidebar */}
-        <div className="flex flex-col gap-6">
-          {/* Recent transactions — live feed */}
-          <RecentTransactions />
-
-          {/* Savings goals */}
-          <GoalsCardClient />
-
-          {/* Cash flow simulator */}
-          <TransactionSimulator />
-        </div>
-      </div>
-      {/* <header>
-        <FinanceHeader />
-      </header>
-
-      <main className="w-full">
-        <FinanceMain />
-      </main> */}
-    </div>
+    <FinancesClient
+      snapshot={snapshot}
+      profile={profile}
+      currentBalance={currentBalance}
+    />
   );
 }

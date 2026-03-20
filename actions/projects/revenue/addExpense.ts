@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { projectFinance, projects, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
+import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 
 export async function addExpense(
   userId: string,
@@ -42,26 +43,19 @@ export async function addExpense(
       })
       .returning();
 
-    const newTotalExpenses = (
-      Number(currentProject.totalExpenses) + Number(expense)
-    ).toFixed(2);
-
-    const newTotalProfit = (
-      Number(currentProject.totalProfit) - Number(expense)
-    ).toFixed(2);
-
-    const [updatedProject] = await db
-      .update(projects)
-      .set({
-        totalExpenses: newTotalExpenses,
-        totalProfit: newTotalProfit,
-      })
-      .where(eq(projects.id, projectId))
-      .returning();
+    const totals = await recalculateProjectTotals(userId, projectId);
+    const updatedProject = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+    });
 
     revalidateTag("clients-page-metrics", "max");
     revalidateTag("dashboard-data", "max");
-    return { success: true, data: newExpense, projectData: updatedProject };
+    return {
+      success: true,
+      data: newExpense,
+      projectData: updatedProject,
+      totals,
+    };
   } catch (error) {
     console.error("Error adding expense:", error);
     return { success: false, error: error as Error };

@@ -44,7 +44,7 @@ export async function addIncome(
 
     revalidateTag("clients-page-metrics", "max");
     revalidateTag("dashboard-data", "max");
-    return { success: true, data, projectData: updatedProject };
+    return { success: true, data, projectData: updatedProject, totals };
   } catch (error) {
     console.error("Error adding revenue:", error);
     return { success: false, error: error as Error };

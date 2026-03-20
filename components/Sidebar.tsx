@@ -6,7 +6,6 @@ import {
   FileText,
   House,
   ListTodo,
-  MessageCircle,
   Users,
   Wallet,
   X,
@@ -21,7 +20,6 @@ const tabs = [
   "Finances",
   "Tasks",
   "Reports",
-  "Messages",
 ];
 
 function renderTab(tab: string) {
@@ -38,8 +36,6 @@ function renderTab(tab: string) {
       return <ListTodo />;
     case "Reports":
       return <FileText />;
-    case "Messages":
-      return <MessageCircle />;
   }
 }
 

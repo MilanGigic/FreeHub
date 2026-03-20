@@ -1,41 +1,49 @@
 "use client";
 
-import { useDataStore } from "@/lib/store/useDataStore";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
-import { FileText, Shield, TrendingDown, TrendingUp } from "lucide-react";
+import { Shield, TrendingDown } from "lucide-react";
 
 export default function FinancesHero() {
-  const { safeToSpend, taxReserved, netProfit } = useTaxProfileStore();
-  const { balance } = useDataStore();
+  const {
+    safeToSpend,
+    safetyBuffer,
+    cashRunwayDays,
+    effectiveTaxRate,
+    monthlyTaxReserve,
+  } = useTaxProfileStore();
 
   const stats = [
     {
-      label: "Total Cash Balance",
-      value: `$${Number(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      icon: TrendingUp,
-      color: "text-green-400",
-      bg: "bg-green-400/10",
-    },
-    {
       label: "Tax Reserved",
-      value: `$${Number(taxReserved).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `$${Number(monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Shield,
       color: "text-amber-400",
       bg: "bg-amber-400/10",
+      tooltip: "Set aside monthly toward your estimated tax bill",
     },
     {
-      label: "Net Profit",
-      value: `$${Number(netProfit).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      icon: netProfit >= 0 ? TrendingUp : TrendingDown,
-      color: netProfit >= 0 ? "text-green-400" : "text-red-400",
-      bg: netProfit >= 0 ? "bg-green-400/10" : "bg-red-400/10",
+      label: "Safety buffer",
+      value: `$${Number(safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      icon: Shield,
+      color: "text-amber-400",
+      bg: "bg-amber-400/10",
+      tooltip: "Held back to cover upcoming business expenses",
     },
     {
-      label: "Unpaid Invoices",
-      value: "$0", // wire from your invoices store/action
-      icon: FileText,
+      label: "Cash runway days",
+      value: cashRunwayDays,
+      icon: Shield,
+      color: "text-amber-400",
+      bg: "bg-amber-400/10",
+      tooltip: "How long your current balance lasts at your burn rate",
+    },
+    {
+      label: "Effective tax rate",
+      value: `${(Number(effectiveTaxRate) * 100).toFixed(2)}%`,
+      icon: TrendingDown,
       color: "text-red-400",
       bg: "bg-red-400/10",
+      tooltip: "Your estimated tax as a share of net profit",
     },
   ];
 
@@ -68,6 +76,9 @@ export default function FinancesHero() {
             <div className="w-1.5 h-1.5 rounded-full bg-(--accent-cyan) animate-pulse" />
             <p className="text-xs text-primary">Live balance</p>
           </div>
+          <p className="text-primary text-xs">
+            What you can spend today without touching your reserves
+          </p>
         </div>
       </div>
       {/* Supporting stats — 2x2 grid */}
@@ -92,6 +103,7 @@ export default function FinancesHero() {
               <p className={`text-2xl font-bold tabular-nums ${stat.color}`}>
                 {stat.value}
               </p>
+              <p className="text-primary text-xs">{stat.tooltip}</p>
             </div>
           );
         })}

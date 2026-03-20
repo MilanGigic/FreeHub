@@ -2,10 +2,10 @@
 
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
-import { ChevronDown, Pen } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-const tableLists = ["Client", "Revenue", "Expenses", "Taxes", "Profit"];
+const tableLists = ["Client", "Revenue", "Expenses", "Profit"];
 
 export default function ProjectProfitability() {
   const { clients } = useClientStore();
@@ -72,7 +72,10 @@ export default function ProjectProfitability() {
                 <h1 className="text-sm primary-slate text-center w-full">
                   $
                   <span className="primary-green ml-0.5">
-                    {project.totalRevenue?.toLocaleString()}
+                    {Number(project.totalRevenue).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </h1>
                 <h1 className="text-sm primary-slate text-center w-full">
@@ -80,9 +83,6 @@ export default function ProjectProfitability() {
                   <span className="primary-red ml-0.5">
                     {project.totalExpenses?.toLocaleString()}
                   </span>
-                </h1>
-                <h1 className="text-sm primary-slate text-center w-full">
-                  To be added...
                 </h1>
                 <h1 className="text-sm primary-cyan text-center w-full font-semibold">
                   ${project.totalProfit}

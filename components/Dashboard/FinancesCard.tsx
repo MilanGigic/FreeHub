@@ -1,7 +1,7 @@
 "use client";
 
 import { useDataStore } from "@/lib/store/useDataStore";
-import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { useAuth } from "@/lib/useAuth";
 import { ArrowRightIcon } from "lucide-react";
@@ -138,8 +138,8 @@ const COLORS = ["#4ade80", "#fb923c", "#38bdf8"];
 export default function FinancesCard() {
   const { projects } = useDataStore();
   const { user } = useAuth();
-  const { allOutstandingInvoices } = useInvoiceStore();
-  const { netProfit, taxReserved, safeToSpend, computeSafeToSpend } =
+
+  const { netProfit, monthlyTaxReserve, safeToSpend, computeSafeToSpend } =
     useTaxProfileStore(); // Extend store with income/expenses
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -148,13 +148,12 @@ export default function FinancesCard() {
       (acc, project) => acc + Number(project.totalProfit || 0),
       0,
     );
-    const expectedIncomeNext30Days = Number(allOutstandingInvoices.data || 0);
 
     computeSafeToSpend({
       currentBalance,
-      expectedIncomeNext30Days,
+      avgMonthlyExpenses: 0,
     });
-  }, [projects, allOutstandingInvoices.data, computeSafeToSpend]);
+  }, [projects, computeSafeToSpend]);
 
   const numericTotalIncome = projects.reduce(
     (acc, p) => acc + Number(p.totalRevenue || 0),
@@ -173,9 +172,9 @@ export default function FinancesCard() {
     () => [
       { name: "Net Profit", value: Math.max(0, Number(netProfit)) },
       { name: "Expenses", value: Math.max(0, numericTotalExpenses) },
-      { name: "Tax Reserved", value: Math.max(0, Number(taxReserved)) },
+      { name: "Tax Reserved", value: Math.max(0, Number(monthlyTaxReserve)) },
     ],
-    [netProfit, numericTotalExpenses, taxReserved],
+    [netProfit, numericTotalExpenses, monthlyTaxReserve],
   );
 
   useEffect(() => {
@@ -232,7 +231,7 @@ export default function FinancesCard() {
             <p className="text-lg primary-slate font-semibold uppercase">
               Tax Reserved:{" "}
               <span className="font-bold primary-amber">
-                ${Number(taxReserved).toLocaleString()}
+                ${Number(monthlyTaxReserve).toLocaleString()}
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">

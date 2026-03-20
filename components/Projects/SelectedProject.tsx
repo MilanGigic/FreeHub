@@ -7,6 +7,7 @@ import { fetchProjectById } from "@/actions/projects/fetchProjectById";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { fetchDataForSelectedDate } from "@/actions/projects/calendar/fetchDataForSelectedDate";
 import SelectedProjectHeader from "./SelectedProjectHeader";
+import SelectedProjectSkeleton from "./SelectedProjectSkeleton";
 import Revenue from "./Revenue";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -56,7 +57,7 @@ export default function SelectedProject() {
     })();
   }, [selectedProject, selectedDate, setNote, setHoursWorked]);
 
-  if (!selectedProject) return null;
+  if (!selectedProject) return <SelectedProjectSkeleton />;
 
   const handleBack = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

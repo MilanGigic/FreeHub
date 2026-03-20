@@ -6,11 +6,12 @@ import { useAuth } from "@/lib/useAuth";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-export default function useFetchAllClients() {
+export default function useFetchAllClients(enabled = true) {
   const { user } = useAuth();
   const { setClients } = useClientStore();
 
   useEffect(() => {
+    if (!enabled) return;
     (async () => {
       if (!user) return;
       const res = await fetchAllClients(user.id);
@@ -24,5 +25,5 @@ export default function useFetchAllClients() {
         setClients(res.data);
       }
     })();
-  }, [setClients, user]);
+  }, [enabled, setClients, user]);
 }

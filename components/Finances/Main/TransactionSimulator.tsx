@@ -18,6 +18,8 @@ import { useAuth } from "@/lib/useAuth";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { Project } from "@/types/types";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 
 const EMPTY_FORM: SimulationInput = {
   type: "expense",
@@ -58,9 +60,11 @@ export default function TransactionSimulator() {
   const [form, setForm] = useState<SimulationInput>(EMPTY_FORM);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [committed, setCommitted] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPending, startTransition] = useTransition();
-  const { transactions, setTransactions } = useDataStore();
+  const { transactions, setTransactions, projects } = useDataStore();
 
+  console.log("Projects:", projects);
   useEffect(() => {
     (async () => {
       if (!user) return;
@@ -111,6 +115,7 @@ export default function TransactionSimulator() {
         amount: form.amount,
         note: form.note || `Simulated ${form.type}`,
         deductible: form.deductible,
+        projectId: selectedProject?.id ?? "",
       });
       if (res.success) {
         setCommitted(true);
@@ -288,13 +293,31 @@ export default function TransactionSimulator() {
 
             {/* Commit / committed */}
             {!committed ? (
-              <button
-                onClick={handleCommit}
-                disabled={isPending}
-                className="w-full py-1.5 rounded border border-(--accent-cyan) text-(--accent-cyan) hover:bg-(--accent-cyan)/10 text-xs font-medium transition-colors disabled:opacity-40"
-              >
-                {isPending ? "Saving..." : "Commit as Real Transaction"}
-              </button>
+              <div className="flex flex-col gap-2">
+                <select
+                  className="w-full text-center py-1.5 rounded border border-(--accent-cyan) text-(--accent-cyan) hover:bg-(--accent-cyan)/10 text-xs font-medium transition-colors disabled:opacity-40"
+                  value={selectedProject?.id ?? ""}
+                  onChange={(e) =>
+                    setSelectedProject(
+                      projects.find((p) => p.id === e.target.value) as Project,
+                    )
+                  }
+                >
+                  <option value="">Select Project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleCommit}
+                  disabled={isPending}
+                  className="w-full py-1.5 rounded border border-(--accent-cyan) text-(--accent-cyan) hover:bg-(--accent-cyan)/10 text-xs font-medium transition-colors disabled:opacity-40"
+                >
+                  {isPending ? "Saving..." : "Commit as Real Transaction"}
+                </button>
+              </div>
             ) : (
               <div className="flex items-center justify-center gap-1.5 py-1.5 text-xs text-(--accent-green)">
                 <CheckCircle size={13} />

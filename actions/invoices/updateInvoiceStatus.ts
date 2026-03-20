@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { invoices, projects, transactions } from "@/db/schema";
+import { invoices, projectFinance, projects, transactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { InvoiceStatus } from "@/types/types";
 import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
@@ -45,6 +45,14 @@ export async function updateInvoiceStatus(
           deductible: false,
         })
         .returning();
+
+      await db.insert(projectFinance).values({
+        userId,
+        projectId,
+        type: "income",
+        amount: updatedInvoice.totalAmount,
+        note: updatedInvoice.note || "Invoice paid",
+      });
 
       await recalculateProjectTotals(userId, projectId);
     } else {
