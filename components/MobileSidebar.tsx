@@ -5,9 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Briefcase,
-  FileText,
   House,
-  ListTodo,
   Users,
   Wallet,
   X,
@@ -23,21 +21,10 @@ function renderTab(tab: string) {
       return <Users />;
     case "Projects":
       return <Briefcase />;
-    case "Tasks":
-      return <ListTodo />;
-    case "Reports":
-      return <FileText />;
   }
 }
 
-const tabs = [
-  "Dashboard",
-  "Clients",
-  "Projects",
-  "Finances",
-  "Tasks",
-  "Reports",
-];
+const tabs = ["Dashboard", "Clients", "Projects", "Finances"];
 
 export default function MobileSidebar() {
   const pathname = usePathname();

@@ -232,8 +232,8 @@ export default function RevenueTrendGraph() {
       <p
         className={`text-sm font-semibold uppercase ${revenueTrendPercentage > 0 ? "primary-green" : revenueTrendPercentage < 0 ? "primary-red" : "primary-slate"}`}
       >
-        {revenueTrendPercentage > 0 ? "+" : "-"}
-        {revenueTrendPercentage}% vs last period
+        {revenueTrendPercentage > 0 ? "+" : revenueTrendPercentage < 0 ? "-" : ""}
+        {Math.abs(revenueTrendPercentage).toFixed(1)}% vs last period
       </p>
     </div>
   );

@@ -143,6 +143,8 @@ export default function FinancesCard() {
     useTaxProfileStore(); // Extend store with income/expenses
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const { avgMonthlyExpenses } = useDataStore();
+
   useEffect(() => {
     const currentBalance = projects.reduce(
       (acc, project) => acc + Number(project.totalProfit || 0),
@@ -151,9 +153,9 @@ export default function FinancesCard() {
 
     computeSafeToSpend({
       currentBalance,
-      avgMonthlyExpenses: 0,
+      avgMonthlyExpenses: Number(avgMonthlyExpenses),
     });
-  }, [projects, computeSafeToSpend]);
+  }, [projects, computeSafeToSpend, avgMonthlyExpenses]);
 
   const numericTotalIncome = projects.reduce(
     (acc, p) => acc + Number(p.totalRevenue || 0),

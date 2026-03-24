@@ -9,19 +9,19 @@ export default function RevenueHeader() {
     <header className="w-full text-center flex gap-2">
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
         <p className="text-primary text-4xl font-bold">
-          ${selectedProject.totalRevenue}
+          ${Number(selectedProject.totalRevenue || 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}
         </p>
         <h1 className="primary-slate tracking-widest">Total Revenue:</h1>
       </div>
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
         <p className="text-primary text-4xl font-bold">
-          ${selectedProject.totalExpenses}
+          ${Number(selectedProject.totalExpenses || 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}
         </p>
         <h1 className="primary-slate tracking-widest">Total Expenses:</h1>
       </div>
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
         <p className="text-primary text-4xl font-bold">
-          ${selectedProject.totalProfit}
+          ${Number(selectedProject.totalProfit || 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}
         </p>
         <h1 className="primary-slate tracking-widest">Net Profit:</h1>
       </div>

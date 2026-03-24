@@ -73,6 +73,7 @@ export interface Category {
 export interface Transaction {
   id: string;
   userId: string;
+  projectId: string | null;
   type: "income" | "expense";
   amount: string;
   deductible: boolean;
@@ -87,9 +88,7 @@ export type Tabs =
   | "Dashboard"
   | "Clients"
   | "Projects"
-  | "Finances"
-  | "Tasks"
-  | "Reports";
+  | "Finances";
 
 export type Goal = {
   id: string;

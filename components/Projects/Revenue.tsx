@@ -4,11 +4,11 @@ import RevenueHeader from "./RevenueHeader";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/types/types";
-import { useAuth } from "@/lib/useAuth";
-import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
+import { fetchProjectTransactions } from "@/actions/projects/revenue/fetchProjectTransactions";
 import { toast } from "react-toastify";
 import AddTransactionModal from "./AddTransactionModal";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 
 const filteredTransactions = (
   transactions: Transaction[],
@@ -19,7 +19,7 @@ const filteredTransactions = (
 };
 
 export default function Revenue() {
-  const { user } = useAuth();
+  const { selectedProject } = useProjectStore();
 
   const { transactions, setTransactions } = useDataStore();
   const [transactionType, setTransactionType] = useState<
@@ -31,17 +31,17 @@ export default function Revenue() {
 
   useEffect(() => {
     (async () => {
-      if (!user) return;
-      const res = await fetchRecentTransactions(user.id);
+      if (!selectedProject) return;
+      const res = await fetchProjectTransactions(selectedProject.id);
       if (res.success) {
         if (res.data) {
-          setTransactions(res.data);
+          setTransactions(res.data as Transaction[]);
         }
       } else {
-        toast.error(res.error?.message || "An error occurred");
+        toast.error("Failed to load project transactions");
       }
     })();
-  }, [user, setTransactions]);
+  }, [selectedProject, setTransactions]);
 
   return (
     <div className="w-full flex flex-col gap-2 md:gap-4 h-full justify-between background-elevated border background-border rounded-lg p-4">
@@ -100,16 +100,16 @@ export default function Revenue() {
                   className="flex w-full justify-between border-b-2 background-border pb-2"
                 >
                   <td className="text-primary text-center w-full">
-                    {transaction.note}
+                    {transaction.note || "No note"}
                   </td>
                   <td className="text-primary text-center w-full">
-                    {transaction.createdAt.toLocaleDateString()}
+                    {new Date(transaction.createdAt).toLocaleDateString()}
                   </td>
                   <td className="text-primary text-center w-full">
                     {transaction.type}
                   </td>
-                  <td className="text-primary text-center w-full">
-                    {transaction.amount}
+                  <td className={`text-center w-full font-semibold ${transaction.type === "income" ? "primary-green" : "primary-red"}`}>
+                    ${Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>
               ),

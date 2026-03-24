@@ -90,7 +90,13 @@ export default function RecentTransactions() {
                   key={type}
                   className="text-secondary text-sm font-semibold p-2 hover:bg-(--border-interactive) cursor-pointer hover:rounded-lg focus-border-accent transition-all"
                   onClick={() =>
-                    setTransactionType(type as "all" | "income" | "expense")
+                    setTransactionType(
+                      type === "All"
+                        ? "all"
+                        : type === "Income"
+                          ? "income"
+                          : "expense",
+                    )
                   }
                 >
                   {type}
@@ -102,9 +108,9 @@ export default function RecentTransactions() {
       </header>
 
       <main className="flex flex-col gap-2 max-h-[210px] overflow-y-auto">
-        {filteredTransactions.map((transaction, index) => (
+        {filteredTransactions.map((transaction) => (
           <div
-            key={index}
+            key={transaction.id}
             className="flex items-center justify-between border-b background-border py-2"
           >
             <h1 className="text-primary text-sm font-medium w-full text-center">

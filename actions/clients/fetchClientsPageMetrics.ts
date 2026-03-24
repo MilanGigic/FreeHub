@@ -19,8 +19,6 @@ const fetchClientsPageMetricsCached = unstable_cache(
       return { success: false, error: "User ID is required" as const };
     }
 
-    console.log("Cache miss: fetching clients page metrics");
-
     try {
       const from = daysAgo(30);
 

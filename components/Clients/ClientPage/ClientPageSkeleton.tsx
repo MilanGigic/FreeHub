@@ -1,8 +1,6 @@
 function Bone({ className = "" }: { className?: string }) {
   return (
-    <div
-      className={`rounded-lg bg-zinc-800 animate-pulse ${className}`}
-    />
+    <div className={`rounded-lg bg-zinc-800 animate-pulse ${className}`} />
   );
 }
 
@@ -32,7 +30,7 @@ export default function ClientPageSkeleton() {
 
       {/* Tab navigation */}
       <div className="flex justify-center items-center gap-2 md:gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <Bone key={i} className="h-9 w-28 md:w-36 rounded-lg" />
         ))}
       </div>

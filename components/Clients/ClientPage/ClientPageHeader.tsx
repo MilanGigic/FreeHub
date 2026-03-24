@@ -1,7 +1,7 @@
 "use client";
 
 import { ClientPageTab } from "@/types/types";
-import { Briefcase, ChartBar, Eye, FileText } from "lucide-react";
+import { Briefcase, Eye, FileText } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -9,7 +9,6 @@ const tabs = [
   { tab: "Overview", icon: <Eye /> },
   { tab: "Jobs And Projects", icon: <Briefcase /> },
   { tab: "Invoices", icon: <FileText /> },
-  { tab: "Insights", icon: <ChartBar /> },
 ];
 
 export default function ClientPageHeader({ clientId }: { clientId: string }) {
@@ -52,7 +51,7 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
                   <span>{tab.icon}</span>
                   {tab.tab}
                   <div
-                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase() ? "w-full" : "w-0"}`}
+                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replaceAll(" ", "-") ? "w-full" : "w-0"}`}
                   ></div>
                 </h1>
               </button>

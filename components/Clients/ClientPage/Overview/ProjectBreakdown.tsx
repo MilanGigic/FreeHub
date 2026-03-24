@@ -25,15 +25,28 @@ export default function ProjectBreakdown() {
           </tr>
         </thead>
         <tbody>
+          {clientProjects.length === 0 && (
+            <tr>
+              <td colSpan={5} className="text-sm primary-slate text-center py-4">
+                No projects for this client yet
+              </td>
+            </tr>
+          )}
           {clientProjects.map((project) => (
             <tr
               key={project.id}
               className="border-b background-border text-center primary-slate"
             >
               <td className="text-sm text-primary py-2">{project.name}</td>
-              <td className="primary-green">${project.totalRevenue}</td>
-              <td className="primary-red">${project.totalExpenses}</td>
-              <td className="primary-green">${project.totalProfit}</td>
+              <td className="primary-green">
+                ${Number(project.totalRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </td>
+              <td className="primary-red">
+                ${Number(project.totalExpenses || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </td>
+              <td className="primary-green">
+                ${Number(project.totalProfit || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </td>
               <td
                 className={`${project.totalMargin && Number(project.totalMargin) >= 40 ? "primary-green" : project.totalMargin && Number(project.totalMargin) >= 25 ? "primary-slate" : "primary-red"}`}
               >

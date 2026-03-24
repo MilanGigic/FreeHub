@@ -1,21 +1,50 @@
 "use client";
 
 import { useClientStore } from "@/lib/store/useClientStore";
-import { useAuth } from "@/lib/useAuth";
+import { useDataStore } from "@/lib/store/useDataStore";
 import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import NewClientModal from "./NewClientModal";
+import { ClientCardMetrics } from "@/actions/clients/fetchClientCardMetrics";
 
 const maxMobileClients = 5;
 
-export default function ClientTable() {
+export default function ClientTable({
+  clientMetrics,
+}: {
+  clientMetrics: ClientCardMetrics[];
+}) {
   const router = useRouter();
 
-  useAuth();
   const { clients, setSelectedClient, selectedClient } = useClientStore();
+  const { projects } = useDataStore();
   const [currentPage] = useState<number>(1);
   const [newClientModalOpen, setNewClientModalOpen] = useState<boolean>(false);
+
+  const metricsMap = useMemo(() => {
+    const map = new Map<string, ClientCardMetrics>();
+    clientMetrics.forEach((m) => map.set(m.clientId, m));
+    return map;
+  }, [clientMetrics]);
+
+  const clientRevenues = useMemo(() => {
+    const map = new Map<string, { ytd: number; mtd: number }>();
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    projects.forEach((p) => {
+      const rev = Number(p.totalRevenue || 0);
+      const existing = map.get(p.clientId) || { ytd: 0, mtd: 0 };
+      existing.ytd += rev;
+      const created = new Date(p.createdAt);
+      if (created >= startOfMonth) {
+        existing.mtd += rev;
+      }
+      map.set(p.clientId, existing);
+    });
+    return map;
+  }, [projects]);
 
   const currentClients = useMemo(() => {
     return clients.slice(
@@ -88,94 +117,53 @@ export default function ClientTable() {
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Revenue MTD:
-                <span className="primary-slate">—</span>
+                <span className="primary-cyan">
+                  $
+                  {(clientRevenues.get(client.id)?.mtd ?? 0).toLocaleString(
+                    "en-US",
+                    { maximumFractionDigits: 0 },
+                  )}
+                </span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Revenue YTD:
-                <span className="primary-slate">—</span>
+                <span className="primary-cyan">
+                  $
+                  {(clientRevenues.get(client.id)?.ytd ?? 0).toLocaleString(
+                    "en-US",
+                    { maximumFractionDigits: 0 },
+                  )}
+                </span>
               </p>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Outstanding:
-                <span className="primary-slate">To be added</span>
+                <span
+                  className={
+                    Number(metricsMap.get(client.id)?.outstandingTotal ?? 0) > 0
+                      ? "primary-amber"
+                      : "primary-slate"
+                  }
+                >
+                  $
+                  {Number(
+                    metricsMap.get(client.id)?.outstandingTotal ?? 0,
+                  ).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                </span>
               </p>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
                 Avg payment time:
-                <span className="primary-slate">To be added</span>
+                <span className="primary-slate">
+                  {metricsMap.get(client.id)?.avgPaymentDays != null
+                    ? `${metricsMap.get(client.id)!.avgPaymentDays} days`
+                    : "—"}
+                </span>
               </p>
             </div>
           </div>
         ))}
       </div>
-      {/* <table className="w-full min-w-[720px]">
-          <thead>
-            <tr>
-              {tableLists.map((list) => (
-                <th
-                  key={list}
-                  className="text-sm text-primary text-center whitespace-nowrap px-2 py-3"
-                >
-                  {list}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          const tableLists = [
-  "Client",
-  "Status",
-  "Revenue MTD",
-  "Revenue YTD",
-  "Outstanding",
-  "Avg Payment Time",
-]; 
-          <tbody className="max-h-[500px] overflow-y-auto">
-            {currentClients.map((client) => (
-              <tr
-                key={client.id}
-                className="border-t background-border hover:bg-(--bg-elevated)"
-                onClick={() => {
-                  setSelectedClient(client);
-                  router.push(`/clients/${client.id}/overview`);
-                }}
-              >
-                <td className="text-sm text-primary text-center px-2 py-3 hover:cursor-pointer">
-                  {client.firstName} {client.lastName}
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  {client.status}
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  ${mtdRevenue}
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  ${ytdRevenue}
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
-                </td>
-                <td className="text-sm primary-slate text-center px-2 py-3">
-                  To be added
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
     </div>
   );
-}
-
-{
-  /*
-Client Name	Bold text, maybe client logo/icon optional
-Status	Badge (green / yellow / red)
-Revenue (MTD)	Number, teal if up, muted if flat
-Revenue (YTD)	Number
-Outstanding	Red if overdue, gray if pending
-Avg Payment Time	Number + small trend arrow
-Profitability %	Number, maybe progress bar
-Last Payment Date	Date, formatted “MMM DD”
-Safe-to-Spend Contribution	Number, small subtext: “% of buffer”  
-  
-*/
 }

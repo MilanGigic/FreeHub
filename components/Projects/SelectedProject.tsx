@@ -19,7 +19,7 @@ export default function SelectedProject() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab");
+  const activeTab = searchParams.get("tab") || "calendar";
 
   const {
     selectedProject,
@@ -119,11 +119,7 @@ export default function SelectedProject() {
           </div>
         ) : activeTab === "revenue" ? (
           <Revenue />
-        ) : (
-          <div>
-            <p>No tab selected</p>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

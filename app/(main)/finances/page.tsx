@@ -8,8 +8,6 @@ import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 
-import Link from "next/link";
-
 export default async function FinancesPage() {
   const user = await getCurrentUser();
 
@@ -32,28 +30,6 @@ export default async function FinancesPage() {
     .from(transactions)
     .where(eq(transactions.userId, user.id))
     .then((res) => Number(res[0]?.total ?? 0));
-
-  if (!user)
-    return (
-      <div className="text-center text-primary font-semibold">
-        You must be logged in to access this page
-        <div className="flex items-center gap-2 justify-center flex-wrap">
-          <Link
-            href="/login"
-            className="primary-cyan hover:opacity-80 transition-all underline"
-          >
-            Login
-          </Link>
-          <span className="text-tertiary">or</span>
-          <Link
-            href="/register"
-            className="primary-cyan hover:opacity-80 transition-all underline"
-          >
-            Register
-          </Link>
-        </div>
-      </div>
-    );
 
   return (
     <FinancesClient

@@ -40,12 +40,14 @@ export default function ProjectsHeader({
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
         <p className="primary-amber text-5xl font-bold tracking-widest mb-6">
-          {(
-            projects.reduce(
-              (acc, project) => acc + Number(project.totalMargin || 0),
-              0,
-            ) / projects.length
-          ).toFixed(2)}
+          {projects.length > 0
+            ? (
+                projects.reduce(
+                  (acc, project) => acc + Number(project.totalMargin || 0),
+                  0,
+                ) / projects.length
+              ).toFixed(2)
+            : "0.00"}
           %
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">

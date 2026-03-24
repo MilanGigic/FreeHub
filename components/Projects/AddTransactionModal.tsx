@@ -1,8 +1,9 @@
 "use client";
 
 import { commitTransaction } from "@/actions/finances/commitTransaction";
+import { fetchProjectById } from "@/actions/projects/fetchProjectById";
 import { useAuth } from "@/lib/useAuth";
-import { Transaction } from "@/types/types";
+import { Project, Transaction } from "@/types/types";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -16,14 +17,12 @@ export default function AddTransactionModal({
 }) {
   const { user } = useAuth();
   const { transactions, setTransactions } = useDataStore();
-  const { selectedProject } = useProjectStore();
+  const { selectedProject, setSelectedProject } = useProjectStore();
 
-  const [form, setForm] = useState<
-    Omit<Transaction, "id" | "userId" | "createdAt" | "updatedAt">
-  >({
+  const [form, setForm] = useState({
     amount: "0",
     note: "",
-    type: "income",
+    type: "income" as "income" | "expense",
     deductible: false,
   });
 
@@ -45,12 +44,14 @@ export default function AddTransactionModal({
       if (res.data) {
         setTransactions([...transactions, res.data as Transaction]);
       }
+      const refreshed = await fetchProjectById(selectedProject.id);
+      if (refreshed.success && refreshed.data) {
+        setSelectedProject(refreshed.data as Project);
+      }
     } else {
       toast.error(res.error?.message || "An error occurred");
     }
   };
-
-  // Update the total revenue and total expenses and total profit and effective rate on submit
 
   return (
     <div className="absolute top-16 right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col">
@@ -89,7 +90,7 @@ export default function AddTransactionModal({
             id="note"
             className="w-full p-2 border background-border rounded-lg focus:outline focus:outline-(--accent-cyan) text-primary"
             value={form.note || ""}
-            onChange={(e) => setForm({ ...form, note: e.target.value || null })}
+            onChange={(e) => setForm({ ...form, note: e.target.value })}
           />
         </div>
         <div>

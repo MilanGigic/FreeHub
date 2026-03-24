@@ -106,7 +106,7 @@ export default function NewProjectModal() {
       className="flex flex-col gap-2 md:gap-4 w-full background-elevated border background-border rounded-lg p-4 absolute top-12 right-0 primary-slate animate-flip-down animate-duration-1500 animate-ease-out"
       onSubmit={(e) => handleSubmit(e)}
     >
-      <button onClick={() => setIsNewProjectModalOpen(false)}>
+      <button type="button" onClick={() => setIsNewProjectModalOpen(false)}>
         <X
           size={40}
           className="text-primary transition-all border background-border rounded-full p-1 hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red)"

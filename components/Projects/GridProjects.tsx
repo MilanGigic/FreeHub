@@ -4,16 +4,18 @@ import { useProjectStore } from "@/lib/store/useProjectStore";
 import { Project } from "@/types/types";
 import { useRouter } from "next/navigation";
 
-function MarginBar({ value, color }: { value: number; color: string }) {
+function MarginBar({ value }: { value: number }) {
+  const clampedValue = Math.min(100, Math.max(0, value));
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 h-4 bg-[#27272a] rounded-md overflow-hidden">
         <div
-          className={`h-full w-[${value}%] bg-[${color}] rounded-md transition-all duration-600`}
+          className="h-full bg-[#2dd4bf] rounded-md transition-all duration-600"
+          style={{ width: `${clampedValue}%` }}
         />
       </div>
       <span className="text-xs text-[#a1a1aa] min-w-8 text-right">
-        {value}%
+        {value.toFixed(1)}%
       </span>
     </div>
   );
@@ -77,7 +79,6 @@ export default function GridProjects({ projects }: { projects: Project[] }) {
             <div className="w-full flex flex-col gap-2">
               <MarginBar
                 value={project.totalMargin ? Number(project.totalMargin) : 0}
-                color="primary-cyan"
               />
               <p className="primary-slate uppercase font-semibold text-sm">
                 Profit Margin

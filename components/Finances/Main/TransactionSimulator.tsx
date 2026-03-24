@@ -19,7 +19,6 @@ import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { Project } from "@/types/types";
-import { useProjectStore } from "@/lib/store/useProjectStore";
 
 const EMPTY_FORM: SimulationInput = {
   type: "expense",
@@ -49,12 +48,6 @@ function DeltaBadge({
   );
 }
 
-function deriveTaxRate(entityType: string | null): number {
-  if (entityType === "s_corp") return 0.2;
-  if (entityType === "llc") return 0.25;
-  return 0.3; // sole proprietor default (SE tax + income tax)
-}
-
 export default function TransactionSimulator() {
   const { user } = useAuth();
   const [form, setForm] = useState<SimulationInput>(EMPTY_FORM);
@@ -64,7 +57,6 @@ export default function TransactionSimulator() {
   const [isPending, startTransition] = useTransition();
   const { transactions, setTransactions, projects } = useDataStore();
 
-  console.log("Projects:", projects);
   useEffect(() => {
     (async () => {
       if (!user) return;
@@ -79,8 +71,8 @@ export default function TransactionSimulator() {
     })();
   }, [user, setTransactions]);
 
-  const { safeToSpend, netProfit, entityType } = useTaxProfileStore();
-  const taxRate = deriveTaxRate(entityType);
+  const { safeToSpend, netProfit, effectiveTaxRate } = useTaxProfileStore();
+  const taxRate = effectiveTaxRate > 0 ? effectiveTaxRate : 0.3;
 
   // Derive monthly expenses from transactions within last 30 days
   const monthlyExpenses = useMemo(() => {

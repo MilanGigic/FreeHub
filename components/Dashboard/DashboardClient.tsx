@@ -2,10 +2,7 @@
 
 import ClientsCard from "@/components/Dashboard/ClientsCard";
 import FinancesCard from "@/components/Dashboard/FinancesCard";
-import MessagesCard from "@/components/Dashboard/MessagesCard";
 import ProjectsCard from "@/components/Dashboard/ProjectsCard";
-import ReportsCard from "@/components/Dashboard/ReportsCard";
-import TasksCard from "@/components/Dashboard/TasksCard";
 import { useUIStore } from "@/lib/store/useUIStore";
 import Link from "next/link";
 
@@ -47,11 +44,6 @@ export default function DashboardClient() {
           <FinancesCard />
           <ClientsCard />
           <ProjectsCard />
-        </div>
-        <div className="flex flex-col xl:flex-row gap-4">
-          <TasksCard />
-          <ReportsCard />
-          <MessagesCard />
         </div>
       </div>
     </div>

@@ -1,17 +1,20 @@
 import { useClientStore } from "@/lib/store/useClientStore";
-import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 
 export default function ProfitMargin() {
   const { clientProjects } = useClientStore();
-  const { profitAfterTaxes } = useTaxProfileStore();
 
   const totalRevenue = clientProjects.reduce(
     (acc, project) => acc + Number(project.totalRevenue || 0),
     0,
   );
+  const totalExpenses = clientProjects.reduce(
+    (acc, project) => acc + Number(project.totalExpenses || 0),
+    0,
+  );
 
   const profitMargin =
-    totalRevenue > 0 ? (profitAfterTaxes / totalRevenue) * 100 : 0;
+    totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue) * 100 : 0;
+
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
       <h1 className="text-base primary-slate uppercase font-semibold">

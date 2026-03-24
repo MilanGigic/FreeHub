@@ -10,6 +10,8 @@ type ClientStore = {
   setSelectedClientId: (id: string | null) => void;
   selectedClient: Client | null;
   setSelectedClient: (client: Client | null) => void;
+  clientNetTakeHome: number;
+  setClientNetTakeHome: (netTakeHome: number) => void;
 };
 
 export const useClientStore = create<ClientStore>((set) => ({
@@ -21,4 +23,7 @@ export const useClientStore = create<ClientStore>((set) => ({
   setSelectedClientId: (id: string | null) => set({ selectedClientId: id }),
   selectedClient: null,
   setSelectedClient: (client: Client | null) => set({ selectedClient: client }),
+  clientNetTakeHome: 0,
+  setClientNetTakeHome: (netTakeHome: number) =>
+    set({ clientNetTakeHome: netTakeHome }),
 }));
