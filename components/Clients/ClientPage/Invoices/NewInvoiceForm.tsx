@@ -8,10 +8,11 @@ import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Project } from "@/types/types";
+import { X } from "lucide-react";
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export default function NewInvoiceForm() {
+export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const { selectedClient } = useClientStore();
   const { projects, setProjects } = useDataStore();
@@ -162,8 +163,11 @@ export default function NewInvoiceForm() {
   return (
     <form
       onSubmit={(e) => handleSubmit(e)}
-      className="flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 max-w-2xl w-full"
+      className="flex flex-col gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 max-w-2xl w-full absolute top-16 right-0 primary-slate animate-flip-down animate-duration-1500 animate-ease-out"
     >
+      <button onClick={onClose}>
+        <X className="w-12 h-12 text-primary transition-all border background-border rounded-full hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red)" />
+      </button>
       {/* AMOUNT INPUT */}
       <div>
         <label

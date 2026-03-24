@@ -1,7 +1,7 @@
 "use client";
 
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
-import { Shield, TrendingDown } from "lucide-react";
+import { Clock, Shield, TrendingDown, Wallet } from "lucide-react";
 
 export default function FinancesHero() {
   const {
@@ -17,32 +17,32 @@ export default function FinancesHero() {
       label: "Tax Reserved",
       value: `$${Number(monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Shield,
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
+      color: "text-(--accent-amber)",
+      bg: "bg-(--accent-amber)/10",
       tooltip: "Set aside monthly toward your estimated tax bill",
     },
     {
       label: "Safety buffer",
       value: `$${Number(safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
-      icon: Shield,
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
+      icon: Wallet,
+      color: "text-(--accent-purple)",
+      bg: "bg-(--accent-purple)/10",
       tooltip: "Held back to cover upcoming business expenses",
     },
     {
       label: "Cash runway days",
       value: cashRunwayDays,
-      icon: Shield,
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
+      icon: Clock,
+      color: "text-(--accent-cyan)",
+      bg: "bg-(--accent-cyan)/10",
       tooltip: "How long your current balance lasts at your burn rate",
     },
     {
       label: "Effective tax rate",
       value: `${(Number(effectiveTaxRate) * 100).toFixed(2)}%`,
       icon: TrendingDown,
-      color: "text-red-400",
-      bg: "bg-red-400/10",
+      color: "text-(--accent-red)",
+      bg: "bg-(--accent-red)/10",
       tooltip: "Your estimated tax as a share of net profit",
     },
   ];

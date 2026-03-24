@@ -83,6 +83,14 @@ export interface Transaction {
 
 export type Conservativeness = "conservative" | "moderate" | "aggressive";
 
+export type Tabs =
+  | "Dashboard"
+  | "Clients"
+  | "Projects"
+  | "Finances"
+  | "Tasks"
+  | "Reports";
+
 export type Goal = {
   id: string;
   userId: string;

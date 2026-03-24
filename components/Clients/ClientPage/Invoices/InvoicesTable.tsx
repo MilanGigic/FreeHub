@@ -7,8 +7,10 @@ import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Invoice, InvoiceStatus } from "@/types/types";
+import { PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import NewInvoiceForm from "./NewInvoiceForm";
 
 const invoiceListHeaders = [
   "Invoice #",
@@ -41,6 +43,8 @@ export default function InvoicesTable() {
   const { setProfit } = useProjectStore();
   const { selectedClient } = useClientStore();
   const [show, setShow] = useState<StatusFilter>("all");
+  const [isNewInvoiceModalOpen, setIsNewInvoiceModalOpen] =
+    useState<boolean>(false);
 
   const { user } = useAuth();
 
@@ -111,40 +115,73 @@ export default function InvoicesTable() {
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col gap-4 relative">
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2 justify-center pb-4 text-xs sm:text-sm">
-        <h1 className="text-primary">Show:</h1>
-        <button
-          className={`${show === "all" ? "bg-(--accent-cyan)/20 primary-cyan" : "primary-cyan"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-cyan)/20 hover:primary-cyan`}
-          onClick={() => setShow("all")}
+      <div className="flex items-center gap-2 justify-between background-elevated border background-border rounded-lg px-4 md:px-0">
+        <select
+          name="sort"
+          id="sort"
+          className="text-lg font-semibold uppercase tracking-wider rounded-lg px-4 py-2 cursor-pointer text-primary focus:outline focus:outline-(--accent-cyan) block md:hidden"
+          value={show}
+          onChange={(e) => setShow(e.target.value as StatusFilter)}
         >
-          All
-        </button>
-        <button
-          className={`${show === "paid" ? "bg-(--accent-green)/20 primary-green" : "primary-green"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-green)/20 hover:primary-green`}
-          onClick={() => setShow("paid")}
-        >
-          Paid
-        </button>
-        <button
-          className={`${show === "sent" ? "bg-(--accent-amber)/20 primary-amber" : "primary-amber"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-amber)/20 hover:primary-amber`}
-          onClick={() => setShow("sent")}
-        >
-          Sent
-        </button>
-        <button
-          className={`${show === "overdue" ? "bg-(--accent-red)/20 primary-red" : "primary-red"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-red)/20 hover:primary-red`}
-          onClick={() => setShow("overdue")}
-        >
-          Overdue
-        </button>
-        <button
-          className={`${show === "draft" ? "bg-(--accent-slate)/20 primary-slate" : "primary-slate"} border background-border rounded-lg px-2 py-1 cursor-pointer hover:bg-(--accent-slate)/20 hover:primary-slate`}
-          onClick={() => setShow("draft")}
-        >
-          Draft
-        </button>
+          <option value="all">All ({invoices.length})</option>
+          <option value="paid">
+            Paid ({invoices.filter((inv) => inv.status === "paid").length})
+          </option>
+          <option value="sent">
+            Sent ({invoices.filter((inv) => inv.status === "sent").length})
+          </option>
+          <option value="overdue">
+            Overdue ({invoices.filter((inv) => inv.status === "overdue").length}
+            )
+          </option>
+          <option value="draft">
+            Draft ({invoices.filter((inv) => inv.status === "draft").length})
+          </option>
+        </select>
+        <div className="items-center gap-2 hidden md:flex">
+          <button
+            className={`${show === "all" ? "bg-(--accent-cyan)/20 primary-cyan" : "primary-cyan"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-cyan)/20 hover:primary-cyan`}
+            onClick={() => setShow("all")}
+          >
+            All ({invoices.length})
+          </button>
+          <button
+            className={`${show === "paid" ? "bg-(--accent-green)/20 primary-green" : "primary-green"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-green)/20 hover:primary-green`}
+            onClick={() => setShow("paid")}
+          >
+            Paid ({invoices.filter((inv) => inv.status === "paid").length})
+          </button>
+          <button
+            className={`${show === "sent" ? "bg-(--accent-amber)/20 primary-amber" : "primary-amber"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-amber)/20 hover:primary-amber`}
+            onClick={() => setShow("sent")}
+          >
+            Sent ({invoices.filter((inv) => inv.status === "sent").length})
+          </button>
+          <button
+            className={`${show === "overdue" ? "bg-(--accent-red)/20 primary-red" : "primary-red"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-red)/20 hover:primary-red`}
+            onClick={() => setShow("overdue")}
+          >
+            Overdue ({invoices.filter((inv) => inv.status === "overdue").length}
+            )
+          </button>
+          <button
+            className={`${show === "draft" ? "bg-(--accent-slate)/20 primary-slate" : "primary-slate"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-slate)/20 hover:primary-slate`}
+            onClick={() => setShow("draft")}
+          >
+            Draft ({invoices.filter((inv) => inv.status === "draft").length})
+          </button>
+        </div>
+        <div>
+          <button
+            className={`primary-cyan text-lg font-semibold uppercase tracking-wider rounded-lg hover:bg-(--accent-cyan)/30 transition-all duration-300 ease-out flex items-center gap-0.5 h-full px-4 cursor-pointer md:w-xs justify-center py-2 ${isNewInvoiceModalOpen ? "bg-(--accent-cyan)/20 primary-cyan" : "primary-cyan"}`}
+            onClick={() => setIsNewInvoiceModalOpen(true)}
+          >
+            <PlusIcon className="w-4 h-4 primary-cyan" />
+            New Invoice
+          </button>
+        </div>
       </div>
 
       {/* Mobile cards */}
@@ -373,6 +410,9 @@ export default function InvoicesTable() {
           </tbody>
         </table>
       </div>
+      {isNewInvoiceModalOpen ? (
+        <NewInvoiceForm onClose={() => setIsNewInvoiceModalOpen(false)} />
+      ) : null}
     </div>
   );
 }

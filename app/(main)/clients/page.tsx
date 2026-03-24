@@ -1,3 +1,5 @@
+"use client";
+
 import ClientsHeader from "@/components/Clients/Header/ClientsHeader";
 import ClientsMain from "@/components/Clients/ClientsMain";
 
@@ -12,10 +14,6 @@ export default function ClientsPage() {
       <main className="w-full">
         <ClientsMain />
       </main>
-
-      {/* <main className="w-full flex justify-center items-center">
-        <NewClientModal />
-      </main> */}
     </div>
   );
 }

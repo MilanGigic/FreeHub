@@ -8,12 +8,44 @@ import ProfitMargin from "./ProfitMargin";
 import TaxReservedFromThisClient from "./TaxReservedFromThisClient";
 import ProjectBreakdown from "./ProjectBreakdown";
 import NetTakeHomeFromThisClient from "./NetTakeHomeFromThisClient";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { MouseEvent } from "react";
 import { useClientStore } from "@/lib/store/useClientStore";
 
 export default function OverviewClient() {
+  const router = useRouter();
+
   const { selectedClient } = useClientStore();
+
+  const handleBack = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    router.back();
+  };
+
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
+      <div className="flex w-full p-2 background-elevated gap-2">
+        <button
+          className="flex items-center gap-2 text-gray-500 uppercase font-semibold hover:text-(--accent-slate) transition-all cursor-pointer"
+          onClick={(e) => handleBack(e)}
+        >
+          <ArrowLeft size={20} />
+          Back
+        </button>
+        <div className="h-full border background-border" />
+        <Link
+          href={"/clients"}
+          className="text-gray-500 uppercase font-semibold hover:text-(--accent-slate) transition-all"
+        >
+          Clients
+        </Link>
+        <div className="h-full border background-border" />
+        <h1 className="text-primary uppercase font-semibold">
+          {selectedClient?.firstName} {selectedClient?.lastName}
+        </h1>
+      </div>
       <header className="text-sm primary-slate font-semibold text-center">
         Status:{" "}
         <span

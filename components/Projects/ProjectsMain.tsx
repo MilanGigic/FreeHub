@@ -35,15 +35,10 @@ export default function ProjectsMain() {
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Project[]>([]);
 
-  const {
-    isNewProjectModalLoading,
-    setIsNewProjectModalOpen,
-    isNewProjectModalOpen,
-  } = useUIStore();
+  const { setIsNewProjectModalOpen, isNewProjectModalOpen } = useUIStore();
 
   const { user } = useAuth();
 
-  const MAX_GRID_PROJECTS = 4;
   useEffect(() => {
     const fetchResults = async () => {
       if (!user) return;

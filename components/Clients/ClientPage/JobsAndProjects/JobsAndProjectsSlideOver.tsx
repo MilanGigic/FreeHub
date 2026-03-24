@@ -115,21 +115,6 @@ export default function JobsAndProjectsSlideOver() {
               </span>
             </p>
           </div>
-          <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
-            <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
-              Details
-            </h1>
-
-            <p className="primary-slate text-sm uppercase font-semibold">
-              Planned Hours: <span className="primary-cyan">12 hours</span>
-            </p>
-            <p className="primary-slate text-sm uppercase font-semibold">
-              Hours Left:{" "}
-              <span className="primary-cyan">
-                {12 - (selectedProject.totalHoursWorked ?? 0)} hours
-              </span>
-            </p>
-          </div>
           {selectedProject.status === "completed" ? (
             <div>
               <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
