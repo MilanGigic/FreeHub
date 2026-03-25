@@ -6,11 +6,14 @@ import { TaxProfile } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 export default function StepFive() {
   const { user } = useAuth();
   const [taxProfile, setTaxProfile] = useState<TaxProfile | null>(null);
   const router = useRouter();
+  const t = useTranslations("wizard");
+  const tCommon = useTranslations("common");
 
   useEffect(() => {
     (async () => {
@@ -38,73 +41,73 @@ export default function StepFive() {
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">Welcome to Efficio</h1>
+        <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
         <p className="text-sm primary-slate">
-          Let&apos;s get you set up with your account.
+          {t("welcomeSubtitle")}
         </p>
       </div>
 
       <div className="text-center flex flex-col gap-2 items-center">
         <h1 className="text-5xl font-bold primary-cyan">
-          You&apos;re all set up!
+          {t("allSetUp")}
         </h1>
         <p className="text-xl text-primary">
-          You can now proceed to the dashboard.
+          {t("proceedToDashboard")}
         </p>
         <p className="text-lg primary-slate">
-          You can always change your answers in the account settings.
+          {t("changeInSettings")}
         </p>
 
         <div className="grid grid-cols-4 gap-2">
           <h1 className="col-span-4 text-center text-2xl font-bold primary-cyan">
-            Here is your tax profile:
+            {t("taxProfile")}
           </h1>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Entity Type:{" "}
+            {t("entityType")}{" "}
             <span className="font-normal text-primary">
               {taxProfile?.entityType}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Filing Status:{" "}
+            {t("filingStatusLabel")}{" "}
             <span className="font-normal text-primary">
               {taxProfile?.filingStatus}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            State Residence:{" "}
+            {t("stateResidence")}{" "}
             <span className="font-normal text-primary">
               {taxProfile?.stateResidence}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Home Office Simplified:{" "}
+            {t("homeOfficeSimplified")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.homeOfficeSimplified ? "Yes" : "No"}
+              {taxProfile?.homeOfficeSimplified ? tCommon("yes") : tCommon("no")}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Home Office Sqft:{" "}
+            {t("homeOfficeSqft")}{" "}
             <span className="font-normal text-primary">
               {taxProfile?.homeOfficeSqft}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Mileage Tracking:{" "}
+            {t("mileageTracking")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.mileageTracking ? "Yes" : "No"}
+              {taxProfile?.mileageTracking ? tCommon("yes") : tCommon("no")}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Health Insurance Deduction:{" "}
+            {t("healthInsuranceDeduction")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.healthInsuranceDeduction ? "Yes" : "No"}
+              {taxProfile?.healthInsuranceDeduction ? tCommon("yes") : tCommon("no")}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
-            Retirement Contribution:{" "}
+            {t("retirementContribution")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.retirementContribution ? "Yes" : "No"}
+              {taxProfile?.retirementContribution ? tCommon("yes") : tCommon("no")}
             </span>
           </p>
         </div>
@@ -115,7 +118,7 @@ export default function StepFive() {
           onClick={() => router.push("/dashboard")}
           className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
         >
-          Proceed to dashboard
+          {t("proceedToDashboardButton")}
         </button>
       </div>
     </div>

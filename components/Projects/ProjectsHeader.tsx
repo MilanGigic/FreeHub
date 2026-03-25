@@ -1,4 +1,7 @@
+"use client";
+
 import { Project } from "@/types/types";
+import { useTranslations } from "next-intl";
 
 export default function ProjectsHeader({
   projects,
@@ -7,6 +10,7 @@ export default function ProjectsHeader({
   projects: Project[];
   totalRevenue: string;
 }) {
+  const t = useTranslations("projects");
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -14,7 +18,7 @@ export default function ProjectsHeader({
           {projects.length}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Total Projects
+          {t("totalProjects")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -27,7 +31,7 @@ export default function ProjectsHeader({
           }
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Active / In Progress
+          {t("activeInProgress")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -35,7 +39,7 @@ export default function ProjectsHeader({
           ${totalRevenue}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Total Revenue
+          {t("totalRevenue")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -51,7 +55,7 @@ export default function ProjectsHeader({
           %
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Avg Margin
+          {t("avgMargin")}
         </p>
       </div>
     </div>

@@ -1,7 +1,12 @@
 'use client'
 
 import { Moon, Sun } from 'lucide-react'
-import { useEffect, useSyncExternalStore, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
+import { useTranslations } from 'next-intl'
+
+function subscribeNoop() {
+  return () => {}
+}
 
 function getThemeSnapshot(): boolean {
   if (typeof window === 'undefined') return false
@@ -30,16 +35,17 @@ function notifyThemeListeners() {
 }
 
 export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false)
+  const t = useTranslations('common')
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false
+  )
   const isDark = useSyncExternalStore(
     subscribeToTheme,
     getThemeSnapshot,
     () => false
   )
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
@@ -59,9 +65,9 @@ export default function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="p-2 rounded-lg background-elevated border background-border"
-      aria-label="Toggle theme"
+      aria-label={t('toggleTheme')}
     >
-      {!mounted ? (
+      {!isClient ? (
         <Sun size={20} className="text-primary" />
       ) : isDark ? (
         <Moon size={20} className="text-primary" />

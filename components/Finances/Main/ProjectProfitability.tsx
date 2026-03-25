@@ -4,15 +4,17 @@ import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
-
-const tableLists = ["Client", "Revenue", "Expenses", "Profit"];
+import { useTranslations } from "next-intl";
 
 export default function ProjectProfitability() {
+  const t = useTranslations("finances");
   const { clients } = useClientStore();
   const { projects } = useDataStore();
 
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  const tableLists = [t("clientColumn"), t("revenueColumn"), t("expensesColumn"), t("profitColumn")];
 
   const filteredProjects = useMemo(() => {
     if (!selectedProjectId) return projects;
@@ -20,8 +22,8 @@ export default function ProjectProfitability() {
   }, [projects, selectedProjectId]);
 
   const dropdownLabel = selectedProjectId
-    ? projects.find((p) => p.id === selectedProjectId)?.name ?? "All Projects"
-    : "All Projects";
+    ? projects.find((p) => p.id === selectedProjectId)?.name ?? t("allProjects")
+    : t("allProjects");
 
   function renderSelectedClient(clientId: string) {
     const client = clients.find((client) => client.id === clientId);
@@ -37,7 +39,7 @@ export default function ProjectProfitability() {
     <div className="w-full h-full flex flex-col gap-4 items-center border background-border rounded-lg background-elevated p-4">
       <header className="flex w-full justify-between items-center">
         <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
-          Project Profitability
+          {t("projectProfitability")}
         </h1>
         <div className="relative">
           <button
@@ -56,7 +58,7 @@ export default function ProjectProfitability() {
                   }}
                   className="text-sm font-semibold primary-cyan py-2 px-4 hover:bg-(--border-default) transition-all cursor-pointer w-full text-center rounded-lg"
                 >
-                  All Projects
+                  {t("allProjects")}
                 </h1>
                 {projects.map((project) => (
                   <h1
@@ -89,7 +91,7 @@ export default function ProjectProfitability() {
         </div>
         <div>
           {filteredProjects.length === 0 && (
-            <p className="text-sm primary-slate text-center py-4">No projects found</p>
+            <p className="text-sm primary-slate text-center py-4">{t("noProjectsFound")}</p>
           )}
           {filteredProjects.map((project) => (
             <div key={project.id}>

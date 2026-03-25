@@ -1,7 +1,9 @@
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useTranslations } from "next-intl";
 
 export default function PaymentReliabilityScore() {
   const { invoices } = useInvoiceStore();
+  const t = useTranslations("clients");
 
   const paidInvoices = invoices.filter((invoice) => invoice.status === "paid");
   const overdueInvoicesCount = invoices.filter(
@@ -62,7 +64,7 @@ export default function PaymentReliabilityScore() {
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
       <h1 className="text-base primary-slate uppercase font-semibold">
-        Payment Reliability Score
+        {t("paymentReliabilityScore")}
       </h1>
       <div className="flex flex-col gap-2">
         <div className="w-full flex items-center gap-2">
@@ -82,19 +84,18 @@ export default function PaymentReliabilityScore() {
         <div>
           <p className="text-sm primary-slate">
             {lateCount > 0
-              ? `Avg ${averageDaysLate.toFixed(1)} days late`
-              : "Paid on time"}
+              ? t("avgDaysLate", { count: averageDaysLate.toFixed(1) })
+              : t("paidOnTime")}
           </p>
           <p className="text-sm font-semibold primary-purple">
             {totalRelevantInvoices > 0
-              ? `${onTimePaidCount} of ${totalRelevantInvoices} invoices paid on time`
-              : "No paid invoices yet"}
+              ? t("invoicesPaidOnTime", { paid: onTimePaidCount, total: totalRelevantInvoices })
+              : t("noPaidInvoicesYet")}
           </p>
         </div>
       </div>
       <p className="text-sm primary-slate">
-        Payment reliability score is a measure of how reliable a client is at
-        paying their invoices.
+        {t("paymentReliabilityDescription")}
       </p>
     </div>
   );

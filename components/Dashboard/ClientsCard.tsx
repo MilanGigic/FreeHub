@@ -1,3 +1,5 @@
+"use client";
+
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
@@ -5,6 +7,7 @@ import { useAuth } from "@/lib/useAuth";
 import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type PieSlice = {
   startAngle: number;
@@ -139,6 +142,7 @@ const COLORS = ["#4ade80", "#fb923c", "#38bdf8", "#a855f7", "#facc15"];
 
 export default function ClientsCard() {
   const { user } = useAuth();
+  const t = useTranslations("dashboard");
   const { clients } = useClientStore();
   const { projects } = useDataStore();
   const { allOutstandingInvoices, allOverdueInvoices } = useInvoiceStore();
@@ -176,7 +180,7 @@ export default function ClientsCard() {
     return (
       <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
         <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
-          Register or login to view your clients.
+          {t("loginToViewClients")}
         </div>
       </div>
     );
@@ -185,33 +189,33 @@ export default function ClientsCard() {
     <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
       <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full">
         <header className="w-full text-2xl font-bold text-primary text-center uppercase flex flex-col border-b-2 background-border pb-4">
-          <h1>Clients Overview</h1>
+          <h1>{t("clientsOverview")}</h1>
         </header>
         <main className="flex flex-col gap-2 space-y-1.5 text-sm items-center">
           <p className="text-lg primary-slate font-semibold uppercase">
-            Clients:{" "}
+            {t("clients")}{" "}
             <span className="font-bold primary-green">{clients.length}</span>
           </p>
           <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
-            Outstanding Invoices:{" "}
+            {t("outstandingInvoices")}{" "}
             <span className="font-bold primary-amber flex items-center gap-2">
               ${allOutstandingInvoices.data} -{" "}
               <span className="text-sm primary-slate">
-                {allOutstandingInvoices.count} invoices
+                {allOutstandingInvoices.count} {t("invoices")}
               </span>
             </span>
           </p>
           <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
-            Overdue Invoices:{" "}
+            {t("overdueInvoices")}{" "}
             <span className="font-bold primary-red flex items-center gap-2">
               ${allOverdueInvoices.data} -{" "}
               <span className="text-sm primary-slate">
-                {allOverdueInvoices.count} invoices
+                {allOverdueInvoices.count} {t("invoices")}
               </span>
             </span>
           </p>
           <p className="text-lg primary-slate font-semibold uppercase text-center w-full">
-            Top Client Contributions
+            {t("topClientContributions")}
           </p>
           <div className="w-full flex flex-col items-center mt-2">
             {clientContributionData.length > 0 ? (
@@ -243,7 +247,7 @@ export default function ClientsCard() {
               </>
             ) : (
               <p className="text-sm primary-slate">
-                No revenue data yet for your clients.
+                {t("noRevenueDataClients")}
               </p>
             )}
           </div>
@@ -253,7 +257,7 @@ export default function ClientsCard() {
           href="/clients"
           className="text-primary underline w-full flex items-center justify-center gap-2 text-2xl font-bold uppercase hover:text-(--accent-cyan) transition-colors duration-300"
         >
-          Go to Clients
+          {t("goToClients")}
           <ArrowRightIcon className="w-4 h-4" />
         </Link>
       </div>

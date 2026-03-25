@@ -8,20 +8,21 @@ import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Invoice, InvoiceStatus } from "@/types/types";
 import { PlusIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import NewInvoiceForm from "./NewInvoiceForm";
 
-const invoiceListHeaders = [
-  "Invoice #",
-  "Client",
-  "Note",
-  "Amount",
-  "Status",
-  "Issued",
-  "Due",
-  "Days to Pay",
-];
+const invoiceListHeaderKeys = [
+  "invoiceNumber",
+  "client",
+  "note",
+  "amount",
+  "status",
+  "issued",
+  "due",
+  "daysToPay",
+] as const;
 
 type StatusFilter = "all" | "paid" | "sent" | "overdue" | "draft";
 
@@ -47,6 +48,7 @@ export default function InvoicesTable() {
     useState<boolean>(false);
 
   const { user } = useAuth();
+  const t = useTranslations("invoices");
 
   const filteredInvoices = useMemo(
     () => filterInvoices(invoices, show),
@@ -125,19 +127,19 @@ export default function InvoicesTable() {
           value={show}
           onChange={(e) => setShow(e.target.value as StatusFilter)}
         >
-          <option value="all">All ({invoices.length})</option>
+          <option value="all">{t("all")} ({invoices.length})</option>
           <option value="paid">
-            Paid ({invoices.filter((inv) => inv.status === "paid").length})
+            {t("paid")} ({invoices.filter((inv) => inv.status === "paid").length})
           </option>
           <option value="sent">
-            Sent ({invoices.filter((inv) => inv.status === "sent").length})
+            {t("sent")} ({invoices.filter((inv) => inv.status === "sent").length})
           </option>
           <option value="overdue">
-            Overdue ({invoices.filter((inv) => inv.status === "overdue").length}
+            {t("overdue")} ({invoices.filter((inv) => inv.status === "overdue").length}
             )
           </option>
           <option value="draft">
-            Draft ({invoices.filter((inv) => inv.status === "draft").length})
+            {t("draft")} ({invoices.filter((inv) => inv.status === "draft").length})
           </option>
         </select>
         <div className="items-center gap-2 hidden md:flex">
@@ -145,32 +147,32 @@ export default function InvoicesTable() {
             className={`${show === "all" ? "bg-(--accent-cyan)/20 primary-cyan" : "primary-cyan"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-cyan)/20 hover:primary-cyan`}
             onClick={() => setShow("all")}
           >
-            All ({invoices.length})
+            {t("all")} ({invoices.length})
           </button>
           <button
             className={`${show === "paid" ? "bg-(--accent-green)/20 primary-green" : "primary-green"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-green)/20 hover:primary-green`}
             onClick={() => setShow("paid")}
           >
-            Paid ({invoices.filter((inv) => inv.status === "paid").length})
+            {t("paid")} ({invoices.filter((inv) => inv.status === "paid").length})
           </button>
           <button
             className={`${show === "sent" ? "bg-(--accent-amber)/20 primary-amber" : "primary-amber"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-amber)/20 hover:primary-amber`}
             onClick={() => setShow("sent")}
           >
-            Sent ({invoices.filter((inv) => inv.status === "sent").length})
+            {t("sent")} ({invoices.filter((inv) => inv.status === "sent").length})
           </button>
           <button
             className={`${show === "overdue" ? "bg-(--accent-red)/20 primary-red" : "primary-red"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-red)/20 hover:primary-red`}
             onClick={() => setShow("overdue")}
           >
-            Overdue ({invoices.filter((inv) => inv.status === "overdue").length}
+            {t("overdue")} ({invoices.filter((inv) => inv.status === "overdue").length}
             )
           </button>
           <button
             className={`${show === "draft" ? "bg-(--accent-slate)/20 primary-slate" : "primary-slate"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-slate)/20 hover:primary-slate`}
             onClick={() => setShow("draft")}
           >
-            Draft ({invoices.filter((inv) => inv.status === "draft").length})
+            {t("draft")} ({invoices.filter((inv) => inv.status === "draft").length})
           </button>
         </div>
         <div>
@@ -179,7 +181,7 @@ export default function InvoicesTable() {
             onClick={() => setIsNewInvoiceModalOpen(true)}
           >
             <PlusIcon className="w-4 h-4 primary-cyan" />
-            New Invoice
+            {t("newInvoice")}
           </button>
         </div>
       </div>
@@ -208,7 +210,7 @@ export default function InvoicesTable() {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex flex-col">
                   <span className="text-xs text-tertiary uppercase">
-                    Invoice #
+                    {t("invoiceNumber")}
                   </span>
                   <span className="text-sm text-primary font-semibold">
                     {invoice.id}
@@ -216,7 +218,7 @@ export default function InvoicesTable() {
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-xs text-tertiary uppercase">
-                    Amount
+                    {t("amount")}
                   </span>
                   <span className="text-sm primary-cyan font-semibold">
                     ${invoice.totalAmount}
@@ -225,7 +227,7 @@ export default function InvoicesTable() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-tertiary uppercase">Client</span>
+                <span className="text-xs text-tertiary uppercase">{t("client")}</span>
                 <span className="text-sm text-primary">
                   {selectedClient?.firstName} {selectedClient?.lastName}
                 </span>
@@ -233,7 +235,7 @@ export default function InvoicesTable() {
 
               {invoice.note && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs text-tertiary uppercase">Note</span>
+                  <span className="text-xs text-tertiary uppercase">{t("note")}</span>
                   <span className="text-xs text-primary wrap-break-word">
                     {invoice.note}
                   </span>
@@ -243,14 +245,14 @@ export default function InvoicesTable() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs text-tertiary uppercase">
-                    Issued
+                    {t("issued")}
                   </span>
                   <span className="text-xs text-primary">
                     {invoice.issueDate.toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs text-tertiary uppercase">Due</span>
+                  <span className="text-xs text-tertiary uppercase">{t("due")}</span>
                   <span className="text-xs text-primary">
                     {invoice.dueDate.toLocaleDateString()}
                   </span>
@@ -260,7 +262,7 @@ export default function InvoicesTable() {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs text-tertiary uppercase">
-                    Status
+                    {t("status")}
                   </span>
                   <select
                     className={`text-xs ${
@@ -282,26 +284,26 @@ export default function InvoicesTable() {
                     }
                   >
                     <option value="draft" className="primary-slate">
-                      Draft
+                      {t("draft")}
                     </option>
                     <option value="sent" className="primary-amber">
-                      Sent
+                      {t("sent")}
                     </option>
                     <option value="overdue" className="primary-red">
-                      Overdue
+                      {t("overdue")}
                     </option>
                     <option value="paid" className="primary-green">
-                      Paid
+                      {t("paid")}
                     </option>
                   </select>
                 </div>
 
                 <div className="flex flex-col gap-1 items-end">
                   <span className="text-xs text-tertiary uppercase">
-                    Days to pay
+                    {t("daysToPay")}
                   </span>
                   <span className={`text-xs ${daysToPayColor}`}>
-                    {invoice.status === "paid" ? "Paid" : daysToPay}
+                    {invoice.status === "paid" ? t("paid") : daysToPay}
                   </span>
                 </div>
               </div>
@@ -315,12 +317,12 @@ export default function InvoicesTable() {
         <table className="w-full">
           <thead className="border-b background-border background-elevated w-full">
             <tr>
-              {invoiceListHeaders.map((header) => (
+              {invoiceListHeaderKeys.map((key) => (
                 <th
-                  key={header}
+                  key={key}
                   className="text-sm text-primary text-center whitespace-nowrap px-2 py-3"
                 >
-                  {header}
+                  {t(key)}
                 </th>
               ))}
             </tr>
@@ -354,16 +356,16 @@ export default function InvoicesTable() {
                     }
                   >
                     <option value="draft" className="primary-slate">
-                      Draft
+                      {t("draft")}
                     </option>
                     <option value="sent" className="primary-amber">
-                      Sent
+                      {t("sent")}
                     </option>
                     <option value="overdue" className="primary-red">
-                      Overdue
+                      {t("overdue")}
                     </option>
                     <option value="paid" className="primary-green">
-                      Paid
+                      {t("paid")}
                     </option>
                   </select>
                 </td>
@@ -395,7 +397,7 @@ export default function InvoicesTable() {
                   >
                     {invoice.status === "paid" ? (
                       <span className="primary-green uppercase font-semibold text-sm">
-                        Paid
+                        {t("paid")}
                       </span>
                     ) : (
                       Math.floor(

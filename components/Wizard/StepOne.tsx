@@ -11,26 +11,26 @@ import {
 } from "../ui/accordion";
 import { updateStepOne } from "@/actions/taxProfile/updateStepOne";
 import { toast } from "react-toastify";
-
-const cards = [
-  {
-    title: "Solo Proprietor / Independent Contractor",
-    description:
-      "Self-employed individuals who go into business without registering their business as a legal entity.",
-  },
-  {
-    title: "Single-Member LLC",
-    description:
-      "A disregarded entity that does not have employees and does not have an excise tax liability does not need an EIN",
-  },
-  {
-    title: "S-Corp",
-    description:
-      "Corporations that elect to pass corporate income, losses, deductions, and credits through to their shareholders for federal tax purposes.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function StepOne() {
+  const t = useTranslations("wizard");
+
+  const cards = [
+    {
+      title: t("soleProprietor"),
+      description: t("soleProprietorDesc"),
+    },
+    {
+      title: t("singleMemberLLC"),
+      description: t("singleMemberLLCDesc"),
+    },
+    {
+      title: t("sCorp"),
+      description: t("sCorpDesc"),
+    },
+  ];
+
   const [businessStructure, setBusinessStructure] = useState<{
     title: string;
     description: string;
@@ -54,14 +54,14 @@ export default function StepOne() {
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">Welcome to Efficio</h1>
+        <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
         <p className="text-sm primary-slate">
-          Let&apos;s get you set up with your account.
+          {t("welcomeSubtitle")}
         </p>
       </div>
       <div className="flex flex-col gap-2">
         <h1 className="text-primary text-2xl font-bold text-center">
-          Choose your business structure
+          {t("chooseBusinessStructure")}
         </h1>
         <RadioGroup
           defaultValue={cards[0].title}
@@ -95,12 +95,12 @@ export default function StepOne() {
                 <Accordion type="single" collapsible defaultValue="item-1">
                   <AccordionItem value="item-1">
                     <AccordionTrigger className="text-primary text-lg font-semibold">
-                      Other...
+                      {t("other")}
                     </AccordionTrigger>
                     <AccordionContent className="px-2">
                       <input
                         type="text"
-                        placeholder="Enter your business structure"
+                        placeholder={t("enterBusinessStructure")}
                         value={otherBusinessStructure}
                         onChange={(e) =>
                           setOtherBusinessStructure(e.target.value)
@@ -111,9 +111,7 @@ export default function StepOne() {
                   </AccordionItem>
                 </Accordion>
                 <FieldDescription>
-                  If your business structure is not listed, please select
-                  &quot;Other&quot; and enter the name of your business
-                  structure.
+                  {t("businessStructureNotListed")}
                 </FieldDescription>
               </FieldContent>
               <RadioGroupItem value="other" id="other" />
@@ -127,13 +125,13 @@ export default function StepOne() {
           onClick={(e) => handleProceed(e)}
           className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
         >
-          Proceed <ArrowRightIcon size={20} />
+          {t("proceed")} <ArrowRightIcon size={20} />
         </button>
         <button
           onClick={() => router.replace("/dashboard")}
           className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
         >
-          Skip
+          {t("skip")}
         </button>
       </div>
     </div>

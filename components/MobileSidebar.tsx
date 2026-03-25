@@ -10,24 +10,31 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-function renderTab(tab: string) {
-  switch (tab) {
-    case "Dashboard":
+function renderTab(key: string) {
+  switch (key) {
+    case "dashboard":
       return <House />;
-    case "Finances":
+    case "finances":
       return <Wallet />;
-    case "Clients":
+    case "clients":
       return <Users />;
-    case "Projects":
+    case "projects":
       return <Briefcase />;
   }
 }
 
-const tabs = ["Dashboard", "Clients", "Projects", "Finances"];
+const tabs = [
+  { key: "dashboard", route: "dashboard" },
+  { key: "clients", route: "clients" },
+  { key: "projects", route: "projects" },
+  { key: "finances", route: "finances" },
+];
 
 export default function MobileSidebar() {
   const pathname = usePathname();
+  const t = useTranslations("navigation");
 
   const { sidebarClose } = useUIStore();
   return (
@@ -42,18 +49,18 @@ export default function MobileSidebar() {
         <div className="flex flex-col pt-2 gap-2 h-[92%]">
           {tabs.map((tab) => (
             <Link
-              key={tab}
-              href={`/${tab.toLowerCase().replace(" ", "-")}`}
+              key={tab.key}
+              href={`/${tab.route}`}
               onClick={() => sidebarClose()}
               className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
-            ${pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`) ? "primary-cyan background-elevated" : "hover:primary-cyan text-primary hover:background-elevated"} transition-all`}
+            ${pathname.startsWith(`/${tab.route}`) ? "primary-cyan background-elevated" : "hover:primary-cyan text-primary hover:background-elevated"} transition-all`}
             >
               {!pathname.startsWith(
-                `/${tab.toLowerCase().replace(" ", "-")}`,
+                `/${tab.route}`,
               ) ? (
-                <span>{renderTab(tab)}</span>
+                <span>{renderTab(tab.key)}</span>
               ) : null}
-              <h1 className="text-xs uppercase font-semibold">{tab}</h1>
+              <h1 className="text-xs uppercase font-semibold">{t(tab.key)}</h1>
             </Link>
           ))}
         </div>

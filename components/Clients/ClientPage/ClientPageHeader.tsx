@@ -4,18 +4,27 @@ import { ClientPageTab } from "@/types/types";
 import { Briefcase, Eye, FileText } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-const tabs = [
-  { tab: "Overview", icon: <Eye /> },
-  { tab: "Jobs And Projects", icon: <Briefcase /> },
-  { tab: "Invoices", icon: <FileText /> },
+const tabIcons = [
+  <Eye key="eye" />,
+  <Briefcase key="briefcase" />,
+  <FileText key="file-text" />,
 ];
 
 export default function ClientPageHeader({ clientId }: { clientId: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("clients");
+  const tCommon = useTranslations("common");
 
   const [open, setOpen] = useState<boolean>(false);
+
+  const tabs = [
+    { tab: t("overview"), icon: tabIcons[0] },
+    { tab: t("jobsAndProjects"), icon: tabIcons[1] },
+    { tab: t("invoicesTab"), icon: tabIcons[2] },
+  ];
 
   const clientPageTab = pathname.split("/").pop() as ClientPageTab;
 
@@ -28,7 +37,7 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
             onClick={() => setOpen((o) => !o)}
             className="primary-slate w-full hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
           >
-            Select a tab
+            {tCommon("selectATab")}
           </button>
           <h1 className="text-center primary-slate w-full h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold relative">
             {clientPageTab}

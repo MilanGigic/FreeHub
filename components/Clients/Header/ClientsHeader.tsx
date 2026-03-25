@@ -1,6 +1,7 @@
 "use client";
 
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useTranslations } from "next-intl";
 
 export default function ClientsHeader({
   clientsPageMetrics,
@@ -12,6 +13,7 @@ export default function ClientsHeader({
   };
 }) {
   const { clients } = useClientStore();
+  const t = useTranslations("clients");
 
   const { revenueThisMonth, expensesThisMonth, outstandingInvoices } =
     clientsPageMetrics;
@@ -23,7 +25,7 @@ export default function ClientsHeader({
           {clients.length}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Total Active Clients
+          {t("totalActiveClients")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -31,7 +33,7 @@ export default function ClientsHeader({
           ${revenueThisMonth}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Revenue This Month
+          {t("revenueThisMonth")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -39,7 +41,7 @@ export default function ClientsHeader({
           ${expensesThisMonth}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Expenses This Month
+          {t("expensesThisMonth")}
         </p>
       </div>
       <div className="background-elevated border background-border flex flex-col items-center rounded-2xl p-4 w-full">
@@ -47,7 +49,7 @@ export default function ClientsHeader({
           ${outstandingInvoices}
         </p>
         <p className="text-primary text-base uppercase tracking-widest mb-6">
-          Outstanding Invoices
+          {t("outstandingInvoices")}
         </p>
       </div>
     </div>

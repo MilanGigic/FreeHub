@@ -1,4 +1,10 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 export default function HeroSection() {
+  const t = useTranslations("landing");
+
   return (
     <section className="relative overflow-hidden p-8 bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Decorative background elements */}
@@ -10,22 +16,19 @@ export default function HeroSection() {
         {/* Main Heading */}
         <div className="text-center mb-16 opacity-0 animate-fade-in-up">
           <h1 className="text-6xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Your Smart Financial
+            {t("yourSmartFinancial")}
             <br />
             <span className="bg-gradient-to-r from-cyan-600 to-green-600 bg-clip-text text-transparent">
-              Command Center
+              {t("commandCenter")}
             </span>
             <br />
-            <span className="text-5xl md:text-6xl">for Freelancers</span>
+            <span className="text-5xl md:text-6xl">{t("forFreelancers")}</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-500 max-w-3xl mx-auto mb-4 font-medium">
-            Know what you can safely spend — without thinking like an
-            accountant.
+            {t("heroSubtitle")}
           </p>
           <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            Your AI employee sends invoices by voice or text, schedules
-            meetings, follows up on every unpaid invoice, and handles all the
-            admin.
+            {t("aiEmployee")}
           </p>
         </div>
 
@@ -49,12 +52,10 @@ export default function HeroSection() {
               </svg>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Stop guessing your numbers
+              {t("stopGuessingTitle")}
             </h3>
             <p className="text-gray-500 leading-relaxed">
-              See exactly how much you can spend today, tomorrow, and next
-              quarter — with live tax estimates baked in. No spreadsheets. No
-              accountant brain required.
+              {t("stopGuessingBody")}
             </p>
           </div>
 
@@ -76,12 +77,10 @@ export default function HeroSection() {
               </svg>
             </div>
             <h3 className="text-2xl font-bold text-white mb-4">
-              Your 24/7 autonomous AI employee
+              {t("aiEmployeeTitle")}
             </h3>
             <p className="text-white/90 leading-relaxed">
-              It sends professional invoices (text or voice), schedules client
-              meetings, politely chases late payments, files expenses, and keeps
-              your projects on track — while you do the creative work.
+              {t("aiEmployeeBody")}
             </p>
           </div>
 
@@ -103,13 +102,12 @@ export default function HeroSection() {
               </svg>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              One dashboard. Total control.
+              {t("oneDashboardTitle")}
             </h3>
             <p className="text-gray-500 leading-relaxed">
-              Clients • Projects • Income • Expenses • Quarterly taxes • Cash
-              runway • AI task list.
+              {t("oneDashboardBody")}
               <br />
-              Everything in one beautiful place.
+              {t("everythingInOnePlace")}
             </p>
           </div>
         </div>
@@ -118,28 +116,28 @@ export default function HeroSection() {
         <div className="max-w-2xl mx-auto mb-12 opacity-0 animate-fade-in-up [animation-delay:400ms]">
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 shadow-2xl shadow-green-500/30">
             <p className="text-gray-400 text-sm font-medium mb-2 uppercase tracking-wider">
-              Live Preview
+              {t("livePreview")}
             </p>
             <h2 className="text-2xl font-semibold text-gray-200 mb-4">
-              Safe to Spend
+              {t("safeToSpend")}
             </h2>
             <div className="font-mono text-6xl font-bold text-green-400 mb-4">
               $4,250.00
             </div>
-            <p className="text-gray-400 text-sm">After taxes and expenses</p>
+            <p className="text-gray-400 text-sm">{t("afterTaxesAndExpenses")}</p>
 
             {/* Mini stats */}
             <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-700">
               <div>
-                <p className="text-gray-500 text-xs mb-1">Tax Reserved</p>
+                <p className="text-gray-500 text-xs mb-1">{t("taxReserved")}</p>
                 <p className="font-mono text-amber-400 font-semibold">$1,340</p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs mb-1">Unpaid Invoices</p>
+                <p className="text-gray-500 text-xs mb-1">{t("unpaidInvoices")}</p>
                 <p className="font-mono text-red-400 font-semibold">$1,950</p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs mb-1">This Month</p>
+                <p className="text-gray-500 text-xs mb-1">{t("thisMonth")}</p>
                 <p className="font-mono text-cyan-400 font-semibold">$2,270</p>
               </div>
             </div>

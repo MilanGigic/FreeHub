@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
@@ -10,6 +11,7 @@ import StepFive from "./StepFive";
 
 export default function Wizard() {
   const router = useRouter();
+  const t = useTranslations("wizard");
 
   const searchParams = useSearchParams();
   const step = searchParams.get("step");
@@ -20,38 +22,32 @@ export default function Wizard() {
           <div className="w-full h-full flex flex-col items-center justify-between primary-slate">
             <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
               <h1 className="text-2xl font-bold text-primary">
-                Welcome to Efficio
+                {t("welcomeTitle")}
               </h1>
               <p className="text-sm primary-slate">
-                Let&apos;s get you set up with your account.
+                {t("welcomeSubtitle")}
               </p>
             </div>
 
             <div className="flex flex-col gap-2 text-primary text-lg font-semibold max-w-lg mx-auto">
-              <p>
-                Please finish setting up your account before proceeding to the
-                application.
-              </p>
-              <p>It helps us better understand your business and your needs.</p>
-              <p>
-                We will ask you a few questions to help us better understand
-                your business and your needs.
-              </p>
-              <p>You can always come back and change your answers later.</p>
-              <p>You can also skip this step and come back later.</p>
+              <p>{t("finishSetup")}</p>
+              <p>{t("helpUnderstand")}</p>
+              <p>{t("askQuestions")}</p>
+              <p>{t("changeAnswers")}</p>
+              <p>{t("skipStep")}</p>
             </div>
             <div className="flex flex-col gap-2 max-w-md w-full mx-auto">
               <button
                 onClick={() => router.push("/dashboard?wizard=true&step=1")}
                 className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
               >
-                Proceed <ArrowRightIcon size={20} />
+                {t("proceed")} <ArrowRightIcon size={20} />
               </button>
               <button
                 onClick={() => router.replace("/dashboard")}
                 className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
               >
-                Skip
+                {t("skip")}
               </button>
             </div>
           </div>

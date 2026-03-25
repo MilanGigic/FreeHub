@@ -3,10 +3,12 @@
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useMemo } from "react";
 
 export default function JobsAndProjectsSlideOver() {
+  const t = useTranslations("jobsAndProjects");
   const { isJobsAndProjectsSlideOverOpen, jobsAndProjectsSlideOverClose } =
     useUIStore();
 
@@ -62,32 +64,32 @@ export default function JobsAndProjectsSlideOver() {
             className="primary-cyan text-sm uppercase font-semibold p-2 border background-border rounded-lg hover:border-(--accent-cyan) text-center transition-all duration-300 ease-out"
             href={`/projects/${selectedProject.id}?tab=calendar`}
           >
-            Go to project
+            {t("goToProject")}
           </Link>
           <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
             <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border pb-2">
-              Revenue
+              {t("revenueSection")}
             </h1>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Revenue:{" "}
+              {t("revenueLabel")}{" "}
               <span className="primary-green">
                 ${selectedProject.totalRevenue}
               </span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Expenses:{" "}
+              {t("expensesLabel")}{" "}
               <span className="primary-red">
                 ${selectedProject.totalExpenses}
               </span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Profit:{" "}
+              {t("profitLabel")}{" "}
               <span className="primary-green">
                 ${selectedProject.totalProfit}
               </span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Margin:{" "}
+              {t("marginLabel")}{" "}
               <span
                 className={`${profitMargin >= 40 ? "primary-green" : profitMargin >= 25 ? "primary-slate" : "primary-red"}`}
               >
@@ -97,20 +99,20 @@ export default function JobsAndProjectsSlideOver() {
           </div>
           <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
             <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
-              Worked Hours
+              {t("workedHours")}
             </h1>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Hours Worked:{" "}
+              {t("hoursWorked")}{" "}
               <span className="primary-cyan">
                 {selectedProject.totalHoursWorked}
               </span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
-              Hourly Rate:{" "}
+              {t("hourlyRateLabel")}{" "}
               <span className="primary-cyan">
                 <span className="primary-green">
                   ${totalProfitPerHour.toFixed(2)}
-                  /hour
+                  {t("perHour")}
                 </span>
               </span>
             </p>
@@ -119,44 +121,44 @@ export default function JobsAndProjectsSlideOver() {
             <div>
               <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
-                  Client Feedback
+                  {t("clientFeedback")}
                 </h1>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Paid on Time: <span className="primary-red">2 days late</span>
+                  {t("paidOnTime")} <span className="primary-red">2 days late</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Message from Client:{" "}
+                  {t("messageFromClient")}{" "}
                   <span className="primary-cyan">Great work!</span>
                 </p>
               </div>
               <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
-                  Invoice Details
+                  {t("invoiceDetails")}
                 </h1>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Number:{" "}
+                  {t("invoiceNumber")}{" "}
                   <span className="primary-cyan">1234567890</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Date: <span className="primary-cyan">12/12/2025</span>
+                  {t("invoiceDate")} <span className="primary-cyan">12/12/2025</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Amount: <span className="primary-cyan">$1000</span>
+                  {t("invoiceAmount")} <span className="primary-cyan">$1000</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Status: <span className="primary-cyan">Paid</span>
+                  {t("invoiceStatus")} <span className="primary-cyan">Paid</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Due Date:{" "}
+                  {t("invoiceDueDate")}{" "}
                   <span className="primary-cyan">12/12/2025</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Payment Date:{" "}
+                  {t("invoicePaymentDate")}{" "}
                   <span className="primary-cyan">12/12/2025</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  Invoice Payment Method:{" "}
-                  <span className="primary-cyan">Bank Transfer</span>
+                  {t("invoicePaymentMethod")}{" "}
+                  <span className="primary-cyan">{t("bankTransfer")}</span>
                 </p>
               </div>
               <h1 className="text-lg primary-green text-center uppercase font-semibold border-b-2 background-border py-2">
@@ -167,7 +169,7 @@ export default function JobsAndProjectsSlideOver() {
             <div>
               <div className="flex flex-col gap-2 border-b-2 background-border pb-2">
                 <h1 className="text-lg text-primary uppercase font-semibold border-b-2 background-border py-2">
-                  Project Description
+                  {t("projectDescription")}
                 </h1>
                 <p className="primary-slate text-sm uppercase font-semibold">
                   {selectedProject.description}

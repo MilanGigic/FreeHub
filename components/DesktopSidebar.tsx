@@ -11,24 +11,31 @@ import { usePathname } from "next/navigation";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useSidebarHover } from "@/lib/hooks/useSidebarHover";
+import { useTranslations } from "next-intl";
 
-function renderTab(tab: string) {
-  switch (tab) {
-    case "Dashboard":
+function renderTab(key: string) {
+  switch (key) {
+    case "dashboard":
       return <House />;
-    case "Finances":
+    case "finances":
       return <Wallet />;
-    case "Clients":
+    case "clients":
       return <Users />;
-    case "Projects":
+    case "projects":
       return <Briefcase />;
   }
 }
 
-const tabs = ["Dashboard", "Clients", "Projects", "Finances"];
+const tabs = [
+  { key: "dashboard", route: "dashboard" },
+  { key: "clients", route: "clients" },
+  { key: "projects", route: "projects" },
+  { key: "finances", route: "finances" },
+];
 
 export default function DesktopSidebar() {
   const pathname = usePathname();
+  const t = useTranslations("navigation");
 
   const { projects } = useDataStore();
   const { clients } = useClientStore();
@@ -55,7 +62,7 @@ export default function DesktopSidebar() {
   return (
     <div className="hidden w-24 md:w-48 h-full background-sidebar background-border border-r p-1 z-20 relative sm:flex sm:flex-col">
       {/* Projects Flyout */}
-      {hoveredTab?.name === "Projects" && (
+      {hoveredTab?.name === "projects" && (
         <div
           className="absolute left-full w-72 background-elevated border-r border-y background-border rounded-r-lg shadow-xl shadow-black/50 z-50 overflow-hidden"
           style={{ top: Math.max(0, hoveredTab.y - 40) }}
@@ -65,14 +72,14 @@ export default function DesktopSidebar() {
           <div className="px-4 py-3 border-b background-border">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-primary uppercase tracking-wider">
-                Projects
+                {t("projects")}
               </h2>
               <div className="flex gap-2">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-(--accent-cyan)/20 primary-cyan font-semibold">
-                  {activeProjectCount} active
+                  {activeProjectCount} {t("active")}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-(--accent-slate)/20 primary-slate font-semibold">
-                  {projects.length} total
+                  {projects.length} {t("total")}
                 </span>
               </div>
             </div>
@@ -81,7 +88,7 @@ export default function DesktopSidebar() {
           <div className="max-h-80 overflow-y-auto">
             {projects.length === 0 ? (
               <div className="px-4 py-6 text-center primary-slate text-sm">
-                No projects yet
+                {t("noProjectsYet")}
               </div>
             ) : (
               projects.map((project) => (
@@ -120,7 +127,7 @@ export default function DesktopSidebar() {
               href="/projects"
               className="flex items-center justify-center gap-1.5 px-4 py-2.5 border-t background-border text-xs font-semibold primary-cyan hover:bg-(--bg-elevated) transition-colors uppercase"
             >
-              View all projects
+              {t("viewAllProjects")}
               <ArrowRight size={12} />
             </Link>
           )}
@@ -136,7 +143,7 @@ export default function DesktopSidebar() {
       )}
 
       {/* Clients Flyout */}
-      {hoveredTab?.name === "Clients" && (
+      {hoveredTab?.name === "clients" && (
         <div
           className="absolute left-full w-72 background-elevated border-r border-y background-border rounded-r-lg shadow-xl shadow-black/50 z-50 overflow-hidden"
           style={{ top: Math.max(0, hoveredTab.y - 40) }}
@@ -146,14 +153,14 @@ export default function DesktopSidebar() {
           <div className="px-4 py-3 border-b background-border">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-primary uppercase tracking-wider">
-                Clients
+                {t("clients")}
               </h2>
               <div className="flex gap-2">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-(--accent-green)/20 primary-green font-semibold">
-                  {activeClientCount} active
+                  {activeClientCount} {t("active")}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-(--accent-slate)/20 primary-slate font-semibold">
-                  {clients.length} total
+                  {clients.length} {t("total")}
                 </span>
               </div>
             </div>
@@ -162,7 +169,7 @@ export default function DesktopSidebar() {
           <div className="max-h-80 overflow-y-auto">
             {clients.length === 0 ? (
               <div className="px-4 py-6 text-center primary-slate text-sm">
-                No clients yet
+                {t("noClientsYet")}
               </div>
             ) : (
               clients.map((client) => (
@@ -189,7 +196,7 @@ export default function DesktopSidebar() {
                     </p>
                   </div>
                   <span className="text-xs primary-slate font-semibold shrink-0">
-                    {projectCountByClient[client.id] || 0} proj
+                    {projectCountByClient[client.id] || 0} {t("proj")}
                   </span>
                 </Link>
               ))
@@ -201,7 +208,7 @@ export default function DesktopSidebar() {
               href="/clients"
               className="flex items-center justify-center gap-1.5 px-4 py-2.5 border-t background-border text-xs font-semibold primary-cyan hover:bg-(--bg-elevated) transition-colors uppercase"
             >
-              View all clients
+              {t("viewAllClients")}
               <ArrowRight size={12} />
             </Link>
           )}
@@ -219,24 +226,24 @@ export default function DesktopSidebar() {
 
       {/* Simple tooltip for other tabs */}
       {hoveredTab &&
-        hoveredTab.name !== "Projects" &&
-        hoveredTab.name !== "Clients" && (
+        hoveredTab.name !== "projects" &&
+        hoveredTab.name !== "clients" && (
           <div
             className="absolute left-full px-3 py-1.5 background-elevated border-r border-y background-border rounded-r-lg text-xs font-semibold uppercase text-primary whitespace-nowrap z-50 pointer-events-none"
             style={{ top: hoveredTab.y }}
           >
-            {hoveredTab.name}
+            {t(hoveredTab.name)}
           </div>
         )}
 
       <div className="flex flex-col pt-2 gap-2 flex-1 relative">
         {tabs.map((tab) => (
           <Link
-            key={tab}
-            href={`/${tab.toLowerCase().replace(" ", "-")}`}
+            key={tab.key}
+            href={`/${tab.route}`}
             className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
                 ${
-                  pathname.startsWith(`/${tab.toLowerCase().replace(" ", "-")}`)
+                  pathname.includes(`/${tab.route}`)
                     ? "primary-cyan background-elevated"
                     : "hover:primary-cyan text-primary hover:background-elevated"
                 } transition-all`}
@@ -249,7 +256,7 @@ export default function DesktopSidebar() {
                 .closest(".relative")!
                 .getBoundingClientRect();
               setHoveredTab({
-                name: tab as Tabs,
+                name: tab.key as Tabs,
                 y: rect.top - parentRect.top + rect.height / 2 - 16,
               });
               setHoveredProject(null);
@@ -257,10 +264,10 @@ export default function DesktopSidebar() {
             }}
             onMouseLeave={scheduleClose}
           >
-            {!pathname.startsWith(
-              `/${tab.toLowerCase().replace(" ", "-")}`,
-            ) && <span>{renderTab(tab)}</span>}
-            <h1 className="text-xs uppercase font-semibold">{tab}</h1>
+            {!pathname.includes(`/${tab.route}`) && (
+              <span>{renderTab(tab.key)}</span>
+            )}
+            <h1 className="text-xs uppercase font-semibold">{t(tab.key)}</h1>
           </Link>
         ))}
       </div>

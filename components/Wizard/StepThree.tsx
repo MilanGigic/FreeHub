@@ -13,9 +13,11 @@ import {
 import { MouseEvent, useState } from "react";
 import { updateStepThree } from "@/actions/taxProfile/updateStepThree";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 export default function StepThree() {
   const router = useRouter();
+  const t = useTranslations("wizard");
   const [homeOfficeSqft, setHomeOfficeSqft] = useState<number>(0);
   const [homeOfficeSimplified, setHomeOfficeSimplified] =
     useState<boolean>(false);
@@ -41,9 +43,9 @@ export default function StepThree() {
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">Welcome to Efficio</h1>
+        <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
         <p className="text-sm primary-slate">
-          Let&apos;s get you set up with your account.
+          {t("welcomeSubtitle")}
         </p>
       </div>
 
@@ -56,7 +58,7 @@ export default function StepThree() {
         >
           <AccordionItem value="homeOffice">
             <AccordionTrigger className="text-primary text-lg font-semibold">
-              Do you use a dedicated home office for business?
+              {t("homeOfficeQuestion")}
             </AccordionTrigger>
             <AccordionContent>
               <RadioGroup value={homeOfficeSimplified ? "true" : "false"}>
@@ -69,7 +71,7 @@ export default function StepThree() {
                     >
                       <AccordionItem value="homeOfficeTrue">
                         <AccordionTrigger className="text-primary text-lg font-semibold">
-                          I use a dedicated home office for business
+                          {t("homeOfficeYes")}
                         </AccordionTrigger>
                         <AccordionContent className="px-2 flex flex-col gap-2">
                           <input
@@ -83,7 +85,7 @@ export default function StepThree() {
                             className="w-full outline outline-(--accent-green) rounded-lg p-2 focus:outline focus:outline-(--accent-cyan) text-primary mt-2"
                           />
                           <span>
-                            Enter your home office square footage (1-300)
+                            {t("homeOfficeSquareFootage")}
                           </span>
                         </AccordionContent>
                       </AccordionItem>
@@ -99,7 +101,7 @@ export default function StepThree() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel className="text-primary text-lg font-semibold">
-                        I don&apos;t use a dedicated home office for business
+                        {t("homeOfficeNo")}
                       </FieldLabel>
                     </FieldContent>
                     <RadioGroupItem
@@ -114,7 +116,7 @@ export default function StepThree() {
           </AccordionItem>
           <AccordionItem value="businessMileage">
             <AccordionTrigger className="text-primary text-lg font-semibold">
-              Do you track mileage for business use?
+              {t("mileageQuestion")}
             </AccordionTrigger>
             <AccordionContent>
               <RadioGroup value={mileageTracking ? "true" : "false"}>
@@ -122,11 +124,10 @@ export default function StepThree() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel className="text-primary text-lg font-semibold">
-                        I track mileage for business use
+                        {t("mileageYes")}
                       </FieldLabel>
                       <FieldDescription>
-                        2026 IRS rate = 72.5¢ per mile (auto-applied in your
-                        dashboard)
+                        {t("mileageIRSRate")}
                       </FieldDescription>
                     </FieldContent>
                     <RadioGroupItem
@@ -140,7 +141,7 @@ export default function StepThree() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel className="text-primary text-lg font-semibold">
-                        I don&apos;t track mileage for business use
+                        {t("mileageNo")}
                       </FieldLabel>
                     </FieldContent>
                     <RadioGroupItem
@@ -155,7 +156,7 @@ export default function StepThree() {
           </AccordionItem>
           <AccordionItem value="healthInsurance">
             <AccordionTrigger className="text-primary text-lg font-semibold">
-              Do you pay for your own health insurance?
+              {t("healthInsuranceQuestion")}
             </AccordionTrigger>
             <AccordionContent>
               <RadioGroup value={healthInsuranceDeduction ? "true" : "false"}>
@@ -163,7 +164,7 @@ export default function StepThree() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel className="text-primary text-lg font-semibold">
-                        I pay for my own health insurance
+                        {t("healthInsuranceYes")}
                       </FieldLabel>
                     </FieldContent>
                     <RadioGroupItem
@@ -177,7 +178,7 @@ export default function StepThree() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel className="text-primary text-lg font-semibold">
-                        I don&apos;t pay for my own health insurance
+                        {t("healthInsuranceNo")}
                       </FieldLabel>
                     </FieldContent>
                     <RadioGroupItem
@@ -199,20 +200,20 @@ export default function StepThree() {
             onClick={() => router.push("/dashboard?wizard=true&step=1")}
             className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
           >
-            <ArrowLeftIcon size={20} /> Back
+            <ArrowLeftIcon size={20} /> {t("back")}
           </button>
           <button
             onClick={(e) => handleProceed(e)}
             className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
           >
-            Proceed <ArrowRightIcon size={20} />
+            {t("proceed")} <ArrowRightIcon size={20} />
           </button>
         </div>
         <button
           onClick={() => router.replace("/dashboard")}
           className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
         >
-          Skip
+          {t("skip")}
         </button>
       </div>
     </div>

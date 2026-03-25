@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import NewClientModal from "./NewClientModal";
 import { ClientCardMetrics } from "@/actions/clients/fetchClientCardMetrics";
+import { useTranslations } from "next-intl";
 
 const maxMobileClients = 5;
 
@@ -19,6 +20,7 @@ export default function ClientTable({
 
   const { clients, setSelectedClient, selectedClient } = useClientStore();
   const { projects } = useDataStore();
+  const t = useTranslations("clients");
   const [currentPage] = useState<number>(1);
   const [newClientModalOpen, setNewClientModalOpen] = useState<boolean>(false);
 
@@ -60,7 +62,7 @@ export default function ClientTable({
           className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out flex items-center justify-center gap-2"
           onClick={() => setNewClientModalOpen(true)}
         >
-          <PlusIcon size={20} /> New Client
+          <PlusIcon size={20} /> {t("newClient")}
         </button>
         {newClientModalOpen ? (
           <NewClientModal onClose={() => setNewClientModalOpen(false)} />
@@ -99,7 +101,7 @@ export default function ClientTable({
               </div>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Status:
+                {t("status")}
                 <span
                   className={`${
                     client.status === "active"
@@ -116,7 +118,7 @@ export default function ClientTable({
               </p>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Revenue MTD:
+                {t("revenueMTD")}
                 <span className="primary-cyan">
                   $
                   {(clientRevenues.get(client.id)?.mtd ?? 0).toLocaleString(
@@ -126,7 +128,7 @@ export default function ClientTable({
                 </span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Revenue YTD:
+                {t("revenueYTD")}
                 <span className="primary-cyan">
                   $
                   {(clientRevenues.get(client.id)?.ytd ?? 0).toLocaleString(
@@ -137,7 +139,7 @@ export default function ClientTable({
               </p>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Outstanding:
+                {t("outstanding")}
                 <span
                   className={
                     Number(metricsMap.get(client.id)?.outstandingTotal ?? 0) > 0
@@ -153,10 +155,10 @@ export default function ClientTable({
               </p>
 
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Avg payment time:
+                {t("avgPaymentTime")}
                 <span className="primary-slate">
                   {metricsMap.get(client.id)?.avgPaymentDays != null
-                    ? `${metricsMap.get(client.id)!.avgPaymentDays} days`
+                    ? `${metricsMap.get(client.id)!.avgPaymentDays} ${t("days")}`
                     : "—"}
                 </span>
               </p>

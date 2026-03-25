@@ -9,10 +9,12 @@ import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { Project } from "@/types/types";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("invoices");
   const { user } = useAuth();
   const { selectedClient } = useClientStore();
   const { projects, setProjects } = useDataStore();
@@ -104,7 +106,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
         if (res.paidInvoices) {
           setPaidInvoices(res.paidInvoices);
         }
-        toast.success("Invoice created successfully");
+        toast.success(t("invoiceCreatedSuccess"));
         setSelectedProject(null);
         setAmount("");
         setIssueDate(new Date());
@@ -147,7 +149,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
         console.log("Error adding to drafts:", res.error);
       } else if (res.data) {
         setInvoices([...invoices, res.data]);
-        toast.success("Invoice added to drafts successfully");
+        toast.success(t("invoiceDraftedSuccess"));
         setSelectedProject(null);
         setAmount("");
         setIssueDate(new Date());
@@ -174,7 +176,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
           htmlFor="amount"
           className="primary-slate font-semibold uppercase"
         >
-          Amount:
+          {t("amountLabel")}
         </label>
         <input
           type="text"
@@ -193,7 +195,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
           htmlFor="project"
           className="primary-slate font-semibold uppercase"
         >
-          Project:
+          {t("projectLabel")}
         </label>
         <select
           id="project"
@@ -210,7 +212,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
             }
           }}
         >
-          <option value="">Select Project</option>
+          <option value="">{t("selectProject")}</option>
           {projects.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
@@ -228,7 +230,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
             htmlFor="issueDate"
             className="primary-slate font-semibold uppercase"
           >
-            Issue Date:
+            {t("issueDate")}
           </label>
           <input
             type="date"
@@ -244,7 +246,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
             htmlFor="dueDate"
             className="primary-slate font-semibold uppercase"
           >
-            Due Date:
+            {t("dueDate")}
           </label>
           <input
             type="date"
@@ -261,7 +263,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
       {/* NOTE INPUT */}
       <div>
         <label htmlFor="note" className="primary-slate font-semibold uppercase">
-          Note:
+          {t("noteLabel")}
         </label>
         <textarea
           id="note"
@@ -279,14 +281,14 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
           disabled={isSubmitting}
           className="rounded-lg background-elevated border w-full px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer primary-slate uppercase font-semibold hover:bg-(--accent-green)/40"
         >
-          Create Invoice
+          {t("createInvoice")}
         </button>
         <button
           type="button"
           onClick={(e) => handleAddToDrafts(e)}
           className="rounded-lg background-elevated border w-full px-4 py-2 outline-none border-(--accent-purple) transition-all cursor-pointer primary-slate uppercase font-semibold hover:bg-(--accent-purple)/40"
         >
-          Save as Draft
+          {t("saveAsDraft")}
         </button>
       </div>
       {/*  */}

@@ -7,6 +7,7 @@ import { Transaction } from "@/types/types";
 import { fetchProjectTransactions } from "@/actions/projects/revenue/fetchProjectTransactions";
 import { toast } from "react-toastify";
 import AddTransactionModal from "./AddTransactionModal";
+import { useTranslations } from "next-intl";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 
@@ -19,6 +20,7 @@ const filteredTransactions = (
 };
 
 export default function Revenue() {
+  const t = useTranslations("transactions");
   const { selectedProject } = useProjectStore();
 
   const { transactions, setTransactions } = useDataStore();
@@ -38,7 +40,7 @@ export default function Revenue() {
           setTransactions(res.data as Transaction[]);
         }
       } else {
-        toast.error("Failed to load project transactions");
+        toast.error(t("failedToLoad"));
       }
     })();
   }, [selectedProject, setTransactions]);
@@ -53,26 +55,26 @@ export default function Revenue() {
             onClick={() => setTransactionType("all")}
             className={`primary-slate hover:text-primary px-4 rounded-lg border background-border py-2 hover:bg-(--accent-cyan)/20 cursor-pointer transition-all duration-300 ease-out ${transactionType === "all" ? "border-(--accent-cyan) bg-(--accent-cyan)/10 text-primary" : "background-border primary-slate hover:border-(--accent-cyan)"}`}
           >
-            All
+            {t("all")}
           </button>
           <button
             onClick={() => setTransactionType("income")}
             className={`primary-slate hover:text-primary px-4 rounded-lg border background-border py-2 hover:bg-(--accent-green)/20 cursor-pointer transition-all duration-300 ease-out ${transactionType === "income" ? "border-(--accent-green) bg-(--accent-green)/10 text-primary" : "background-border primary-slate hover:border-(--accent-green)"}`}
           >
-            Income
+            {t("income")}
           </button>
           <button
             onClick={() => setTransactionType("expense")}
             className={`primary-slate hover:text-primary px-4 rounded-lg border background-border py-2 hover:bg-(--accent-red)/20 cursor-pointer transition-all duration-300 ease-out ${transactionType === "expense" ? "border-(--accent-red) bg-(--accent-red)/10 text-primary" : "background-border primary-slate hover:border-(--accent-red)"}`}
           >
-            Expenses
+            {t("expenses")}
           </button>
         </div>
         <button
           onClick={() => setOpenAddTransactionModal(true)}
           className="primary-slate hover:text-primary uppercase font-semibold bg-(--accent-green)/80 hover:bg-(--accent-green)/40 px-4 py-2 rounded-lg border background-border cursor-pointer transition-all duration-300 ease-out flex items-center gap-2"
         >
-          <PlusIcon size={20} /> Add Transaction
+          <PlusIcon size={20} /> {t("addTransaction")}
         </button>
 
         {openAddTransactionModal && (
@@ -86,10 +88,10 @@ export default function Revenue() {
         <table className="w-full flex flex-col gap-2">
           <thead className="border-b background-border pb-4">
             <tr className="flex w-full justify-between">
-              <th className="text-primary text-center w-full">Description</th>
-              <th className="text-primary text-center w-full">Date</th>
-              <th className="text-primary text-center w-full">Type</th>
-              <th className="text-primary text-center w-full">Amount</th>
+              <th className="text-primary text-center w-full">{t("description")}</th>
+              <th className="text-primary text-center w-full">{t("date")}</th>
+              <th className="text-primary text-center w-full">{t("type")}</th>
+              <th className="text-primary text-center w-full">{t("amount")}</th>
             </tr>
           </thead>
           <tbody className="flex flex-col gap-2">
@@ -100,7 +102,7 @@ export default function Revenue() {
                   className="flex w-full justify-between border-b-2 background-border pb-2"
                 >
                   <td className="text-primary text-center w-full">
-                    {transaction.note || "No note"}
+                    {transaction.note || t("noNote")}
                   </td>
                   <td className="text-primary text-center w-full">
                     {new Date(transaction.createdAt).toLocaleDateString()}
@@ -120,14 +122,14 @@ export default function Revenue() {
       <footer>
         {transactions.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-primary text-center">No transactions found</p>
+            <p className="text-primary text-center">{t("noTransactionsFound")}</p>
           </div>
         )}
         {transactions.length > 0 && (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-primary text-center">
               {transactions.length}{" "}
-              {transactions.length === 1 ? "transaction" : "transactions"}.
+              {transactions.length === 1 ? t("transaction") : t("transactions")}.
             </p>
           </div>
         )}

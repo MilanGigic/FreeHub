@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { register } from "@/actions/auth/register";
 import { generateDEK, encryptDEK, exportKey } from "@/lib/crypto";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const t = useTranslations("auth");
   const [email, setEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -22,12 +24,12 @@ export default function RegisterPage() {
 
     // Validation
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("passwordsDoNotMatch"));
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError(t("passwordTooShort"));
       return;
     }
 
@@ -53,21 +55,18 @@ export default function RegisterPage() {
       );
 
       if (result.success && result.userId) {
-        // Store DEK in sessionStorage for this session
-        // In production, use more secure storage (IndexedDB with encryption)
         const dekString = await exportKey(dek);
         sessionStorage.setItem("dek", dekString);
         sessionStorage.setItem("dekSalt", salt);
 
-        // Redirect to dashboard
         router.push("/dashboard?wizard=true");
         router.refresh();
       } else {
-        setError(result.error || "Registration failed");
+        setError(result.error || t("registrationFailed"));
       }
     } catch (err) {
       console.error("Registration error:", err);
-      setError("An unexpected error occurred");
+      setError(t("unexpectedError"));
     } finally {
       setLoading(false);
     }
@@ -81,13 +80,13 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center background">
       <div className="w-full max-w-md p-8 background-elevated rounded-lg border background-border">
         <h1 className="text-2xl font-bold text-primary mb-6 text-center">
-          Register
+          {t("register")}
         </h1>
 
         <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
-              Email
+              {t("email")}
             </label>
             <input
               id="email"
@@ -96,13 +95,13 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className={inputClass}
-              placeholder="your@email.com"
+              placeholder={t("emailPlaceholder")}
             />
           </div>
 
           <div>
             <label htmlFor="country" className={labelClass}>
-              Country
+              {t("country")}
             </label>
             <input
               id="country"
@@ -112,23 +111,22 @@ export default function RegisterPage() {
               disabled
               // required
               className={inputClass}
-              placeholder="United States"
+              placeholder={t("unitedStates")}
             />
             <p className="text-xs text-tertiary mt-1">
-              We currently only support the United States for tax purposes.
+              {t("countryRestriction")}
               <br />
-              If you need to register for a different country, please contact us
-              at freehubsupport@gmail.com.
+              {t("countryContactUs")}
               <br />
-              We are working on adding more countries soon.
+              {t("countryComingSoon")}
               <br />
-              Thank you for your understanding.
+              {t("thankYou")}
             </p>
           </div>
 
           <div>
             <label htmlFor="userName" className={labelClass}>
-              Username
+              {t("username")}
             </label>
             <input
               id="userName"
@@ -137,13 +135,13 @@ export default function RegisterPage() {
               onChange={(e) => setUserName(e.target.value)}
               required
               className={inputClass}
-              placeholder="johndoe"
+              placeholder={t("usernamePlaceholder")}
             />
           </div>
 
           <div>
             <label htmlFor="password" className={labelClass}>
-              Password
+              {t("password")}
             </label>
             <input
               id="password"
@@ -156,13 +154,13 @@ export default function RegisterPage() {
               placeholder="••••••••"
             />
             <p className="text-xs text-tertiary mt-1">
-              Must be at least 8 characters
+              {t("passwordMinLength")}
             </p>
           </div>
 
           <div>
             <label htmlFor="confirmPassword" className={labelClass}>
-              Confirm Password
+              {t("confirmPassword")}
             </label>
             <input
               id="confirmPassword"
@@ -186,18 +184,18 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full py-2 px-4 btn-primary"
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? t("registering") : t("register")}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-tertiary text-sm">
-            Already have an account?{" "}
+            {t("haveAccount")}
             <Link
               href="/login"
               className="primary-cyan hover:opacity-80 underline"
             >
-              Login
+              {t("login")}
             </Link>
           </p>
         </div>

@@ -6,38 +6,28 @@ import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { ProjectCalendar } from "@/types/types";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const MONTH_KEYS = [
+  "months.january", "months.february", "months.march", "months.april",
+  "months.may", "months.june", "months.july", "months.august",
+  "months.september", "months.october", "months.november", "months.december",
+] as const;
 
 function isToday(d: Date) {
-  const t = new Date();
+  const now = new Date();
   return (
-    d.getFullYear() === t.getFullYear() &&
-    d.getMonth() === t.getMonth() &&
-    d.getDate() === t.getDate()
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
   );
 }
 
-function formatHeaderDate(d: Date) {
-  return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
-}
-
 export default function CalendarEntries() {
+  const t = useTranslations("calendar");
+  const tCommon = useTranslations("common");
   const { user } = useAuth();
   const {
     selectedProject,
@@ -72,7 +62,7 @@ export default function CalendarEntries() {
           const msg =
             typeof entries.error === "string"
               ? entries.error
-              : "Failed to load entries";
+              : t("failedToLoadEntries");
           toast.error(msg);
         }
       }
@@ -87,8 +77,8 @@ export default function CalendarEntries() {
   const totalHours = existingEntries.reduce((sum, e) => sum + e.hoursWorked, 0);
   const entryLabel =
     existingEntries.length === 1
-      ? "1 entry"
-      : `${existingEntries.length} entries`;
+      ? t("oneEntry")
+      : `${existingEntries.length} ${t("entries")}`;
 
   const goPrevDay = () => {
     if (!selectedDate) return;
@@ -118,7 +108,7 @@ export default function CalendarEntries() {
       user.id,
       selectedProject.id,
       selectedDate,
-      note.trim() || "No description",
+      note.trim() || tCommon("noDescription"),
       hoursWorked,
     );
 
@@ -126,14 +116,14 @@ export default function CalendarEntries() {
       setExistingEntries(result.newEntries.data || []);
     }
     if (result.success) {
-      toast.success("Entry added");
+      toast.success(t("entryAdded"));
       setNote("");
       setHoursWorked(null);
     } else {
       const errMsg =
         result.error instanceof Error
           ? result.error.message
-          : (result.error as string) || "Failed to add entry";
+          : (result.error as string) || t("failedToAddEntry");
       toast.error(errMsg);
       setNote("");
       setHoursWorked(null);
@@ -143,7 +133,7 @@ export default function CalendarEntries() {
   if (!selectedDate) {
     return (
       <div className="w-full h-full flex flex-col gap-3 p-4 background-elevated border background-border rounded-lg items-center justify-center text-tertiary">
-        <p className="text-sm">Select a day on the calendar</p>
+        <p className="text-sm">{t("selectADay")}</p>
       </div>
     );
   }
@@ -153,15 +143,15 @@ export default function CalendarEntries() {
       {/* Header: "Today March 13" + nav arrows + list icon */}
       <div className="flex items-center justify-between gap-2 shrink-0">
         <h2 className="text-primary font-semibold">
-          {isToday(selectedDate) ? "Today " : ""}
-          {formatHeaderDate(selectedDate)}
+          {isToday(selectedDate) ? t("today") : ""}
+          {t(MONTH_KEYS[selectedDate.getMonth()])} {selectedDate.getDate()}
         </h2>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={goPrevDay}
             className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
-            aria-label="Previous day"
+            aria-label={t("previousDay")}
           >
             <ChevronLeftIcon size={18} />
           </button>
@@ -169,7 +159,7 @@ export default function CalendarEntries() {
             type="button"
             onClick={goNextDay}
             className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
-            aria-label="Next day"
+            aria-label={t("nextDay")}
           >
             <ChevronRightIcon size={18} />
           </button>
@@ -181,7 +171,7 @@ export default function CalendarEntries() {
         <span className="inline-flex items-center gap-1.5 rounded-full bg-(--accent-green)/20 text-(--accent-green) px-2.5 py-1 text-sm font-medium">
           {totalHours}h
         </span>
-        <span className="text-sm text-tertiary">logged • {entryLabel}</span>
+        <span className="text-sm text-tertiary">{t("logged")} {entryLabel}</span>
       </div>
 
       {/* Entry list: description left, hours right */}
@@ -191,7 +181,7 @@ export default function CalendarEntries() {
             key={entry.id}
             className="flex items-center justify-between py-2 px-2 rounded border background-border text-primary text-sm"
           >
-            <span className="truncate">{entry.note || "No description"}</span>
+            <span className="truncate">{entry.note || tCommon("noDescription")}</span>
             <span className="font-medium shrink-0 ml-2">
               {entry.hoursWorked}h
             </span>
@@ -206,7 +196,7 @@ export default function CalendarEntries() {
       >
         <input
           type="text"
-          placeholder="What did you work on?"
+          placeholder={t("whatDidYouWorkOn")}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           className="w-full p-2.5 rounded-lg border background-border background text-primary placeholder:text-tertiary outline-none focus:ring-2 focus:ring-(--accent-cyan) text-sm"
@@ -219,7 +209,7 @@ export default function CalendarEntries() {
             max={24}
             step="0.25"
             inputMode="decimal"
-            placeholder="Hours (eg, 2.5)"
+            placeholder={t("hoursPlaceholder")}
             value={hoursWorked !== null && hoursWorked > 0 ? hoursWorked : ""}
             onKeyDown={(e) => {
               const allowed = [
@@ -273,7 +263,7 @@ export default function CalendarEntries() {
             type="submit"
             className="px-4 py-2.5 rounded-lg font-semibold text-white bg-linear-to-r from-(--accent-green) to-(--accent-cyan) hover:opacity-90 transition-opacity shrink-0"
           >
-            Add
+            {tCommon("add")}
           </button>
         </div>
       </form>

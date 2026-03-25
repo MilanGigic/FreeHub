@@ -9,9 +9,11 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/lib/useAuth";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { useDataStore } from "@/lib/store/useDataStore";
+import { useTranslations } from "next-intl";
 import { useClientStore } from "@/lib/store/useClientStore";
 
 export default function NewProjectModal() {
+  const t = useTranslations("projects");
   const { user } = useAuth();
   const { setIsNewProjectModalLoading, setIsNewProjectModalOpen } =
     useUIStore();
@@ -53,13 +55,13 @@ export default function NewProjectModal() {
     setIsNewProjectModalLoading(true);
     setError(null);
     if (!selectedClient) {
-      toast.error("Please select a client");
+      toast.error(t("pleaseSelectClient"));
       setIsNewProjectModalLoading(false);
       return;
     }
 
     if (!user) {
-      toast.error("Please login to add a project");
+      toast.error(t("pleaseLoginToAdd"));
       setIsNewProjectModalLoading(false);
       return null;
     }
@@ -68,7 +70,7 @@ export default function NewProjectModal() {
     if (res.data) {
       if (res.success) {
         setProjects(res.data);
-        toast.success("Project added successfully");
+        toast.success(t("projectAddedSuccess"));
         setIsNewProjectModalLoading(false);
         setProjectForm({
           name: "",
@@ -87,9 +89,9 @@ export default function NewProjectModal() {
         setIsNewProjectModalLoading(false);
       }
     } else {
-      toast.error("An error occurred while adding project: " + res.error);
+      toast.error(t("projectAddedError") + res.error);
       setIsNewProjectModalLoading(false);
-      setError("An error occurred while adding project: " + res.error);
+      setError(t("projectAddedError") + res.error);
     }
   };
 
@@ -113,7 +115,7 @@ export default function NewProjectModal() {
         />
       </button>
       <div className="flex flex-col gap-2 md:gap-4 w-full border-b-2 background-border pb-4 background-elevated">
-        <h1>Client</h1>
+        <h1>{t("client")}</h1>
         <select
           id="client"
           name="client"
@@ -128,7 +130,7 @@ export default function NewProjectModal() {
             }
           }}
         >
-          <option value="">Select Client</option>
+          <option value="">{t("selectClient")}</option>
           {clients.map((client) => (
             <option
               key={client.id}
@@ -141,7 +143,7 @@ export default function NewProjectModal() {
         </select>
       </div>
       <div className="flex flex-col gap-2 md:gap-4 w-full">
-        <label htmlFor="name">Name</label>
+        <label htmlFor="name">{t("nameLabel")}</label>
         <input
           type="text"
           id="name"
@@ -154,7 +156,7 @@ export default function NewProjectModal() {
         />
       </div>
       <div className="flex flex-col gap-2 md:gap-4 w-full">
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description">{t("descriptionLabel")}</label>
         <input
           type="text"
           id="description"
@@ -167,7 +169,7 @@ export default function NewProjectModal() {
         />
       </div>
       <div className="flex flex-col gap-2 md:gap-4 w-full">
-        <label htmlFor="status">Status</label>
+        <label htmlFor="status">{t("statusLabel")}</label>
         <select
           id="status"
           name="status"
@@ -180,13 +182,13 @@ export default function NewProjectModal() {
             })
           }
         >
-          <option value="">Select Status</option>
-          <option value="active">Active</option>
-          <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="on_hold">On Hold</option>
-          <option value="not_started">Not Started</option>
+          <option value="">{t("selectStatus")}</option>
+          <option value="active">{t("statusActiveOption")}</option>
+          <option value="in_progress">{t("statusInProgressOption")}</option>
+          <option value="completed">{t("statusCompletedOption")}</option>
+          <option value="cancelled">{t("statusCancelledOption")}</option>
+          <option value="on_hold">{t("statusOnHoldOption")}</option>
+          <option value="not_started">{t("statusNotStartedOption")}</option>
         </select>
       </div>
       <div className="flex flex-col gap-2 md:gap-4 w-full">
@@ -194,7 +196,7 @@ export default function NewProjectModal() {
           type="submit"
           className="primary-green p-2 rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
         >
-          Create Project
+          {t("createProject")}
         </button>
       </div>
     </form>

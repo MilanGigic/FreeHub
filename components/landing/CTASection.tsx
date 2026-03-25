@@ -2,20 +2,23 @@
 
 import { useUIStore } from "@/lib/store/useUIStore";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function CTASection() {
   const router = useRouter();
   const { setIsRegisterWindowOpen } = useUIStore();
+  const t = useTranslations("landing");
+
   return (
     <section className="relative py-24 px-6 bg-linear-to-br from-gray-900 via-gray-800 to-black">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-6">
-          Ready to fire your
+          {t("readyToFire")}
           <br />
-          financial chaos?
+          {t("financialChaos")}
         </h2>
         <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-          Join thousands of freelancers who finally feel in control.
+          {t("joinThousands")}
         </p>
 
         {/* CTA Button */}
@@ -27,12 +30,12 @@ export default function CTASection() {
               setIsRegisterWindowOpen(true);
             }}
           >
-            <span className="relative z-10">Start Free — No Card Required</span>
+            <span className="relative z-10">{t("startFree")}</span>
           </button>
         </div>
 
         <p className="text-gray-400 text-sm mt-6">
-          14-day full access • Cancel anytime
+          {t("trialInfo")}
         </p>
 
         {/* Trust indicators */}
@@ -49,7 +52,7 @@ export default function CTASection() {
                 clipRule="evenodd"
               />
             </svg>
-            <span>Bank-level encryption</span>
+            <span>{t("bankLevelEncryption")}</span>
           </div>
           <div className="flex items-center gap-2">
             <svg
@@ -63,7 +66,7 @@ export default function CTASection() {
                 clipRule="evenodd"
               />
             </svg>
-            <span>No credit card needed</span>
+            <span>{t("noCreditCard")}</span>
           </div>
           <div className="flex items-center gap-2">
             <svg
@@ -77,17 +80,12 @@ export default function CTASection() {
                 clipRule="evenodd"
               />
             </svg>
-            <span>Cancel anytime</span>
+            <span>{t("cancelAnytime")}</span>
           </div>
         </div>
       </div>
       <p className="text-red-500 mt-4 text-center font-semibold text-sm">
-        This is a high-level overview based on official IRS rules as of March
-        2026 (tax year 2025/2026). Tax laws change annually (wage base,
-        brackets, etc.). This is NOT tax advice. <br />
-        Estimates only — always verify with IRS.gov, a CPA, or tax software like
-        TurboTax. Consult a tax professional. Non-compliance can lead to
-        penalties and interest.
+        {t("irsDisclaimer")}
       </p>
     </section>
   );

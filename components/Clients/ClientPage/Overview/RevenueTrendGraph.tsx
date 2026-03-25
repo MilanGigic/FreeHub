@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import type { Invoice } from "@/types/types";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useTranslations } from "next-intl";
 
 interface RevenueData {
   date: string;
@@ -120,6 +121,7 @@ const formatCurrency = (value: number) => {
 
 export default function RevenueTrendGraph() {
   const { invoices } = useInvoiceStore();
+  const t = useTranslations("clients");
   const [timeRange, setTimeRange] = useState<"30" | "365">("30");
 
   const { chartData, revenueTrendPercentage } = useMemo(() => {
@@ -170,7 +172,7 @@ export default function RevenueTrendGraph() {
     <div className="flex flex-col gap-2 md:gap-4 items-center justify-between p-4 background-elevated border background-border rounded-lg">
       <div className="flex items-center justify-between w-full">
         <h1 className="text-lg font-semibold primary-slate uppercase">
-          Revenue Trend
+          {t("revenueTrend")}
         </h1>
 
         <div className="flex gap-2">
@@ -182,7 +184,7 @@ export default function RevenueTrendGraph() {
                 : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
-            Monthly
+            {t("monthly")}
           </button>
           <button
             onClick={() => setTimeRange("365")}
@@ -192,7 +194,7 @@ export default function RevenueTrendGraph() {
                 : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
-            Yearly
+            {t("yearly")}
           </button>
         </div>
       </div>
@@ -225,7 +227,7 @@ export default function RevenueTrendGraph() {
             dataKey="value"
             fill="#2ea043"
             radius={[4, 4, 0, 0]}
-            name="Revenue"
+            name={t("revenueChartName")}
           />
         </ComposedChart>
       </ResponsiveContainer>
@@ -233,7 +235,7 @@ export default function RevenueTrendGraph() {
         className={`text-sm font-semibold uppercase ${revenueTrendPercentage > 0 ? "primary-green" : revenueTrendPercentage < 0 ? "primary-red" : "primary-slate"}`}
       >
         {revenueTrendPercentage > 0 ? "+" : revenueTrendPercentage < 0 ? "-" : ""}
-        {Math.abs(revenueTrendPercentage).toFixed(1)}% vs last period
+        {Math.abs(revenueTrendPercentage).toFixed(1)}% {t("vsLastPeriod")}
       </p>
     </div>
   );

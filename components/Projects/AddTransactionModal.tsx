@@ -7,6 +7,7 @@ import { Project, Transaction } from "@/types/types";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 
@@ -15,6 +16,8 @@ export default function AddTransactionModal({
 }: {
   onClose: () => void;
 }) {
+  const t = useTranslations("transactions");
+  const tCommon = useTranslations("common");
   const { user } = useAuth();
   const { transactions, setTransactions } = useDataStore();
   const { selectedProject, setSelectedProject } = useProjectStore();
@@ -40,7 +43,7 @@ export default function AddTransactionModal({
     });
     if (res.success) {
       onClose();
-      toast.success("Transaction added successfully");
+      toast.success(t("transactionAddedSuccess"));
       if (res.data) {
         setTransactions([...transactions, res.data as Transaction]);
       }
@@ -49,7 +52,7 @@ export default function AddTransactionModal({
         setSelectedProject(refreshed.data as Project);
       }
     } else {
-      toast.error(res.error?.message || "An error occurred");
+      toast.error(res.error?.message || tCommon("anErrorOccurred"));
     }
   };
 
@@ -68,7 +71,7 @@ export default function AddTransactionModal({
             htmlFor="amount"
             className="text-lg font-semibold uppercase primary-slate"
           >
-            Amount
+            {t("amountLabel")}
           </label>
           <input
             type="number"
@@ -83,7 +86,7 @@ export default function AddTransactionModal({
             htmlFor="note"
             className="text-lg font-semibold uppercase primary-slate"
           >
-            Note
+            {t("noteLabel")}
           </label>
           <input
             type="text"
@@ -98,7 +101,7 @@ export default function AddTransactionModal({
             htmlFor="type"
             className="text-lg font-semibold uppercase primary-slate"
           >
-            Type
+            {t("typeLabel")}
           </label>
           <select
             id="type"
@@ -108,8 +111,8 @@ export default function AddTransactionModal({
               setForm({ ...form, type: e.target.value as "income" | "expense" })
             }
           >
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
+            <option value="income">{t("incomeOption")}</option>
+            <option value="expense">{t("expenseOption")}</option>
           </select>
         </div>
         <div className="flex items-center gap-2">
@@ -117,7 +120,7 @@ export default function AddTransactionModal({
             htmlFor="deductible"
             className="text-lg font-semibold uppercase primary-slate"
           >
-            Deductible
+            {t("deductible")}
           </label>
           <input
             type="checkbox"
@@ -131,7 +134,7 @@ export default function AddTransactionModal({
           type="submit"
           className="w-full p-2 border background-border rounded-lg focus:outline focus:outline-(--accent-cyan) text-primary primary-slate hover:text-primary uppercase font-semibold"
         >
-          Add Transaction
+          {t("addTransactionButton")}
         </button>
       </form>
     </div>

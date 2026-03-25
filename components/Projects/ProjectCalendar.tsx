@@ -5,22 +5,18 @@ import { ChevronLeftIcon, ChevronRightIcon, Clock } from "lucide-react";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { fetchCalendarEntriesForMonth } from "@/actions/projects/calendar/fetchCalendarEntriesForMonth";
+import { useTranslations } from "next-intl";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const WEEKDAY_KEYS = [
+  "weekdays.sun", "weekdays.mon", "weekdays.tue", "weekdays.wed",
+  "weekdays.thu", "weekdays.fri", "weekdays.sat",
+] as const;
+
+const MONTH_KEYS = [
+  "months.january", "months.february", "months.march", "months.april",
+  "months.may", "months.june", "months.july", "months.august",
+  "months.september", "months.october", "months.november", "months.december",
+] as const;
 
 function isSameDay(a: Date, b: Date) {
   return (
@@ -78,6 +74,7 @@ const DOT_COLORS = [
 
 export default function ProjectCalendar() {
   const { user } = useAuth();
+  const t = useTranslations("calendar");
   const { selectedProject, selectedDate, setSelectedDate } = useProjectStore();
 
   const projectCreatedAt = useMemo(() => {
@@ -153,14 +150,14 @@ export default function ProjectCalendar() {
       {/* Header: Month year + nav (left, 1, right) */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-primary">
-          {MONTHS[month]} {year}
+          {t(MONTH_KEYS[month])} {year}
         </h2>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={goPrev}
             className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
-            aria-label="Previous month"
+            aria-label={t("previousMonth")}
           >
             <ChevronLeftIcon size={18} />
           </button>
@@ -169,7 +166,7 @@ export default function ProjectCalendar() {
             type="button"
             onClick={goNext}
             className="p-1.5 rounded border background-border hover:background text-primary transition-colors"
-            aria-label="Next month"
+            aria-label={t("nextMonth")}
           >
             <ChevronRightIcon size={18} />
           </button>
@@ -178,12 +175,12 @@ export default function ProjectCalendar() {
 
       {/* Weekday row */}
       <div className="grid grid-cols-7 gap-px">
-        {WEEKDAYS.map((day) => (
+        {WEEKDAY_KEYS.map((key) => (
           <div
-            key={day}
+            key={key}
             className="text-center text-xs font-medium text-tertiary py-1"
           >
-            {day}
+            {t(key)}
           </div>
         ))}
       </div>

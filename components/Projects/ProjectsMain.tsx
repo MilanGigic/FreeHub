@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import GridProjects from "./GridProjects";
 import NewProjectModal from "./NewProjectModal";
 import { useUIStore } from "@/lib/store/useUIStore";
+import { useTranslations } from "next-intl";
 
 const projectStatuses = [
   "all",
@@ -26,6 +27,7 @@ function filterProjects(projects: Project[], status: ProjectStatus | "all") {
 }
 
 export default function ProjectsMain() {
+  const t = useTranslations("projects");
   const { projects, setProjects } = useDataStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +40,16 @@ export default function ProjectsMain() {
   const { setIsNewProjectModalOpen, isNewProjectModalOpen } = useUIStore();
 
   const { user } = useAuth();
+
+  const statusLabels: Record<string, string> = {
+    all: t("statusAll"),
+    completed: t("statusCompleted"),
+    in_progress: t("statusInProgress"),
+    active: t("statusActive"),
+    cancelled: t("statusCancelled"),
+    on_hold: t("statusOnHold"),
+    not_started: t("statusNotStarted"),
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -108,8 +120,7 @@ export default function ProjectsMain() {
                 onClick={() => setShow(status as ProjectStatus)}
               >
                 <p className="text-primary">
-                  {status.charAt(0).toUpperCase() +
-                    status.slice(1).replace("_", " ")}
+                  {statusLabels[status]}
                 </p>
               </div>
             ))}
@@ -118,7 +129,7 @@ export default function ProjectsMain() {
             <div className="w-full flex items-center h-full justify-center">
               <input
                 type="text"
-                placeholder="Search projects"
+                placeholder={t("searchProjects")}
                 className="p-2 w-full text-center rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out placeholder:text-tertiary"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -136,14 +147,14 @@ export default function ProjectsMain() {
               />
             )}
             <p className="border background-border text-primary px-2 background-elevated flex items-center gap-0.5 w-40 justify-center">
-              {filteredProjects.length} {filteredProjects.length === 1 ? "project" : "projects"}
+              {filteredProjects.length} {filteredProjects.length === 1 ? t("project") : t("projects")}
             </p>
             <button
               className="primary-cyan text-sm font-semibold uppercase rounded-lg hover:bg-(--accent-cyan)/30 transition-all duration-300 ease-out flex items-center gap-0.5 h-full px-2 cursor-pointer w-xs justify-center py-2"
               onClick={() => setIsNewProjectModalOpen(true)}
             >
               <Plus className="w-4 h-4" />
-              New Project
+              {t("newProject")}
             </button>
           </div>
 
@@ -155,7 +166,7 @@ export default function ProjectsMain() {
           <GridProjects projects={filteredProjects} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-primary">No projects found</p>
+            <p className="text-primary">{t("noProjectsFound")}</p>
           </div>
         )}
       </div>

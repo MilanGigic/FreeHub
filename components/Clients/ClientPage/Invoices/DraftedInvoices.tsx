@@ -1,6 +1,7 @@
 "use client";
 
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 export default function DraftedInvoices() {
@@ -16,6 +17,7 @@ export default function DraftedInvoices() {
     note,
   } = useInvoiceStore();
 
+  const t = useTranslations("invoices");
   const [draftActive, setDraftActive] = useState<boolean>(false);
 
   const draftedInvoices = useMemo(
@@ -28,11 +30,11 @@ export default function DraftedInvoices() {
       <div>
         <h1 className="text-primary font-semibold uppercase">
           {draftedInvoices.length > 0
-            ? `${draftedInvoices.length} draft(s)`
-            : "No drafts"}
+            ? `${draftedInvoices.length} ${t("drafts")}`
+            : t("noDrafts")}
         </h1>
         <p className="text-sm primary-slate">
-          Drafted invoices are invoices that are not yet sent to the client.
+          {t("draftDescription")}
         </p>
       </div>
 
@@ -67,26 +69,26 @@ export default function DraftedInvoices() {
               }}
             >
               <p className="text-sm primary-slate text-center uppercase font-semibold flex flex-col items-center">
-                Amount:{" "}
+                {t("amountLabel")}{" "}
                 <span className="primary-cyan">${invoice.totalAmount}</span>
               </p>
               <div className="flex items-center justify-start w-full gap-2 primary-slate">
                 <p className="text-end">
-                  Issue Date:{" "}
+                  {t("issueDate")}{" "}
                   <span className="text-primary">
                     {invoice.issueDate.toLocaleDateString()}
                   </span>
                 </p>
                 <p>•</p>
                 <p>
-                  Due Date:{" "}
+                  {t("dueDate")}{" "}
                   <span className="text-primary">
                     {invoice.dueDate.toLocaleDateString()}
                   </span>
                 </p>
               </div>
               <p className="text-sm primary-slate text-center uppercase font-semibold flex flex-col items-center">
-                Note: <span className="text-primary">{invoice.note}</span>
+                {t("noteLabel")} <span className="text-primary">{invoice.note}</span>
               </p>
             </div>
           ))}

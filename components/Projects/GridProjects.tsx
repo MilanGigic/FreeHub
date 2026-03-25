@@ -2,6 +2,7 @@
 
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { Project } from "@/types/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 function MarginBar({ value }: { value: number }) {
@@ -22,6 +23,7 @@ function MarginBar({ value }: { value: number }) {
 }
 
 export default function GridProjects({ projects }: { projects: Project[] }) {
+  const t = useTranslations("projects");
   const router = useRouter();
   const { setSelectedProject } = useProjectStore();
   return (
@@ -56,21 +58,21 @@ export default function GridProjects({ projects }: { projects: Project[] }) {
           <div className="flex flex-col gap-4">
             <div className="flex w-full items-center justify-between gap-4">
               <p className="text-sm primary-slate uppercase font-semibold gap-2 flex flex-col items-center">
-                Revenue
+                {t("revenue")}
                 <span className="primary-green text-2xl font-bold">
                   ${project.totalRevenue}
                 </span>
               </p>
               <div className="border h-full background-border w-0.5"></div>
               <p className="text-sm primary-slate uppercase font-semibold gap-2 flex flex-col items-center">
-                Expenses
+                {t("expenses")}
                 <span className="primary-red text-2xl font-bold">
                   ${project.totalExpenses}
                 </span>
               </p>
               <div className="border h-full background-border w-0.5"></div>
               <p className="text-sm primary-slate uppercase font-semibold gap-2 flex flex-col items-center">
-                Profit
+                {t("profit")}
                 <span className="primary-cyan text-2xl font-bold">
                   ${project.totalProfit}
                 </span>
@@ -81,22 +83,22 @@ export default function GridProjects({ projects }: { projects: Project[] }) {
                 value={project.totalMargin ? Number(project.totalMargin) : 0}
               />
               <p className="primary-slate uppercase font-semibold text-sm">
-                Profit Margin
+                {t("profitMargin")}
               </p>
             </div>
           </div>
           <footer className="flex justify-between items-center pt-2.5 border-t background-border">
             <div className="flex gap-3 h-full">
               <span className="primary-slate text-lg font-semibold">
-                Started on: {new Date(project.createdAt).toLocaleDateString()}
+                {t("startedOn")} {new Date(project.createdAt).toLocaleDateString()}
               </span>
               <div className="border h-full background-border w-0.5"></div>
               <span className="primary-cyan text-lg font-semibold">
-                Last Updated: {new Date(project.updatedAt).toLocaleDateString()}
+                {t("lastUpdated")} {new Date(project.updatedAt).toLocaleDateString()}
               </span>
             </div>
             <span className="text-primary text-lg font-semibold">
-              ⏱ {project.totalHoursWorked} hours
+              ⏱ {project.totalHoursWorked} {t("hours")}
             </span>
           </footer>
         </div>

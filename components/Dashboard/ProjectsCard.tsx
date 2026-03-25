@@ -4,6 +4,7 @@ import { useDataStore } from "@/lib/store/useDataStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
 import { ArrowRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
@@ -17,14 +18,14 @@ type PieSlice = {
   percent: number;
 };
 
-const projectListHeaders = [
-  "Project Name",
-  "Description",
-  "Revenue",
-  "Expenses",
-  "Profit",
-  "Hours Worked",
-];
+const projectListHeaderKeys = [
+  "projectName",
+  "description",
+  "revenue",
+  "expensesColumn",
+  "profit",
+  "hoursWorked",
+] as const;
 
 function draw3DPie(
   canvas: HTMLCanvasElement,
@@ -150,6 +151,7 @@ const COLORS = ["#4ade80", "#fb923c", "#38bdf8", "#a855f7", "#facc15"];
 
 export default function ProjectsCard() {
   const router = useRouter();
+  const t = useTranslations("dashboard");
 
   const { user } = useAuth();
   const { activeProjects, setSelectedProject } = useProjectStore();
@@ -179,7 +181,7 @@ export default function ProjectsCard() {
     return (
       <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
         <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
-          Register or login to view your projects.
+          {t("loginToViewProjects")}
         </div>
       </div>
     );
@@ -188,16 +190,16 @@ export default function ProjectsCard() {
     <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
       <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full">
         <header className="w-full text-2xl font-bold text-primary text-center uppercase flex flex-col border-b-2 background-border pb-4">
-          <h1>Projects Overview</h1>
+          <h1>{t("projectsOverview")}</h1>
         </header>
         <main className="flex flex-col gap-2 space-y-1.5 text-sm items-center w-full">
           <div className="flex justify-center gap-4">
             <p className="text-lg primary-slate font-semibold uppercase">
-              Total Projects:{" "}
+              {t("totalProjects")}{" "}
               <span className="font-bold primary-green">{projects.length}</span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
-              Active Projects:{" "}
+              {t("activeProjects")}{" "}
               <span className="font-bold primary-green">
                 {activeProjects.length}
               </span>
@@ -208,12 +210,12 @@ export default function ProjectsCard() {
             <table className="w-full">
               <thead className="border-b-2 background-border w-full">
                 <tr>
-                  {projectListHeaders.map((header) => (
+                  {projectListHeaderKeys.map((key) => (
                     <th
-                      key={header}
+                      key={key}
                       className="text-sm font-semibold primary-slate text-center pb-2"
                     >
-                      {header}
+                      {t(key)}
                     </th>
                   ))}
                 </tr>
@@ -246,7 +248,7 @@ export default function ProjectsCard() {
 
           <div className="w-full flex flex-col items-center mt-2">
             <p className="text-lg primary-slate font-semibold uppercase">
-              Revenue by Project
+              {t("revenueByProject")}
             </p>
             {projectRevenueData.length > 0 ? (
               <>
@@ -277,7 +279,7 @@ export default function ProjectsCard() {
               </>
             ) : (
               <p className="text-sm primary-slate">
-                No revenue data yet for your projects.
+                {t("noRevenueDataProjects")}
               </p>
             )}
           </div>
@@ -287,7 +289,7 @@ export default function ProjectsCard() {
           href="/projects"
           className="text-primary underline w-full flex items-center justify-center gap-2 text-2xl font-bold uppercase hover:text-(--accent-cyan) transition-colors duration-300"
         >
-          Go to Projects
+          {t("goToProjects")}
           <ArrowRightIcon className="w-4 h-4" />
         </Link>
       </div>

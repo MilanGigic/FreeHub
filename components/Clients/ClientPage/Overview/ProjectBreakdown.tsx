@@ -1,15 +1,22 @@
 import { useClientStore } from "@/lib/store/useClientStore";
-
-// | Project | Revenue | Expenses | Profit | Margin |
-const tableLists = ["Project", "Revenue", "Expenses", "Profit", "Margin"];
+import { useTranslations } from "next-intl";
 
 export default function ProjectBreakdown() {
   const { clientProjects } = useClientStore();
+  const t = useTranslations("clients");
+
+  const tableLists = [
+    t("project"),
+    t("revenueColumn"),
+    t("expensesColumn"),
+    t("profitColumn"),
+    t("marginColumn"),
+  ];
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
       <h1 className="text-base primary-slate uppercase font-semibold">
-        Project Breakdown
+        {t("projectBreakdown")}
       </h1>
       <table className="w-full">
         <thead className="border-b-2 background-border">
@@ -28,7 +35,7 @@ export default function ProjectBreakdown() {
           {clientProjects.length === 0 && (
             <tr>
               <td colSpan={5} className="text-sm primary-slate text-center py-4">
-                No projects for this client yet
+                {t("noProjectsForClient")}
               </td>
             </tr>
           )}
@@ -57,7 +64,7 @@ export default function ProjectBreakdown() {
         </tbody>
       </table>
       <p className="text-sm primary-slate">
-        Revenue and profit by project under this client.
+        {t("projectBreakdownDescription")}
       </p>
     </div>
   );

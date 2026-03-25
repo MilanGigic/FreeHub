@@ -5,21 +5,24 @@ import { fetchClientsPageMetrics } from "@/actions/clients/fetchClientsPageMetri
 import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 import { fetchClientCardMetrics } from "@/actions/clients/fetchClientCardMetrics";
 import ClientTable from "@/components/Clients/ClientTable";
+import { getTranslations } from "next-intl/server";
 
 export default async function ClientsPage() {
   const user = await getCurrentUser();
   if (!user) {
+    const tAuth = await getTranslations("auth");
     return (
       <div className="text-center text-primary font-semibold">
-        You must be logged in to access this page
+        {tAuth("mustBeLoggedIn")}
       </div>
     );
   }
+  const tClients = await getTranslations("clients");
   const headerRes = await fetchClientsPageMetrics(user.id);
   if (!headerRes.success) {
     return (
       <div className="text-center text-primary font-semibold">
-        An error occurred while fetching clients page metrics
+        {tClients("errorFetchingMetrics")}
       </div>
     );
   }
@@ -27,14 +30,14 @@ export default async function ClientsPage() {
   if (!mainRes.success) {
     return (
       <div className="text-center text-primary font-semibold">
-        An error occurred while fetching client card metrics
+        {tClients("errorFetchingCardMetrics")}
       </div>
     );
   }
   if (!mainRes.data) {
     return (
       <div className="text-center text-primary font-semibold">
-        No client card metrics found
+        {tClients("noCardMetrics")}
       </div>
     );
   }

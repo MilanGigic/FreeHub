@@ -2,6 +2,7 @@ import { Client, Project } from "@/types/types";
 import { Mail } from "lucide-react";
 import { getStatusColor, getStatusTextColor } from "@/utils/getStatusColor";
 import { formatMoney } from "@/utils/formatMoney";
+import { useTranslations } from "next-intl";
 
 export function ClientDetailPanel({
   client,
@@ -14,6 +15,9 @@ export function ClientDetailPanel({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
+  const t = useTranslations("clients");
+  const tCommon = useTranslations("common");
+
   return (
     <div
       className="absolute left-full top-0 ml-0.5 w-72 background-elevated border background-border rounded-lg shadow-xl shadow-black/50 z-50 overflow-hidden"
@@ -50,7 +54,7 @@ export function ClientDetailPanel({
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-(--bg-elevated) rounded-md p-2.5 border background-border">
             <span className="text-[10px] primary-slate uppercase font-semibold block mb-1">
-              Projects
+              {t("detailProjects")}
             </span>
             <p className="text-lg font-bold primary-cyan">
               {clientProjects.length}
@@ -58,7 +62,7 @@ export function ClientDetailPanel({
           </div>
           <div className="bg-(--bg-elevated) rounded-md p-2.5 border background-border">
             <span className="text-[10px] primary-slate uppercase font-semibold block mb-1">
-              Since
+              {t("detailSince")}
             </span>
             <p className="text-sm font-bold text-primary">
               {new Date(client.startDate).toLocaleDateString(undefined, {
@@ -72,7 +76,7 @@ export function ClientDetailPanel({
         {clientProjects.length > 0 && (
           <div>
             <span className="text-[10px] primary-slate uppercase font-semibold block mb-1.5">
-              Their Projects
+              {t("theirProjects")}
             </span>
             <div className="space-y-1.5">
               {clientProjects.slice(0, 4).map((p) => (
@@ -88,7 +92,7 @@ export function ClientDetailPanel({
               ))}
               {clientProjects.length > 4 && (
                 <p className="text-[10px] primary-slate">
-                  +{clientProjects.length - 4} more
+                  +{clientProjects.length - 4} {tCommon("more")}
                 </p>
               )}
             </div>
@@ -96,9 +100,9 @@ export function ClientDetailPanel({
         )}
 
         <div className="flex justify-between text-[10px] primary-slate pt-1 border-t background-border">
-          <span>Start: {new Date(client.startDate).toLocaleDateString()}</span>
+          <span>{t("start")} {new Date(client.startDate).toLocaleDateString()}</span>
           {client.endDate && (
-            <span>End: {new Date(client.endDate).toLocaleDateString()}</span>
+            <span>{t("end")} {new Date(client.endDate).toLocaleDateString()}</span>
           )}
         </div>
       </div>

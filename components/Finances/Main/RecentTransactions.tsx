@@ -6,8 +6,7 @@ import { Transaction } from "@/types/types";
 import { List } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-
-const transactionTypes = ["All", "Income", "Expense"];
+import { useTranslations } from "next-intl";
 
 function filterTransactions(
   transactions: Transaction[],
@@ -19,6 +18,8 @@ function filterTransactions(
 
 export default function RecentTransactions() {
   const { user } = useAuth();
+  const t = useTranslations("finances");
+  const tCommon = useTranslations("common");
 
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
@@ -27,6 +28,12 @@ export default function RecentTransactions() {
   const [transactionType, setTransactionType] = useState<
     "all" | "income" | "expense"
   >("all");
+
+  const transactionTypes = [
+    { key: "all" as const, label: tCommon("all") },
+    { key: "income" as const, label: t("incomeType") },
+    { key: "expense" as const, label: t("expenseType") },
+  ];
 
   useEffect(() => {
     (async () => {
@@ -37,7 +44,7 @@ export default function RecentTransactions() {
           setRecentTransactions(res.data);
         }
       } else {
-        toast.error(res.error?.message || "An error occurred");
+        toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
     })();
   }, [user]);
@@ -51,25 +58,17 @@ export default function RecentTransactions() {
     <div className="background-elevated border background-border rounded-lg p-4 w-full h-full flex flex-col">
       <header className="flex flex-col gap-2 items-start justify-between w-full border-b background-border pb-4">
         <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
-          Recent Transactions
+          {t("recentTransactions")}
         </h1>
 
         <ul className="items-center gap-2 hidden md:flex">
-          {transactionTypes.map((type) => (
+          {transactionTypes.map(({ key, label }) => (
             <li
-              key={type}
-              className={`text-sm font-semibold cursor-pointer background-elevated border background-border rounded-lg p-2 ${transactionType === type.toLowerCase() ? "border-(--accent-cyan) bg-(--accent-cyan)/10 text-primary" : "background-border primary-slate hover:border-(--accent-cyan)"} transition-all`}
-              onClick={() =>
-                setTransactionType(
-                  type === "All"
-                    ? "all"
-                    : type === "Income"
-                      ? "income"
-                      : "expense",
-                )
-              }
+              key={key}
+              className={`text-sm font-semibold cursor-pointer background-elevated border background-border rounded-lg p-2 ${transactionType === key ? "border-(--accent-cyan) bg-(--accent-cyan)/10 text-primary" : "background-border primary-slate hover:border-(--accent-cyan)"} transition-all`}
+              onClick={() => setTransactionType(key)}
             >
-              {type}
+              {label}
             </li>
           ))}
         </ul>
@@ -79,27 +78,19 @@ export default function RecentTransactions() {
             className="md:hidden flex items-center gap-2 text-secondary text-sm font-semibold cursor-pointer background-elevated border background-border rounded-lg p-2"
           >
             <h1 className="text-secondary text-sm font-semibold">
-              All Transactions
+              {t("allTransactions")}
             </h1>
             <List className="w-4 h-4 text-secondary" />
           </button>
           {openDropdown ? (
             <div className="absolute mt-1 w-full rounded-lg background-elevated border background-border shadow-lg z-10">
-              {transactionTypes.map((type) => (
+              {transactionTypes.map(({ key, label }) => (
                 <button
-                  key={type}
+                  key={key}
                   className="text-secondary text-sm font-semibold p-2 hover:bg-(--border-interactive) cursor-pointer hover:rounded-lg focus-border-accent transition-all"
-                  onClick={() =>
-                    setTransactionType(
-                      type === "All"
-                        ? "all"
-                        : type === "Income"
-                          ? "income"
-                          : "expense",
-                    )
-                  }
+                  onClick={() => setTransactionType(key)}
                 >
-                  {type}
+                  {label}
                 </button>
               ))}
             </div>
@@ -114,9 +105,9 @@ export default function RecentTransactions() {
             className="flex items-center justify-between border-b background-border py-2"
           >
             <h1 className="text-primary text-sm font-medium w-full text-center">
-              {transaction.note || "No note"}{" "}
+              {transaction.note || tCommon("noNote")}{" "}
               <span className="primary-slate text-xs font-semibold background-elevated border background-border rounded-lg p-1">
-                {transaction.type === "income" ? "Income" : "Expense"}
+                {transaction.type === "income" ? t("incomeType") : t("expenseType")}
               </span>
             </h1>
             <h1

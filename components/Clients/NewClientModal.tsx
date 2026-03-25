@@ -8,10 +8,12 @@ import { X } from "lucide-react";
 import { redirect } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 export default function NewClientModal({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const { setClients } = useClientStore();
+  const t = useTranslations("clients");
   const [clientForm, setClientForm] = useState<ClientForm>({
     firstName: "",
     lastName: "",
@@ -38,7 +40,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
     if (res.data) {
       if (res.success) {
         setClients(res.data);
-        toast.success("Client added successfully");
+        toast.success(t("clientAddedSuccess"));
         setIsLoading(false);
         setClientForm({
           firstName: "",
@@ -55,9 +57,9 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
         setIsLoading(false);
       }
     } else {
-      toast.error("An error occurred while adding client");
+      toast.error(t("clientAddedError"));
       setIsLoading(false);
-      setError("An error occurred while adding client");
+      setError(t("clientAddedError"));
     }
   };
 
@@ -84,7 +86,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
       <div className="w-full flex flex-col gap-2 md:gap-4">
         <div className="w-full flex justify-center items-center">
           <h1 className="text-2xl font-bold uppercase text-primary">
-            Add New Client
+            {t("addNewClient")}
           </h1>
         </div>
         <form
@@ -98,12 +100,12 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   htmlFor="firstName"
                   className="text-primary uppercase font-semibold"
                 >
-                  First Name
+                  {t("firstName")}
                 </label>
                 <input
                   id="firstName"
                   type="text"
-                  placeholder="First Name"
+                  placeholder={t("firstName")}
                   value={clientForm.firstName ? clientForm.firstName : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, firstName: e.target.value })
@@ -116,12 +118,12 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   htmlFor="lastName"
                   className="text-primary uppercase font-semibold"
                 >
-                  Last Name
+                  {t("lastName")}
                 </label>
                 <input
                   id="lastName"
                   type="text"
-                  placeholder="Last Name"
+                  placeholder={t("lastName")}
                   value={clientForm.lastName ? clientForm.lastName : ""}
                   onChange={(e) =>
                     setClientForm({ ...clientForm, lastName: e.target.value })
@@ -135,12 +137,12 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   htmlFor="email"
                   className="text-primary uppercase font-semibold"
                 >
-                  Email
+                  {t("emailLabel")}
                 </label>
                 <input
                   id="email"
                   type="email"
-                  placeholder="Email"
+                  placeholder={t("emailLabel")}
                   className="rounded-md background-elevated border background-border w-full text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                   value={clientForm.email ? clientForm.email : ""}
                   onChange={(e) =>
@@ -152,7 +154,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
             <div className="flex flex-col gap-2 md:gap-4 w-full">
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
                 <h1 className="text-primary uppercase font-semibold">
-                  Currency
+                  {t("currency")}
                 </h1>
                 <select
                   name="currency"
@@ -163,14 +165,14 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                     setClientForm({ ...clientForm, currency: e.target.value })
                   }
                 >
-                  <option value="">Select Currency</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
+                  <option value="">{t("selectCurrency")}</option>
+                  <option value="USD">{t("usd")}</option>
+                  <option value="EUR">{t("eur")}</option>
+                  <option value="GBP">{t("gbp")}</option>
                 </select>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
-                <h1 className="text-primary uppercase font-semibold">Status</h1>
+                <h1 className="text-primary uppercase font-semibold">{t("statusLabel")}</h1>
                 <select
                   name="status"
                   id="status"
@@ -180,10 +182,10 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                     setClientForm({ ...clientForm, status: e.target.value })
                   }
                 >
-                  <option value="">Select Status</option>
-                  <option value="active">Active</option>
-                  <option value="paused">Paused</option>
-                  <option value="archived">Archived</option>
+                  <option value="">{t("selectStatus")}</option>
+                  <option value="active">{t("active")}</option>
+                  <option value="paused">{t("paused")}</option>
+                  <option value="archived">{t("archived")}</option>
                 </select>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
@@ -191,13 +193,13 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   htmlFor="startDate"
                   className="text-primary uppercase font-semibold"
                 >
-                  Start Date
+                  {t("startDate")}
                 </label>
                 <input
                   id="startDate"
                   type="date"
                   name="startDate"
-                  placeholder="Start Date"
+                  placeholder={t("startDate")}
                   className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all min-h-[44px] touch-manipulation"
                   value={clientForm.startDate ? clientForm.startDate : ""}
                   onChange={(e) =>
@@ -210,13 +212,13 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   htmlFor="endDate"
                   className="text-primary uppercase font-semibold"
                 >
-                  End Date
+                  {t("endDate")}
                 </label>
                 <input
                   id="endDate"
                   type="date"
                   name="endDate"
-                  placeholder="End Date"
+                  placeholder={t("endDate")}
                   className="rounded-md background-elevated border background-border p-4 outline-none text-sm text-primary focus-border-accent transition-all min-h-[44px] touch-manipulation"
                   value={clientForm.endDate ? clientForm.endDate : ""}
                   onChange={(e) =>
@@ -230,7 +232,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
             type="submit"
             className="rounded-lg background-elevated border px-4 py-2 outline-none border-(--accent-green) transition-all cursor-pointer text-primary font-semibold hover:bg-(--accent-green)/20"
           >
-            Add Client
+            {t("addClient")}
           </button>
         </form>
       </div>

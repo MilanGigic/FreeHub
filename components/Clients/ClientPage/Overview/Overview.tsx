@@ -13,9 +13,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MouseEvent } from "react";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { useTranslations } from "next-intl";
 
 export default function OverviewClient() {
   const router = useRouter();
+  const t = useTranslations("clients");
+  const tCommon = useTranslations("common");
 
   const { selectedClient } = useClientStore();
 
@@ -32,14 +35,14 @@ export default function OverviewClient() {
           onClick={(e) => handleBack(e)}
         >
           <ArrowLeft size={20} />
-          Back
+          {tCommon("back")}
         </button>
         <div className="h-full border background-border" />
         <Link
           href={"/clients"}
           className="text-gray-500 uppercase font-semibold hover:text-(--accent-slate) transition-all"
         >
-          Clients
+          {t("title")}
         </Link>
         <div className="h-full border background-border" />
         <h1 className="text-primary uppercase font-semibold">
@@ -47,7 +50,7 @@ export default function OverviewClient() {
         </h1>
       </div>
       <header className="text-sm primary-slate font-semibold text-center">
-        Status:{" "}
+        {t("status")}{" "}
         <span
           className={`uppercase font-semibold ${
             selectedClient?.status === "active"

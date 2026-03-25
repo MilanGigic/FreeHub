@@ -6,6 +6,7 @@ import { useClientStore } from "@/lib/store/useClientStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { Project } from "@/types/types";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
 function calculateProfitMargin(project: Project) {
@@ -18,6 +19,7 @@ function calculateProfitMargin(project: Project) {
 }
 
 export default function Projects() {
+  const t = useTranslations("jobsAndProjects");
   const {
     jobsAndProjectsSlideOverOpen,
     setIsNewProjectModalOpen,
@@ -48,7 +50,7 @@ export default function Projects() {
           className="primary-green p-2 w-full rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
           onClick={() => setIsNewProjectModalOpen(true)}
         >
-          New Project
+          {t("newProject")}
         </button>
         {isNewProjectModalOpen ? <NewProjectModal /> : null}
       </div>
@@ -72,11 +74,11 @@ export default function Projects() {
                 </p>
               </div>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Profit:
+                {t("profit")}
                 <span className="primary-green">${project.totalProfit}</span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Margin:
+                {t("margin")}
                 <span
                   className={`${Number(calculateProfitMargin(project)) >= 40 ? "primary-green" : Number(calculateProfitMargin(project)) >= 25 ? "primary-slate" : "primary-red"}`}
                 >
@@ -84,7 +86,7 @@ export default function Projects() {
                 </span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Hourly Rate:
+                {t("hourlyRate")}
                 <span className="primary-cyan">
                   $
                   {(project.totalProfit &&
@@ -95,11 +97,11 @@ export default function Projects() {
                       Number(project.totalHoursWorked)
                     : 0
                   ).toFixed(2)}
-                  /hour
+                  {t("perHour")}
                 </span>
               </p>
               <p className="text-sm primary-slate uppercase font-semibold flex items-center gap-2">
-                Status:
+                {t("status")}
                 <span
                   className={`${project.status === "completed" ? "primary-green" : project.status === "in_progress" ? "primary-slate" : project.status === "cancelled" ? "primary-red" : project.status === "on_hold" ? "primary-slate" : project.status === "not_started" ? "primary-slate" : project.status === "active" ? "primary-purple" : "primary-red"}`}
                 >

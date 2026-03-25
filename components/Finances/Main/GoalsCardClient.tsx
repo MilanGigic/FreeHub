@@ -17,16 +17,13 @@ import { useAuth } from "@/lib/useAuth";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
 import { toast } from "react-toastify";
 import { useDataStore } from "@/lib/store/useDataStore";
-
-const CONSERVATIVENESS_LABELS: Record<Conservativeness, string> = {
-  conservative: "Conservative (50%)",
-  moderate: "Moderate (75%)",
-  aggressive: "Aggressive (100%)",
-};
+import { useTranslations } from "next-intl";
 
 export default function GoalsCardClient() {
   const { user } = useAuth();
   const { transactions, setTransactions } = useDataStore();
+  const t = useTranslations("finances");
+  const tCommon = useTranslations("common");
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -37,6 +34,18 @@ export default function GoalsCardClient() {
     conservativeness: "moderate" as Conservativeness,
   });
 
+  const conservativenessLabels: Record<Conservativeness, string> = {
+    conservative: t("conservative50"),
+    moderate: t("moderate75"),
+    aggressive: t("aggressive100"),
+  };
+
+  const conservativenessShortLabels: Record<Conservativeness, string> = {
+    conservative: t("conservative"),
+    moderate: t("moderate"),
+    aggressive: t("aggressive"),
+  };
+
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -46,7 +55,7 @@ export default function GoalsCardClient() {
           setGoals(res.data);
         }
       } else {
-        toast.error(res.error?.message || "An error occurred");
+        toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
       const transactionsRes = await fetchRecentTransactions(user.id);
       if (transactionsRes.success) {
@@ -54,7 +63,7 @@ export default function GoalsCardClient() {
           setTransactions(transactionsRes.data);
         }
       } else {
-        toast.error(transactionsRes.error?.message || "An error occurred");
+        toast.error(transactionsRes.error?.message || tCommon("anErrorOccurred"));
       }
     })();
   }, [user, setTransactions]);
@@ -77,10 +86,10 @@ export default function GoalsCardClient() {
             setGoals(goalsRes.data);
           }
         } else {
-          toast.error(goalsRes.error?.message || "An error occurred");
+          toast.error(goalsRes.error?.message || tCommon("anErrorOccurred"));
         }
       } catch (error) {
-        toast.error((error as string) || "An error occurred");
+        toast.error((error as string) || tCommon("anErrorOccurred"));
       }
       setForm({
         name: "",
@@ -104,7 +113,7 @@ export default function GoalsCardClient() {
           }
         }
       } catch (error) {
-        toast.error((error as string) || "An error occurred");
+        toast.error((error as string) || tCommon("anErrorOccurred"));
       }
     });
   };
@@ -121,7 +130,7 @@ export default function GoalsCardClient() {
           }
         }
       } catch (error) {
-        toast.error((error as string) || "An error occurred");
+        toast.error((error as string) || tCommon("anErrorOccurred"));
       }
     });
   };
@@ -133,14 +142,14 @@ export default function GoalsCardClient() {
           <div className="flex items-center gap-2">
             <Target size={14} className="primary-cyan" />
             <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
-              Savings Goals
+              {t("savingsGoals")}
             </h1>
           </div>
           <button
             onClick={() => setShowForm((v) => !v)}
             className="flex items-center gap-1 text-xs primary-cyan hover:primary-cyan/80 transition-colors"
           >
-            <Plus size={12} /> Add Goal
+            <Plus size={12} /> {t("addGoal")}
           </button>
         </header>
 
@@ -149,13 +158,13 @@ export default function GoalsCardClient() {
           <div className="flex flex-col gap-2 p-3 rounded-md bg-white/5 border border-white/10 text-xs">
             <input
               className="bg-transparent border border-white/10 rounded px-2 py-1.5 text-white placeholder-gray-500 outline-none focus:border-(--accent-cyan)"
-              placeholder="Goal name (e.g. New Laptop)"
+              placeholder={t("goalNamePlaceholder")}
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             />
             <input
               className="bg-transparent border border-white/10 rounded px-2 py-1.5 text-white placeholder-gray-500 outline-none focus:border-(--accent-cyan)"
-              placeholder="Target amount (e.g. 5000)"
+              placeholder={t("targetAmountPlaceholder")}
               type="number"
               value={form.targetAmount}
               onChange={(e) =>
@@ -180,10 +189,10 @@ export default function GoalsCardClient() {
                 }))
               }
             >
-              {(Object.keys(CONSERVATIVENESS_LABELS) as Conservativeness[]).map(
+              {(Object.keys(conservativenessLabels) as Conservativeness[]).map(
                 (k) => (
                   <option key={k} value={k}>
-                    {CONSERVATIVENESS_LABELS[k]}
+                    {conservativenessLabels[k]}
                   </option>
                 ),
               )}
@@ -193,7 +202,7 @@ export default function GoalsCardClient() {
               disabled={isPending}
               className="bg-(--accent-cyan) hover:bg-(--accent-cyan)/80 text-white rounded px-3 py-1.5 transition-colors disabled:opacity-50"
             >
-              Save Goal
+              {t("saveGoal")}
             </button>
           </div>
         )}
@@ -206,7 +215,7 @@ export default function GoalsCardClient() {
           <div className="flex flex-col gap-3 overflow-y-auto max-h-72">
             {goals.length === 0 && (
               <p className="text-xs primary-slate text-center py-4">
-                No goals yet — add one above.
+                {t("noGoalsYet")}
               </p>
             )}
             {goals.map((goal) => {
@@ -252,24 +261,24 @@ export default function GoalsCardClient() {
                       ${saved.toLocaleString()}
                     </span>
                     <span>
-                      of ${target.toLocaleString()} ({percent.toFixed(0)}%)
+                      {tCommon("of")} ${target.toLocaleString()} ({percent.toFixed(0)}%)
                     </span>
                   </div>
 
                   {weekly && (
                     <p className="text-xs primary-slate">
-                      Save{" "}
+                      {t("savePerWeek")}{" "}
                       <span className="primary-amber">
-                        ${weekly.toFixed(0)}/wk
+                        ${weekly.toFixed(0)}{t("perWeek")}
                       </span>{" "}
-                      to hit deadline
+                      {t("toHitDeadline")}
                     </p>
                   )}
 
                   {/* Conservativeness toggle */}
                   <div className="flex gap-1 mt-1">
                     {(
-                      Object.keys(CONSERVATIVENESS_LABELS) as Conservativeness[]
+                      Object.keys(conservativenessLabels) as Conservativeness[]
                     ).map((k) => (
                       <button
                         key={k}
@@ -280,7 +289,7 @@ export default function GoalsCardClient() {
                             : "border-white/10 primary-slate hover:border-white/20"
                         }`}
                       >
-                        {k.charAt(0).toUpperCase() + k.slice(1)}
+                        {conservativenessShortLabels[k]}
                       </button>
                     ))}
                   </div>

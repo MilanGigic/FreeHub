@@ -1,6 +1,7 @@
 import { Project } from "@/types/types";
 import { getStatusColor, getStatusTextColor } from "@/utils/getStatusColor";
 import { DollarSign, TrendingUp, Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function ProjectDetailPanel({
   project,
@@ -11,6 +12,8 @@ export function ProjectDetailPanel({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
+  const t = useTranslations("projects");
+
   return (
     <div
       className="absolute left-full top-0 w-80 background-elevated border-r background-border rounded-r-lg shadow-xl shadow-black/50 z-50 overflow-hidden"
@@ -45,7 +48,7 @@ export function ProjectDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <DollarSign size={12} className="primary-green" />
               <span className="text-[10px] primary-slate uppercase font-semibold">
-                Revenue
+                {t("detailRevenue")}
               </span>
             </div>
             <p className="text-sm font-bold primary-green">
@@ -56,7 +59,7 @@ export function ProjectDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <DollarSign size={12} className="primary-red" />
               <span className="text-[10px] primary-slate uppercase font-semibold">
-                Expenses
+                {t("detailExpenses")}
               </span>
             </div>
             <p className="text-sm font-bold primary-red">
@@ -67,7 +70,7 @@ export function ProjectDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <TrendingUp size={12} className="primary-cyan" />
               <span className="text-[10px] primary-slate uppercase font-semibold">
-                Profit
+                {t("detailProfit")}
               </span>
             </div>
             <p className="text-sm font-bold primary-cyan">
@@ -78,7 +81,7 @@ export function ProjectDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <Clock size={12} className="primary-purple" />
               <span className="text-[10px] primary-slate uppercase font-semibold">
-                Hours
+                {t("detailHours")}
               </span>
             </div>
             <p className="text-sm font-bold primary-purple">
@@ -90,7 +93,7 @@ export function ProjectDetailPanel({
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] primary-slate uppercase font-semibold">
-              Profit Margin
+              {t("detailProfitMargin")}
             </span>
             <span className="text-xs primary-cyan font-bold">
               {project.totalMargin || "0"}%
@@ -108,10 +111,10 @@ export function ProjectDetailPanel({
 
         <div className="flex justify-between text-[10px] primary-slate pt-1 border-t background-border">
           <span>
-            Created {new Date(project.createdAt).toLocaleDateString()}
+            {t("detailCreated")} {new Date(project.createdAt).toLocaleDateString()}
           </span>
           <span>
-            Updated {new Date(project.updatedAt).toLocaleDateString()}
+            {t("detailUpdated")} {new Date(project.updatedAt).toLocaleDateString()}
           </span>
         </div>
       </div>

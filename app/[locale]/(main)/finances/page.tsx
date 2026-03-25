@@ -7,16 +7,19 @@ import FinancesClient from "@/components/Finances/FinancesClient";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { getTranslations } from "next-intl/server";
 
 export default async function FinancesPage() {
   const user = await getCurrentUser();
 
-  if (!user)
+  if (!user) {
+    const t = await getTranslations("auth");
     return (
       <div className="text-center text-primary font-semibold">
-        You must be logged in to access this page
+        {t("mustBeLoggedIn")}
       </div>
     );
+  }
 
   const [snapshot, profile] = await Promise.all([
     getFinancesSnapshot(),

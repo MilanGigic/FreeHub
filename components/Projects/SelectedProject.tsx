@@ -12,14 +12,19 @@ import Revenue from "./Revenue";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ProjectCalendar from "./ProjectCalendar";
+import { useTranslations } from "next-intl";
 
-const Tabs = ["Calendar", "Revenue"];
+const tabs = [
+  { key: "calendar", labelKey: "calendar" },
+  { key: "revenue", labelKey: "revenueTab" },
+] as const;
 
 export default function SelectedProject() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "calendar";
+  const t = useTranslations("projects");
 
   const {
     selectedProject,
@@ -72,14 +77,14 @@ export default function SelectedProject() {
           onClick={(e) => handleBack(e)}
         >
           <ArrowLeft size={20} />
-          Back
+          {t("back")}
         </button>
         <div className="h-full border background-border" />
         <Link
           href={"/projects"}
           className="text-gray-500 uppercase font-semibold hover:text-(--accent-slate) transition-all"
         >
-          Projects
+          {t("title")}
         </Link>
         <div className="h-full border background-border" />
         <h1 className="text-primary uppercase font-semibold">
@@ -90,17 +95,17 @@ export default function SelectedProject() {
         </h1>
       </div>
       <div className="flex items-center gap-2 justify-center p-2">
-        {Tabs.map((tab, index) => (
+        {tabs.map((tab, index) => (
           <button
             key={index}
             onClick={() =>
               router.push(
-                `/projects/${selectedProject.id}?tab=${tab === "Calendar" ? "calendar" : "revenue"}`,
+                `/projects/${selectedProject.id}?tab=${tab.key}`,
               )
             }
-            className={`text-lg border background-border uppercase font-semibold px-4 py-2 rounded-lg ${activeTab === "calendar" && tab === "Calendar" ? "text-primary bg-(--accent-cyan)/20" : activeTab === "revenue" && tab === "Revenue" ? "text-primary bg-(--accent-green)/20" : "primary-slate hover:text-primary"} hover:cursor-pointer transition-all duration-300 ease-out`}
+            className={`text-lg border background-border uppercase font-semibold px-4 py-2 rounded-lg ${activeTab === tab.key ? (tab.key === "calendar" ? "text-primary bg-(--accent-cyan)/20" : "text-primary bg-(--accent-green)/20") : "primary-slate hover:text-primary"} hover:cursor-pointer transition-all duration-300 ease-out`}
           >
-            {tab}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>

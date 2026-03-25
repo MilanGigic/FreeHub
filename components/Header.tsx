@@ -5,10 +5,14 @@ import { List, User } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/lib/useAuth";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function Header() {
   const { user } = useAuth();
   const { isSidebarOpen, sidebarOpen } = useUIStore();
+  const t = useTranslations("navigation");
+  const tAuth = useTranslations("auth");
 
   return (
     <div className="w-full flex px-4 py-2 gap-2 border-b background-border sticky top-0 z-30 background backdrop-blur-sm">
@@ -22,11 +26,12 @@ export default function Header() {
 
       <div className="hidden sm:flex items-center">
         <h1 className="text-sm font-bold uppercase text-primary tracking-wider px-4">
-          Freehub
+          {t("freehub")}
         </h1>
       </div>
 
       <div className="flex items-center justify-end w-full gap-2">
+        <LanguageSwitcher />
         <div className="flex items-center gap-2">
           {user ? (
             <Link
@@ -46,7 +51,7 @@ export default function Header() {
               href="/register"
               className="text-primary underline hover:text-(--accent-cyan) transition-all uppercase font-semibold text-sm"
             >
-              Register
+              {tAuth("register")}
             </Link>
           )}
         </div>

@@ -2,8 +2,10 @@
 
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { Clock, Shield, TrendingDown, Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function FinancesHero() {
+  const t = useTranslations("finances");
   const {
     safeToSpend,
     safetyBuffer,
@@ -14,36 +16,36 @@ export default function FinancesHero() {
 
   const stats = [
     {
-      label: "Tax Reserved",
+      label: t("taxReserved"),
       value: `$${Number(monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Shield,
       color: "text-(--accent-amber)",
       bg: "bg-(--accent-amber)/10",
-      tooltip: "Set aside monthly toward your estimated tax bill",
+      tooltip: t("taxReservedTooltip"),
     },
     {
-      label: "Safety buffer",
+      label: t("safetyBuffer"),
       value: `$${Number(safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Wallet,
       color: "text-(--accent-purple)",
       bg: "bg-(--accent-purple)/10",
-      tooltip: "Held back to cover upcoming business expenses",
+      tooltip: t("safetyBufferTooltip"),
     },
     {
-      label: "Cash runway days",
+      label: t("cashRunwayDays"),
       value: cashRunwayDays,
       icon: Clock,
       color: "text-(--accent-cyan)",
       bg: "bg-(--accent-cyan)/10",
-      tooltip: "How long your current balance lasts at your burn rate",
+      tooltip: t("cashRunwayTooltip"),
     },
     {
-      label: "Effective tax rate",
+      label: t("effectiveTaxRate"),
       value: `${(Number(effectiveTaxRate) * 100).toFixed(2)}%`,
       icon: TrendingDown,
       color: "text-(--accent-red)",
       bg: "bg-(--accent-red)/10",
-      tooltip: "Your estimated tax as a share of net profit",
+      tooltip: t("effectiveTaxRateTooltip"),
     },
   ];
 
@@ -57,7 +59,7 @@ export default function FinancesHero() {
           <div className="absolute -top-8 -right-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
 
           <p className="text-lg font-semibold tracking-widest text-primary uppercase">
-            Safe to Spend
+            {t("safeToSpend")}
           </p>
           <div>
             <p className="text-5xl font-bold text-(--accent-cyan) leading-none tabular-nums">
@@ -67,17 +69,17 @@ export default function FinancesHero() {
               })}
             </p>
             <p className="text-xs text-primary mt-2">
-              After taxes &amp; expenses
+              {t("afterTaxesAndExpenses")}
             </p>
           </div>
 
           {/* Mini burn rate indicator */}
           <div className="flex items-center gap-2 pt-2 border-t background-border">
             <div className="w-1.5 h-1.5 rounded-full bg-(--accent-cyan) animate-pulse" />
-            <p className="text-xs text-primary">Live balance</p>
+            <p className="text-xs text-primary">{t("liveBalance")}</p>
           </div>
           <p className="text-primary text-xs">
-            What you can spend today without touching your reserves
+            {t("safeToSpendDescription")}
           </p>
         </div>
       </div>

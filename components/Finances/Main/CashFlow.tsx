@@ -14,6 +14,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslations } from "next-intl";
 
 interface CashFlowData {
   date: string;
@@ -32,6 +33,7 @@ interface TooltipPayload {
 interface TooltipProps {
   active?: boolean;
   payload?: TooltipPayload[];
+  labels?: { inflow: string; outflow: string; balance: string };
 }
 
 const formatCurrency = (value: number) => {
@@ -44,7 +46,7 @@ const formatCurrency = (value: number) => {
   return `$${value.toFixed(0)}`;
 };
 
-const CustomTooltip = ({ active, payload }: TooltipProps) => {
+const CustomTooltip = ({ active, payload, labels }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="background-elevated border background-border rounded-lg p-3 shadow-lg">
@@ -55,21 +57,21 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
           if (entry.dataKey === "inflow" && entry.value > 0) {
             return (
               <p key={index} className="primary-green text-sm">
-                Inflow: {formatCurrency(entry.value)}
+                {labels?.inflow} {formatCurrency(entry.value)}
               </p>
             );
           }
           if (entry.dataKey === "outflow" && entry.value > 0) {
             return (
               <p key={index} className="primary-red text-sm">
-                Outflow: {formatCurrency(entry.value)}
+                {labels?.outflow} {formatCurrency(entry.value)}
               </p>
             );
           }
           if (entry.dataKey === "balance") {
             return (
               <p key={index} className="primary-cyan text-sm font-semibold">
-                Balance: {formatCurrency(entry.value)}
+                {labels?.balance} {formatCurrency(entry.value)}
               </p>
             );
           }
@@ -84,6 +86,8 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
 export default function CashFlow() {
   const { user } = useAuth();
   const { balance } = useDataStore();
+  const t = useTranslations("finances");
+  const tCommon = useTranslations("common");
   const [timeRange, setTimeRange] = useState<"30" | "365">("30");
   const [rawData, setRawData] = useState<
     Awaited<ReturnType<typeof fetchCashFlowData>>["data"]
@@ -127,11 +131,17 @@ export default function CashFlow() {
     });
   }, [rawData, balance]);
 
+  const tooltipLabels = {
+    inflow: t("inflowLabel"),
+    outflow: t("outflowLabel"),
+    balance: t("balanceLabel"),
+  };
+
   return (
     <div className="col-span-2 w-full flex flex-col border background-border rounded-lg p-4 background-elevated gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
-          Cash Flow Forecast
+          {t("cashFlowForecast")}
         </h1>
         <div className="flex gap-2">
           <button
@@ -142,7 +152,7 @@ export default function CashFlow() {
                 : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
-            30 Days
+            {t("thirtyDays")}
           </button>
           <button
             onClick={() => setTimeRange("365")}
@@ -152,7 +162,7 @@ export default function CashFlow() {
                 : "background-elevated primary-slate border background-border hover:border-(--border-interactive)"
             }`}
           >
-            365 Days
+            {t("threeSixtyFiveDays")}
           </button>
         </div>
       </div>
@@ -160,11 +170,11 @@ export default function CashFlow() {
       <ResponsiveContainer width="100%" height={150}>
         {loading ? (
           <div className="w-full h-full flex items-center justify-center primary-slate text-sm">
-            Loading…
+            {tCommon("loading")}
           </div>
         ) : chartData.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center primary-slate text-sm">
-            No transaction data for this period
+            {t("noTransactionData")}
           </div>
         ) : (
           <ComposedChart
@@ -189,18 +199,18 @@ export default function CashFlow() {
               tickLine={{ stroke: "#21262d" }}
               tickFormatter={formatCurrency}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip labels={tooltipLabels} />} />
             <Bar
               dataKey="inflow"
               fill="#2ea043"
               radius={[4, 4, 0, 0]}
-              name="Inflow"
+              name={t("inflow")}
             />
             <Bar
               dataKey="outflow"
               fill="#f85149"
               radius={[4, 4, 0, 0]}
-              name="Outflow"
+              name={t("outflow")}
             />
             <Line
               type="linear"
@@ -210,7 +220,7 @@ export default function CashFlow() {
               strokeDasharray="3 3"
               dot={{ fill: "#2dd4bf", r: 2 }}
               activeDot={{ r: 4 }}
-              name="Balance"
+              name={t("balance")}
             />
           </ComposedChart>
         )}

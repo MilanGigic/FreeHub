@@ -4,10 +4,12 @@ import ClientsCard from "@/components/Dashboard/ClientsCard";
 import FinancesCard from "@/components/Dashboard/FinancesCard";
 import ProjectsCard from "@/components/Dashboard/ProjectsCard";
 import { useUIStore } from "@/lib/store/useUIStore";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export default function DashboardClient() {
   const { setIsRegisterWindowOpen, isRegisterWindowOpen } = useUIStore();
+  const t = useTranslations("dashboard");
 
   return (
     <div className="w-full h-full relative">
@@ -15,10 +17,10 @@ export default function DashboardClient() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/20 backdrop-blur-xs w-full h-full p-4">
           <div className="flex flex-col items-center justify-center w-full h-full max-w-md mx-auto">
             <h1 className="text-2xl font-bold text-primary">
-              Register Account
+              {t("registerAccount")}
             </h1>
             <p className="text-lg font-semibold primary-slate mb-4">
-              To get started, please register your account.
+              {t("registerAccountDescription")}
             </p>
             <div className="w-full flex flex-col gap-2">
               <Link
@@ -26,13 +28,13 @@ export default function DashboardClient() {
                 onClick={() => setIsRegisterWindowOpen(false)}
                 className="py-2 px-4 text-(--accent-cyan) text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
               >
-                Register
+                {t("register")}
               </Link>
               <button
                 onClick={() => setIsRegisterWindowOpen(false)}
                 className="primary-red py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer"
               >
-                Close
+                {t("close")}
               </button>
             </div>
           </div>

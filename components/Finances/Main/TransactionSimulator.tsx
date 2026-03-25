@@ -19,6 +19,7 @@ import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { fetchRecentTransactions } from "@/actions/finances/fetchRecentTransactions";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { Project } from "@/types/types";
+import { useTranslations } from "next-intl";
 
 const EMPTY_FORM: SimulationInput = {
   type: "expense",
@@ -50,6 +51,8 @@ function DeltaBadge({
 
 export default function TransactionSimulator() {
   const { user } = useAuth();
+  const t = useTranslations("finances");
+  const tCommon = useTranslations("common");
   const [form, setForm] = useState<SimulationInput>(EMPTY_FORM);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [committed, setCommitted] = useState(false);
@@ -66,7 +69,7 @@ export default function TransactionSimulator() {
           setTransactions(res.data);
         }
       } else {
-        toast.error(res.error?.message || "An error occurred");
+        toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
     })();
   }, [user, setTransactions]);
@@ -74,16 +77,15 @@ export default function TransactionSimulator() {
   const { safeToSpend, netProfit, effectiveTaxRate } = useTaxProfileStore();
   const taxRate = effectiveTaxRate > 0 ? effectiveTaxRate : 0.3;
 
-  // Derive monthly expenses from transactions within last 30 days
   const monthlyExpenses = useMemo(() => {
     const cutoff = new Date(new Date().setDate(new Date().getDate() - 30));
     return transactions
       .filter(
-        (t) =>
-          t.type === "expense" &&
-          new Date(t.createdAt).getTime() > cutoff.getTime(),
+        (tx) =>
+          tx.type === "expense" &&
+          new Date(tx.createdAt).getTime() > cutoff.getTime(),
       )
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+      .reduce((sum, tx) => sum + Number(tx.amount), 0);
   }, [transactions]);
 
   const handleSimulate = () => {
@@ -105,14 +107,14 @@ export default function TransactionSimulator() {
       const res = await commitTransaction(user.id, {
         type: form.type,
         amount: form.amount,
-        note: form.note || `Simulated ${form.type}`,
+        note: form.note || (form.type === "expense" ? t("simulatedExpense") : t("simulatedIncome")),
         deductible: form.deductible,
         projectId: selectedProject?.id ?? "",
       });
       if (res.success) {
         setCommitted(true);
       } else {
-        toast.error(res.error?.message || "An error occurred");
+        toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
     });
   };
@@ -131,7 +133,7 @@ export default function TransactionSimulator() {
           <div className="flex items-center gap-2">
             <Zap size={14} className="text-(--accent-cyan)" />
             <h1 className="text-lg font-semibold tracking-wider text-primary uppercase">
-              Cash Flow Impact Simulator
+              {t("cashFlowSimulator")}
             </h1>
           </div>
           {result && (
@@ -148,19 +150,19 @@ export default function TransactionSimulator() {
         <div className="flex flex-col gap-2 text-xs">
           {/* Type toggle */}
           <div className="flex rounded-md overflow-hidden border background-border">
-            {(["expense", "income"] as const).map((t) => (
+            {(["expense", "income"] as const).map((type) => (
               <button
-                key={t}
-                onClick={() => setForm((f) => ({ ...f, type: t }))}
+                key={type}
+                onClick={() => setForm((f) => ({ ...f, type }))}
                 className={`flex-1 py-1.5 capitalize transition-colors ${
-                  form.type === t
-                    ? t === "expense"
+                  form.type === type
+                    ? type === "expense"
                       ? "bg-(--accent-red)/20 text-(--accent-red) border-(--accent-red)/40"
                       : "bg-(--accent-green)/20 text-(--accent-green) border-(--accent-green)/40"
                     : "primary-slate hover:text-(--accent-cyan)"
                 }`}
               >
-                {t}
+                {type === "expense" ? t("expenseToggle") : t("incomeToggle")}
               </button>
             ))}
           </div>
@@ -174,7 +176,7 @@ export default function TransactionSimulator() {
               <input
                 type="number"
                 min="0"
-                placeholder="Amount"
+                placeholder={t("amountPlaceholder")}
                 value={form.amount || ""}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, amount: Number(e.target.value) }))
@@ -183,7 +185,7 @@ export default function TransactionSimulator() {
               />
             </div>
             <input
-              placeholder="Label (optional)"
+              placeholder={t("labelOptional")}
               value={form.note}
               onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
               className="flex-1 bg-transparent border background-border rounded px-2 py-1.5 text-primary placeholder-gray-600 outline-none focus:border-(--accent-cyan)"
@@ -193,8 +195,8 @@ export default function TransactionSimulator() {
           {/* Recurring + deductible */}
           <div className="flex gap-4 px-1">
             {[
-              { key: "isRecurring", label: "Recurring (monthly)" },
-              { key: "deductible", label: "Tax deductible" },
+              { key: "isRecurring", label: t("recurringMonthly") },
+              { key: "deductible", label: t("taxDeductible") },
             ].map(({ key, label }) => (
               <label
                 key={key}
@@ -219,7 +221,7 @@ export default function TransactionSimulator() {
             disabled={!form.amount || form.amount <= 0}
             className="w-full py-2 rounded bg-(--accent-cyan) hover:bg-(--accent-cyan)/80 text-white font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Simulate Impact
+            {t("simulateImpact")}
           </button>
         </div>
 
@@ -230,7 +232,7 @@ export default function TransactionSimulator() {
               {/* Safe to Spend */}
               <div className="flex flex-col gap-0.5 p-2.5 rounded-md bg-white/5 border border-white/10">
                 <span className="text-[10px] primary-slate uppercase tracking-wide">
-                  Safe to Spend
+                  {t("safeToSpendResult")}
                 </span>
                 <span
                   className={`text-sm font-bold ${result.newSafeToSpend >= 0 ? "text-primary" : "text-(--accent-red)"}`}
@@ -246,7 +248,7 @@ export default function TransactionSimulator() {
               {/* Net Profit */}
               <div className="flex flex-col gap-0.5 p-2.5 rounded-md bg-white/5 border border-white/10">
                 <span className="text-[10px] primary-slate uppercase tracking-wide">
-                  Net Profit Δ
+                  {t("netProfitDelta")}
                 </span>
                 <div className="flex items-center gap-1">
                   {result.netProfitChange >= 0 ? (
@@ -261,7 +263,7 @@ export default function TransactionSimulator() {
               {/* Cash Buffer */}
               <div className="flex flex-col gap-0.5 p-2.5 rounded-md bg-white/5 border background-border">
                 <span className="text-[10px] primary-slate uppercase tracking-wide">
-                  Buffer Days
+                  {t("bufferDays")}
                 </span>
                 <span
                   className={`text-sm font-bold ${result.cashBufferDays < 30 ? "text-(--accent-red)" : result.cashBufferDays < 60 ? "text-(--accent-amber)" : "text-primary"}`}
@@ -275,10 +277,10 @@ export default function TransactionSimulator() {
             {form.isRecurring && (
               <div className="flex justify-between px-2.5 py-2 rounded-md bg-white/5 border background-border text-xs primary-slate">
                 <span>
-                  Monthly impact: <DeltaBadge value={result.monthlyImpact} />
+                  {t("monthlyImpact")} <DeltaBadge value={result.monthlyImpact} />
                 </span>
                 <span>
-                  Annual impact: <DeltaBadge value={result.annualImpact} />
+                  {t("annualImpact")} <DeltaBadge value={result.annualImpact} />
                 </span>
               </div>
             )}
@@ -295,7 +297,7 @@ export default function TransactionSimulator() {
                     )
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">{t("selectProject")}</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
                       {project.name}
@@ -307,13 +309,13 @@ export default function TransactionSimulator() {
                   disabled={isPending}
                   className="w-full py-1.5 rounded border border-(--accent-cyan) text-(--accent-cyan) hover:bg-(--accent-cyan)/10 text-xs font-medium transition-colors disabled:opacity-40"
                 >
-                  {isPending ? "Saving..." : "Commit as Real Transaction"}
+                  {isPending ? t("saving") : t("commitAsRealTransaction")}
                 </button>
               </div>
             ) : (
               <div className="flex items-center justify-center gap-1.5 py-1.5 text-xs text-(--accent-green)">
                 <CheckCircle size={13} />
-                Transaction committed
+                {t("transactionCommitted")}
               </div>
             )}
           </div>
