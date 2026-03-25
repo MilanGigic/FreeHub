@@ -4,7 +4,7 @@ import { ClientPageTab } from "@/types/types";
 import { Briefcase, Eye, FileText } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const tabIcons = [
   <Eye key="eye" />,
@@ -17,16 +17,23 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
   const router = useRouter();
   const t = useTranslations("clients");
   const tCommon = useTranslations("common");
-
+  const locale = useLocale();
   const [open, setOpen] = useState<boolean>(false);
 
   const tabs = [
-    { tab: t("overview"), icon: tabIcons[0] },
-    { tab: t("jobsAndProjects"), icon: tabIcons[1] },
-    { tab: t("invoicesTab"), icon: tabIcons[2] },
+    { key: "overview", label: t("overview"), icon: tabIcons[0] },
+    {
+      key: "jobs-and-projects",
+      label: t("jobsAndProjects"),
+      icon: tabIcons[1],
+    },
+    { key: "invoices", label: t("invoicesTab"), icon: tabIcons[2] },
   ];
 
-  const clientPageTab = pathname.split("/").pop() as ClientPageTab;
+  const clientPageTab = pathname
+    .replace(`/${locale}`, "")
+    .split("/")
+    .pop() as string;
 
   return (
     <div>
@@ -50,7 +57,7 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
                 key={index}
                 onClick={() => {
                   router.push(
-                    `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
+                    `/clients/${clientId}/${tab.key.toLowerCase().replaceAll(" ", "-")}`,
                   );
                   setOpen(false);
                 }}
@@ -58,9 +65,9 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
               >
                 <h1 className="text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold">
                   <span>{tab.icon}</span>
-                  {tab.tab}
+                  {tab.label}
                   <div
-                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replaceAll(" ", "-") ? "w-full" : "w-0"}`}
+                    className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.key.toLowerCase().replaceAll(" ", "-") ? "w-full" : "w-0"}`}
                   ></div>
                 </h1>
               </button>
@@ -77,18 +84,18 @@ export default function ClientPageHeader({ clientId }: { clientId: string }) {
             className="primary-slate hover:cursor-pointer px-4 py-2 rounded-lg transition-all h-full text-center flex flex-col relative group items-center justify-between duration-200 cursor-pointer hover:primary-cyan"
             onClick={() =>
               router.push(
-                `/clients/${clientId}/${tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-")}`,
+                `/clients/${clientId}/${tab.key.toLowerCase().replaceAll(" ", "-")}`,
               )
             }
           >
             <h1
-              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "primary-cyan" : "primary-slate"}`}
+              className={`text-center flex-1 h-full flex justify-center items-center gap-2 md:gap-4 uppercase text-sm font-semibold ${clientPageTab === tab.key.toLowerCase().replaceAll(" ", "-") ? "primary-cyan" : "primary-slate"}`}
             >
               <span>{tab.icon}</span>
-              {tab.tab}
+              {tab.label}
             </h1>
             <div
-              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.tab.toLowerCase().replace(" ", "-").replace(" ", "-") ? "w-full" : "w-0"}`}
+              className={`absolute bottom-0 left-1/2 h-0.5 w-0 bg-(--accent-cyan) transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full ${clientPageTab === tab.key.toLowerCase().replaceAll(" ", "-") ? "w-full" : "w-0"}`}
             ></div>
           </button>
         ))}

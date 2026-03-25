@@ -1,14 +1,19 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
-import { Field, FieldContent, FieldDescription, FieldLabel } from "../ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+} from "../../ui/field";
 import { MouseEvent, useState } from "react";
 import {
   Accordion,
   AccordionTrigger,
   AccordionItem,
   AccordionContent,
-} from "../ui/accordion";
+} from "../../ui/accordion";
 import { updateStepOne } from "@/actions/taxProfile/updateStepOne";
 import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
@@ -55,9 +60,7 @@ export default function StepOne() {
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
-        <p className="text-sm primary-slate">
-          {t("welcomeSubtitle")}
-        </p>
+        <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
       <div className="flex flex-col gap-2">
         <h1 className="text-primary text-2xl font-bold text-center">

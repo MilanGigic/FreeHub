@@ -6,11 +6,11 @@ import {
   AccordionTrigger,
   AccordionItem,
   AccordionContent,
-} from "../ui/accordion";
+} from "../../ui/accordion";
 
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 import { useRouter } from "next/navigation";
-import { Field, FieldContent, FieldLabel } from "../ui/field";
+import { Field, FieldContent, FieldLabel } from "../../ui/field";
 import { US_STATES } from "@/lib/usaStates";
 import { MouseEvent, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -57,9 +57,7 @@ export default function StepTwo() {
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
-        <p className="text-sm primary-slate">
-          {t("welcomeSubtitle")}
-        </p>
+        <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
       <div className="flex gap-4 max-w-3xl h-[70vh] w-full mx-auto">
         <div className="flex flex-col gap-2 flex-1">
@@ -133,7 +131,10 @@ export default function StepTwo() {
         </div>
         <div className="flex flex-col gap-2 items-center justify-center">
           <h1 className="text-primary text-2xl font-bold text-center flex flex-col border-b-2 background-border pb-2">
-            {t("filingStatus")} <span className="primary-cyan">{t(filingStatusKeys[filingStatus])}</span>
+            {t("filingStatus")}{" "}
+            <span className="primary-cyan">
+              {t(filingStatusKeys[filingStatus])}
+            </span>
           </h1>
           <h1 className="text-primary text-2xl font-bold text-center flex flex-col">
             {t("stateOfResidence")}{" "}

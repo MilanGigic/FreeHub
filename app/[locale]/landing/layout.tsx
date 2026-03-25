@@ -1,5 +1,5 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
-import "@/app/globals.css";
+import "@/app/[locale]/globals.css";
 
 const inter = Inter({
   subsets: ["latin"],

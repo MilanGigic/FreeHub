@@ -24,7 +24,8 @@ export default function ClientLayout({
   const pathname = usePathname();
 
   const clientSegments = pathname.split("/");
-  const clientId = clientSegments[2];
+  const clientId = clientSegments[3];
+  console.log(clientId);
 
   useEffect(() => {
     if (!clientId) return;

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { clients, invoices, projects } from "@/db/schema";
-import { and, eq, lt, or, sql } from "drizzle-orm";
+import { and, eq, lt, sql } from "drizzle-orm";
 
 export async function fetchClientOverviewData(clientId: string) {
   if (!clientId) {
@@ -64,7 +64,9 @@ export async function fetchClientOverviewData(clientId: string) {
       .filter((inv) => inv.status === "sent" || inv.status === "overdue")
       .reduce((acc, inv) => acc + Number(inv.totalAmount || 0), 0);
 
-    const overdueList = clientInvoices.filter((inv) => inv.status === "overdue");
+    const overdueList = clientInvoices.filter(
+      (inv) => inv.status === "overdue",
+    );
     const overdueInvoices = overdueList.reduce(
       (acc, inv) => acc + Number(inv.totalAmount || 0),
       0,
@@ -100,4 +102,3 @@ export async function fetchClientOverviewData(clientId: string) {
     };
   }
 }
-

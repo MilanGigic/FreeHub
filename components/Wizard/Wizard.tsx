@@ -3,11 +3,11 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import StepOne from "./StepOne";
-import StepTwo from "./StepTwo";
-import StepThree from "./StepThree";
-import StepFour from "./StepFour";
-import StepFive from "./StepFive";
+import StepOne from "./USA/StepOne";
+import StepTwo from "./USA/StepTwo";
+import StepThree from "./USA/StepThree";
+import StepFour from "./USA/StepFour";
+import StepFive from "./USA/StepFive";
 
 export default function Wizard() {
   const router = useRouter();
@@ -24,9 +24,7 @@ export default function Wizard() {
               <h1 className="text-2xl font-bold text-primary">
                 {t("welcomeTitle")}
               </h1>
-              <p className="text-sm primary-slate">
-                {t("welcomeSubtitle")}
-              </p>
+              <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
             </div>
 
             <div className="flex flex-col gap-2 text-primary text-lg font-semibold max-w-lg mx-auto">

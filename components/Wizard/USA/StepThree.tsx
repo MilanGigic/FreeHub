@@ -2,14 +2,19 @@
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Field, FieldContent, FieldDescription, FieldLabel } from "../ui/field";
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+} from "../../ui/field";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
+} from "../../ui/accordion";
 import { MouseEvent, useState } from "react";
 import { updateStepThree } from "@/actions/taxProfile/updateStepThree";
 import { toast } from "react-toastify";
@@ -44,9 +49,7 @@ export default function StepThree() {
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
-        <p className="text-sm primary-slate">
-          {t("welcomeSubtitle")}
-        </p>
+        <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
 
       <div className="w-full max-w-3xl mx-auto">
@@ -84,9 +87,7 @@ export default function StepThree() {
                             }
                             className="w-full outline outline-(--accent-green) rounded-lg p-2 focus:outline focus:outline-(--accent-cyan) text-primary mt-2"
                           />
-                          <span>
-                            {t("homeOfficeSquareFootage")}
-                          </span>
+                          <span>{t("homeOfficeSquareFootage")}</span>
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -126,9 +127,7 @@ export default function StepThree() {
                       <FieldLabel className="text-primary text-lg font-semibold">
                         {t("mileageYes")}
                       </FieldLabel>
-                      <FieldDescription>
-                        {t("mileageIRSRate")}
-                      </FieldDescription>
+                      <FieldDescription>{t("mileageIRSRate")}</FieldDescription>
                     </FieldContent>
                     <RadioGroupItem
                       value="true"

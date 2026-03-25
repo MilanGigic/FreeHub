@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { Field, FieldLabel, FieldContent } from "../ui/field";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Field, FieldLabel, FieldContent } from "../../ui/field";
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
 import { toast } from "react-toastify";
@@ -28,9 +28,7 @@ export default function StepFour() {
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
-        <p className="text-sm primary-slate">
-          {t("welcomeSubtitle")}
-        </p>
+        <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
 
       <div>
@@ -64,9 +62,7 @@ export default function StepFour() {
             </Field>
           </FieldLabel>
         </RadioGroup>
-        <p className="text-sm text-zinc-500">
-          {t("retirementToggle")}
-        </p>
+        <p className="text-sm text-zinc-500">{t("retirementToggle")}</p>
       </div>
       <div className="flex gap-2">
         <button

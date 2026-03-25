@@ -11,30 +11,14 @@ import { usePathname } from "next/navigation";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useSidebarHover } from "@/lib/hooks/useSidebarHover";
-import { useTranslations } from "next-intl";
-
-function renderTab(key: string) {
-  switch (key) {
-    case "dashboard":
-      return <House />;
-    case "finances":
-      return <Wallet />;
-    case "clients":
-      return <Users />;
-    case "projects":
-      return <Briefcase />;
-  }
-}
-
-const tabs = [
-  { key: "dashboard", route: "dashboard" },
-  { key: "clients", route: "clients" },
-  { key: "projects", route: "projects" },
-  { key: "finances", route: "finances" },
-];
+import { useLocale, useTranslations } from "next-intl";
 
 export default function DesktopSidebar() {
   const pathname = usePathname();
+  const locale = useLocale();
+
+  // Strip the locale prefix for clean comparison
+  const pathnameWithoutLocale = pathname.replace(`/${locale}`, "");
   const t = useTranslations("navigation");
 
   const { projects } = useDataStore();
@@ -58,6 +42,26 @@ export default function DesktopSidebar() {
     handleDetailLeave,
     clearCloseTimeout,
   } = useSidebarHover({ projects, clients });
+
+  const tabs = [
+    { key: "dashboard", route: "dashboard" },
+    { key: "clients", route: "clients" },
+    { key: "projects", route: "projects" },
+    { key: "finances", route: "finances" },
+  ];
+
+  function renderTab(key: string) {
+    switch (key) {
+      case "dashboard":
+        return <House />;
+      case "finances":
+        return <Wallet />;
+      case "clients":
+        return <Users />;
+      case "projects":
+        return <Briefcase />;
+    }
+  }
 
   return (
     <div className="hidden w-24 md:w-48 h-full background-sidebar background-border border-r p-1 z-20 relative sm:flex sm:flex-col">
@@ -240,13 +244,13 @@ export default function DesktopSidebar() {
         {tabs.map((tab) => (
           <Link
             key={tab.key}
-            href={`/${tab.route}`}
+            href={`/${locale}/${tab.route}`}
             className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
-                ${
-                  pathname.includes(`/${tab.route}`)
-                    ? "primary-cyan background-elevated"
-                    : "hover:primary-cyan text-primary hover:background-elevated"
-                } transition-all`}
+              ${
+                pathnameWithoutLocale.includes(`/${tab.route}`)
+                  ? "primary-cyan background-elevated"
+                  : "hover:primary-cyan text-primary hover:background-elevated"
+              } transition-all`}
             onMouseEnter={(e) => {
               clearCloseTimeout();
               const rect = (
@@ -264,7 +268,7 @@ export default function DesktopSidebar() {
             }}
             onMouseLeave={scheduleClose}
           >
-            {!pathname.includes(`/${tab.route}`) && (
+            {!pathnameWithoutLocale.includes(`/${tab.route}`) && (
               <span>{renderTab(tab.key)}</span>
             )}
             <h1 className="text-xs uppercase font-semibold">{t(tab.key)}</h1>
