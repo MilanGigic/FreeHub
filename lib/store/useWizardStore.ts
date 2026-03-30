@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 type WizardStore = {
   // Step One
@@ -30,27 +31,37 @@ type WizardStore = {
   setPersonalSalaryAmount: (personalSalaryAmount: number | null) => void;
 };
 
-export const useWizardStore = create<WizardStore>((set) => ({
-  entityType: null,
-  setEntityType: (entityType: string | null) => set({ entityType }),
-  regime: null,
-  setRegime: (regime: string | null) => set({ regime }),
-  filingStatus: null,
-  setFilingStatus: (filingStatus: string | null) => set({ filingStatus }),
-  stateResidence: null,
-  setStateResidence: (stateResidence: string | null) => set({ stateResidence }),
-  model: null,
-  setModel: (model: string | null) => set({ model }),
-  healthInsuredElsewhere: null,
-  setHealthInsuredElsewhere: (healthInsuredElsewhere: boolean | null) =>
-    set({ healthInsuredElsewhere }),
-  estimatedAnnualGross: null,
-  setEstimatedAnnualGross: (estimatedAnnualGross: number | null) =>
-    set({ estimatedAnnualGross }),
-  paysPersonalSalary: null,
-  setPaysPersonalSalary: (paysPersonalSalary: boolean | null) =>
-    set({ paysPersonalSalary }),
-  personalSalaryAmount: null,
-  setPersonalSalaryAmount: (personalSalaryAmount: number | null) =>
-    set({ personalSalaryAmount }),
-}));
+export const useWizardStore = create<WizardStore>()(
+  persist(
+    (set) => ({
+      entityType: null,
+      setEntityType: (entityType: string | null) => set({ entityType }),
+      regime: null,
+      setRegime: (regime: string | null) => set({ regime }),
+      filingStatus: null,
+      setFilingStatus: (filingStatus: string | null) => set({ filingStatus }),
+      stateResidence: null,
+      setStateResidence: (stateResidence: string | null) =>
+        set({ stateResidence }),
+      model: null,
+      setModel: (model: string | null) => set({ model }),
+      healthInsuredElsewhere: null,
+      setHealthInsuredElsewhere: (healthInsuredElsewhere: boolean | null) =>
+        set({ healthInsuredElsewhere }),
+      estimatedAnnualGross: null,
+      setEstimatedAnnualGross: (estimatedAnnualGross: number | null) =>
+        set({ estimatedAnnualGross }),
+      paysPersonalSalary: null,
+      setPaysPersonalSalary: (paysPersonalSalary: boolean | null) =>
+        set({ paysPersonalSalary }),
+      personalSalaryAmount: null,
+      setPersonalSalaryAmount: (personalSalaryAmount: number | null) =>
+        set({ personalSalaryAmount }),
+    }),
+    {
+      name: "wizard-store",
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+    },
+  ),
+);

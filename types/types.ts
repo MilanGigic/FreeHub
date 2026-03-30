@@ -23,6 +23,12 @@ export type ProjectStatus =
 
 export type InvoiceStatus = "draft" | "overdue" | "sent" | "paid";
 
+export type SerbianMunicipality = {
+  code: string; // stable internal key (normalized)
+  name: string; // display name
+  city?: string; // parent city (for Beograd, Niš, Novi Sad...)
+};
+
 export type ClientForm = {
   firstName: string;
   lastName: string;
@@ -84,11 +90,7 @@ export interface Transaction {
 
 export type Conservativeness = "conservative" | "moderate" | "aggressive";
 
-export type Tabs =
-  | "dashboard"
-  | "clients"
-  | "projects"
-  | "finances";
+export type Tabs = "dashboard" | "clients" | "projects" | "finances";
 
 export type Goal = {
   id: string;

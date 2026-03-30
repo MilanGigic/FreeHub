@@ -176,6 +176,13 @@
       "when": 1774533144161,
       "tag": "0024_bouncy_bedlam",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1774911182044,
+      "tag": "0025_fuzzy_rocket_raccoon",
+      "breakpoints": true
     }
   ]
 }

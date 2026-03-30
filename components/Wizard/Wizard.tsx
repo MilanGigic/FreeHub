@@ -1,8 +1,6 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import LanguageSwitcher from "../LanguageSwitcher";
 import ThemeToggle from "../ThemeToggle";
 
 type WizardProps = {
@@ -11,7 +9,6 @@ type WizardProps = {
 };
 
 export default function Wizard({ steps, totalSteps }: WizardProps) {
-  const t = useTranslations("wizard");
   const searchParams = useSearchParams();
 
   // URL is 1-indexed (?step=1, ?step=2, ?step=3)
@@ -22,7 +19,7 @@ export default function Wizard({ steps, totalSteps }: WizardProps) {
 
   return (
     <div className="min-h-screen h-full w-full flex items-center justify-center p-4">
-      <div className="flex flex-col w-full min-h-screen max-w-7xl background-elevated border background-border rounded-lg p-4">
+      <div className="flex flex-col w-full h-screen max-w-7xl background-elevated border background-border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <ThemeToggle />
         </div>
@@ -41,7 +38,7 @@ export default function Wizard({ steps, totalSteps }: WizardProps) {
           </div>
         ) : null}
 
-        <div className="flex-1 overflow-auto h-full">
+        <div className="flex-1 overflow-auto min-h-0">
           {steps[currentIndex] || null}
         </div>
       </div>

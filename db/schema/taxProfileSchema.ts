@@ -119,3 +119,10 @@ export const dailyExchangeRates = pgTable(
     };
   },
 );
+
+export const municipalities = pgTable("municipalities", {
+  code: text("code").primaryKey(), // e.g. "KRUSEVAC"
+  name: text("name").notNull(), // "Kruševac"
+  city: text("city"), // optional (Beograd, Niš...)
+  taxZone: integer("tax_zone"), // for paušal calculation later
+});

@@ -205,8 +205,6 @@ export default function SRBStepTwo() {
                           Unesite iznos iz poslednjeg kvartala
                         </FieldLabel>
 
-                        {/* WORK ON THIS, IT SHOULD BE LOGIC FOR IF THE USER IS UNSURE, THEY TYPE IN THE AMOUNT OF THEIR QUARTERLY INCOME AND THE APP CALCULATES WHAT WOULD THE BEST OPTION BE */}
-
                         <Input
                           type="string"
                           placeholder="Iznos"

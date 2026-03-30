@@ -16,7 +16,7 @@ export default function SerbianTaxWizard() {
   ];
 
   const totalSteps =
-    regime === "frilenser" ? 3 : regime === "pausal" ? 5 : regime ? 4 : 3;
+    regime === "frilenser" ? 4 : regime === "pausal" ? 5 : regime ? 4 : 3;
 
   return (
     <div className="h-full w-full">
