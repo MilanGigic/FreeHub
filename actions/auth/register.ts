@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { taxProfiles, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createSession } from "@/lib/session";
@@ -64,6 +64,11 @@ export async function register(
         encryptedDEK: encryptedDEK,
       })
       .returning();
+
+    await db.insert(taxProfiles).values({
+      userId: newUser.id,
+      country: country,
+    });
 
     // Create session token directly here instead of calling setSession
     // This avoids nested cookie() calls which can cause issues

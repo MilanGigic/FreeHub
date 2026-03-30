@@ -133,8 +133,9 @@
     "mustBeLoggedIn": "You must be logged in to access this page.",
     "mustBeLoggedInDashboard": "You must be logged in to view the dashboard.",
     "country": "Country",
+    "serbia": "Serbia",
     "unitedStates": "United States",
-    "countryRestriction": "We currently only support the United States for tax purposes.",
+    "countryRestriction": "We currently only support the United States and Serbia for tax purposes.",
     "countryContactUs": "If you need to register for another country, contact us at freehubsupport@gmail.com.",
     "countryComingSoon": "We are working on adding more countries soon.",
     "thankYou": "Thank you for your understanding."
@@ -482,6 +483,8 @@
   "wizard": {
     "welcomeTitle": "Welcome to Efficio",
     "welcomeSubtitle": "Let's set up your account.",
+    "changeLanguage": "Change Language",
+    "changeLanguageDescription": "You can change the language whenever you want.",
     "finishSetup": "Please finish setting up your account before continuing to the app.",
     "helpUnderstand": "Helps us better understand your business and needs.",
     "askQuestions": "We'll ask you a few questions to better understand your business and needs.",

@@ -57,23 +57,6 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const taxProfiles = pgTable("tax_profiles", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  entityType: text("entity_type"),
-  filingStatus: text("filing_status"),
-  stateResidence: text("state_residence"),
-  homeOfficeSqft: integer("home_office_sqft"),
-  homeOfficeSimplified: boolean("home_office_simplified"),
-  mileageTracking: boolean("mileage_tracking"),
-  healthInsuranceDeduction: boolean("health_insurance_deduction"),
-  retirementContribution: boolean("retirement_contribution"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const clients = pgTable("clients", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")

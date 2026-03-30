@@ -6,11 +6,11 @@ import {
   AccordionTrigger,
   AccordionItem,
   AccordionContent,
-} from "../../ui/accordion";
+} from "../../../ui/accordion";
 
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 import { useRouter } from "next/navigation";
-import { Field, FieldContent, FieldLabel } from "../../ui/field";
+import { Field, FieldContent, FieldLabel } from "../../../ui/field";
 import { US_STATES } from "@/lib/usaStates";
 import { MouseEvent, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -30,7 +30,7 @@ const filingStatusValues = Object.keys(filingStatusKeys) as Array<
   keyof typeof filingStatusKeys
 >;
 
-export default function StepTwo() {
+export default function USAStepTwo() {
   const router = useRouter();
   const t = useTranslations("wizard");
   const [query, setQuery] = useState("");

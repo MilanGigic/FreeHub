@@ -2,25 +2,25 @@
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldLabel,
-} from "../../ui/field";
+} from "@/components/ui/field";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../ui/accordion";
+} from "@/components/ui/accordion";
 import { MouseEvent, useState } from "react";
 import { updateStepThree } from "@/actions/taxProfile/updateStepThree";
 import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
 
-export default function StepThree() {
+export default function USAStepThree() {
   const router = useRouter();
   const t = useTranslations("wizard");
   const [homeOfficeSqft, setHomeOfficeSqft] = useState<number>(0);

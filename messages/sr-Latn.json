@@ -133,8 +133,9 @@
     "mustBeLoggedIn": "Morate biti prijavljeni da biste pristupili ovoj stranici.",
     "mustBeLoggedInDashboard": "Morate biti prijavljeni da biste videli kontrolnu tablu.",
     "country": "Država",
+    "serbia": "Srbija",
     "unitedStates": "Sjedinjene Države",
-    "countryRestriction": "Trenutno podržavamo samo Sjedinjene Države za poreske svrhe.",
+    "countryRestriction": "Trenutno podržavamo samo Sjedinjene Države i Srbiju za poreske svrhe.",
     "countryContactUs": "Ako treba da se registrujete za drugu državu, kontaktirajte nas na freehubsupport@gmail.com.",
     "countryComingSoon": "Radimo na dodavanju više država uskoro.",
     "thankYou": "Hvala Vam na razumevanju."
@@ -480,8 +481,10 @@
     "aggressive": "Agresivno"
   },
   "wizard": {
-    "welcomeTitle": "Dobrodošli u Efficio",
+    "welcomeTitle": "Dobrodošli u Freehub",
     "welcomeSubtitle": "Hajde da podesimo Vaš nalog.",
+    "changeLanguage": "Promenite jezik",
+    "changeLanguageDescription": "Možete promeniti jezik u nastavku.",
     "finishSetup": "Molimo završite podešavanje naloga pre nego što nastavite ka aplikaciji.",
     "helpUnderstand": "Pomaže nam da bolje razumemo Vaše poslovanje i potrebe.",
     "askQuestions": "Postavićemo Vam nekoliko pitanja da bismo bolje razumeli Vaše poslovanje i potrebe.",

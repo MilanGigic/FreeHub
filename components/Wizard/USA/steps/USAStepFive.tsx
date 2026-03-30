@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
 
-export default function StepFive() {
+export default function USAStepFive() {
   const { user } = useAuth();
   const [taxProfile, setTaxProfile] = useState<TaxProfile | null>(null);
   const router = useRouter();
@@ -42,21 +42,13 @@ export default function StepFive() {
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
-        <p className="text-sm primary-slate">
-          {t("welcomeSubtitle")}
-        </p>
+        <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
 
       <div className="text-center flex flex-col gap-2 items-center">
-        <h1 className="text-5xl font-bold primary-cyan">
-          {t("allSetUp")}
-        </h1>
-        <p className="text-xl text-primary">
-          {t("proceedToDashboard")}
-        </p>
-        <p className="text-lg primary-slate">
-          {t("changeInSettings")}
-        </p>
+        <h1 className="text-5xl font-bold primary-cyan">{t("allSetUp")}</h1>
+        <p className="text-xl text-primary">{t("proceedToDashboard")}</p>
+        <p className="text-lg primary-slate">{t("changeInSettings")}</p>
 
         <div className="grid grid-cols-4 gap-2">
           <h1 className="col-span-4 text-center text-2xl font-bold primary-cyan">
@@ -83,7 +75,9 @@ export default function StepFive() {
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
             {t("homeOfficeSimplified")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.homeOfficeSimplified ? tCommon("yes") : tCommon("no")}
+              {taxProfile?.homeOfficeSimplified
+                ? tCommon("yes")
+                : tCommon("no")}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
@@ -101,13 +95,17 @@ export default function StepFive() {
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
             {t("healthInsuranceDeduction")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.healthInsuranceDeduction ? tCommon("yes") : tCommon("no")}
+              {taxProfile?.healthInsuranceDeduction
+                ? tCommon("yes")
+                : tCommon("no")}
             </span>
           </p>
           <p className="flex flex-col gap-2 border background-border rounded-lg p-4 background-elevated primary-slate text-lg font-semibold">
             {t("retirementContribution")}{" "}
             <span className="font-normal text-primary">
-              {taxProfile?.retirementContribution ? tCommon("yes") : tCommon("no")}
+              {taxProfile?.retirementContribution
+                ? tCommon("yes")
+                : tCommon("no")}
             </span>
           </p>
         </div>

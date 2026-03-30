@@ -1,65 +1,49 @@
 "use client";
 
-import { ArrowRightIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import StepOne from "./USA/StepOne";
-import StepTwo from "./USA/StepTwo";
-import StepThree from "./USA/StepThree";
-import StepFour from "./USA/StepFour";
-import StepFive from "./USA/StepFive";
+import LanguageSwitcher from "../LanguageSwitcher";
+import ThemeToggle from "../ThemeToggle";
 
-export default function Wizard() {
-  const router = useRouter();
+type WizardProps = {
+  steps: React.ReactNode[];
+  totalSteps?: number;
+};
+
+export default function Wizard({ steps, totalSteps }: WizardProps) {
   const t = useTranslations("wizard");
-
   const searchParams = useSearchParams();
-  const step = searchParams.get("step");
-  return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/20 backdrop-blur-xs w-full h-full p-4 z-50 flex items-center justify-center">
-      <div className="flex flex-col w-full h-full max-w-7xl max-h-[80vh] background-elevated border background-border rounded-lg p-4">
-        {!step ? (
-          <div className="w-full h-full flex flex-col items-center justify-between primary-slate">
-            <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-              <h1 className="text-2xl font-bold text-primary">
-                {t("welcomeTitle")}
-              </h1>
-              <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
-            </div>
 
-            <div className="flex flex-col gap-2 text-primary text-lg font-semibold max-w-lg mx-auto">
-              <p>{t("finishSetup")}</p>
-              <p>{t("helpUnderstand")}</p>
-              <p>{t("askQuestions")}</p>
-              <p>{t("changeAnswers")}</p>
-              <p>{t("skipStep")}</p>
-            </div>
-            <div className="flex flex-col gap-2 max-w-md w-full mx-auto">
-              <button
-                onClick={() => router.push("/dashboard?wizard=true&step=1")}
-                className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
-              >
-                {t("proceed")} <ArrowRightIcon size={20} />
-              </button>
-              <button
-                onClick={() => router.replace("/dashboard")}
-                className="primary-cyan py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
-              >
-                {t("skip")}
-              </button>
-            </div>
+  // URL is 1-indexed (?step=1, ?step=2, ?step=3)
+  // Array is 0-indexed — subtract 1 when indexing
+  const currentStep = parseInt(searchParams.get("step") || "1");
+  const currentIndex = currentStep - 1;
+  const progressSteps = Math.max(totalSteps ?? steps.length, 1);
+
+  return (
+    <div className="min-h-screen h-full w-full flex items-center justify-center p-4">
+      <div className="flex flex-col w-full min-h-screen max-w-7xl background-elevated border background-border rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <ThemeToggle />
+        </div>
+
+        {/* Progress Bar */}
+        {currentStep > 1 ? (
+          <div className="flex gap-2 mb-8">
+            {Array.from({ length: progressSteps }).map((_, index) => (
+              <div
+                key={index}
+                className={`h-1.5 flex-1 rounded-full transition-all ${
+                  index < currentStep ? "bg-emerald-500" : "bg-zinc-700"
+                }`}
+              />
+            ))}
           </div>
-        ) : step === "1" ? (
-          <StepOne />
-        ) : step === "2" ? (
-          <StepTwo />
-        ) : step === "3" ? (
-          <StepThree />
-        ) : step === "4" ? (
-          <StepFour />
-        ) : step === "5" ? (
-          <StepFive />
         ) : null}
+
+        <div className="flex-1 overflow-auto h-full">
+          {steps[currentIndex] || null}
+        </div>
       </div>
     </div>
   );

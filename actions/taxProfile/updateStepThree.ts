@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { getCurrentUser } from "../auth/getCurrentUser";
-import { taxProfiles } from "@/db/schema";
+import { taxProfiles, usaTaxProfiles } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 
@@ -17,14 +17,6 @@ export async function updateStepThree(
     return { error: "Unauthorized" };
   }
 
-  console.log(
-    "Fields:",
-    homeOfficeSqft,
-    homeOfficeSimplified,
-    mileageTracking,
-    healthInsuranceDeduction,
-  );
-
   if (
     homeOfficeSqft === null ||
     homeOfficeSimplified === null ||
@@ -35,16 +27,32 @@ export async function updateStepThree(
   }
 
   try {
-    await db
-      .update(taxProfiles)
-      .set({
-        userId: user.id,
-        homeOfficeSqft,
-        homeOfficeSimplified,
-        mileageTracking,
-        healthInsuranceDeduction,
-      })
-      .where(eq(taxProfiles.userId, user.id));
+    const taxProfile = await db.query.taxProfiles.findFirst({
+      where: eq(taxProfiles.userId, user.id),
+    });
+
+    if (!taxProfile) {
+      return { error: "Tax profile not found" };
+    }
+
+    if (taxProfile.country === "United States") {
+      const usaTaxProfile = await db.query.usaTaxProfiles.findFirst({
+        where: eq(usaTaxProfiles.taxProfileId, taxProfile.id),
+      });
+      if (!usaTaxProfile) {
+        return { error: "USA tax profile not found" };
+      }
+
+      await db
+        .update(usaTaxProfiles)
+        .set({
+          homeOfficeSqft,
+          homeOfficeSimplified,
+          mileageTracking,
+          healthInsuranceDeduction,
+        })
+        .where(eq(usaTaxProfiles.id, usaTaxProfile.id));
+    }
 
     return { success: true };
   } catch (error) {
@@ -57,6 +65,6 @@ export async function updateStepThree(
           : "An error occurred while updating step three",
     };
   } finally {
-    revalidatePath("/dashboard?wizard=true&step=4");
+    revalidatePath("/onboarding?step=4");
   }
 }

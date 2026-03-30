@@ -169,6 +169,13 @@
       "when": 1773270153186,
       "tag": "0023_chilly_doctor_octopus",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1774533144161,
+      "tag": "0024_bouncy_bedlam",
+      "breakpoints": true
     }
   ]
 }

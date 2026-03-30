@@ -59,8 +59,11 @@ export default function RegisterPage() {
         sessionStorage.setItem("dek", dekString);
         sessionStorage.setItem("dekSalt", salt);
 
-        router.push("/dashboard?wizard=true");
-        router.refresh();
+        if (country === "United States") {
+          router.push("/en/onboarding");
+        } else if (country === "Serbia") {
+          router.push("/sr-Latn/onboarding");
+        }
       } else {
         setError(result.error || t("registrationFailed"));
       }
@@ -103,16 +106,17 @@ export default function RegisterPage() {
             <label htmlFor="country" className={labelClass}>
               {t("country")}
             </label>
-            <input
+            <select
+              name="country"
               id="country"
-              type="text"
-              value={country}
-              // onChange={(e) => setCountry(e.target.value)}
-              disabled
-              // required
               className={inputClass}
-              placeholder={t("unitedStates")}
-            />
+              required
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            >
+              <option value="United States">{t("unitedStates")}</option>
+              <option value="Serbia">{t("serbia")}</option>
+            </select>
             <p className="text-xs text-tertiary mt-1">
               {t("countryRestriction")}
               <br />

@@ -1,4 +1,20 @@
 TODO:
   - Design Serbian freelancers taxing models
   - Switch from USA market being main market to Serbia market being main market
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                    Creating separate tax models
+                    Update updateStepX.ts functions to support any input they're given
+                                  Finish SRBTaxWizard.ts component
+                    Update messages files to match newly added separate tax wizards
 
+
+------------------------------------------------------------------------------------------
+Pro-Tip for your Developer Workflow:
+
+Since the NBS (National Bank of Serbia) has a public API/Web Service, you should set up a Cron Job (a scheduled task) that runs every morning at 08:00 AM.
+
+    It fetches the new rates.
+
+    It inserts them into this table.
+
+    That way, when your user opens the app to log a payment, the rate is already there waiting for them.
