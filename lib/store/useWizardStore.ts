@@ -1,3 +1,4 @@
+import { TaxProfile } from "@/types/types";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -29,6 +30,9 @@ type WizardStore = {
   setPaysPersonalSalary: (paysPersonalSalary: boolean | null) => void;
   personalSalaryAmount: number | null;
   setPersonalSalaryAmount: (personalSalaryAmount: number | null) => void;
+
+  taxProfile: TaxProfile | null;
+  setTaxProfile: (taxProfile: TaxProfile | null) => void;
 };
 
 export const useWizardStore = create<WizardStore>()(
@@ -57,6 +61,8 @@ export const useWizardStore = create<WizardStore>()(
       personalSalaryAmount: null,
       setPersonalSalaryAmount: (personalSalaryAmount: number | null) =>
         set({ personalSalaryAmount }),
+      taxProfile: null,
+      setTaxProfile: (taxProfile: TaxProfile | null) => set({ taxProfile }),
     }),
     {
       name: "wizard-store",

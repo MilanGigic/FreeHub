@@ -57,7 +57,7 @@ export default function SRBStepThree() {
     }
 
     if (res?.success) {
-      router.push(`/sr-Latn/onboarding?step=${currentStep + 1}`);
+      router.push("/sr-Latn/onboarding?step=4");
     } else {
       // Use window.alert as a fallback instead of toast
       window.alert(res?.error || "Greška");

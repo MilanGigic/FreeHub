@@ -77,9 +77,6 @@ export async function updateStepTwo(input: UpdateStepTwoInput) {
         if (input.pausalActivityCode) {
           updateData.pausalActivityCode = input.pausalActivityCode;
         }
-        if (input.pausalMunicipality) {
-          updateData.pausalMunicipality = input.pausalMunicipality;
-        }
       }
 
       // ---------- KNJIGAS ----------

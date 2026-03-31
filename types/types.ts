@@ -159,12 +159,59 @@ export interface Invoice {
 }
 
 export interface TaxProfile {
-  entityType: string | null;
-  filingStatus: string | null;
-  stateResidence: string | null;
-  homeOfficeSqft: number | null;
-  homeOfficeSimplified: boolean | null;
-  mileageTracking: boolean | null;
-  healthInsuranceDeduction: boolean | null;
-  retirementContribution: boolean | null;
+  // Base tax profile fields
+  id?: string;
+  userId?: string;
+  country: string;
+
+  // --- USA Fields ---
+  entityType?: string | null;
+  filingStatus?: string | null;
+  stateResidence?: string | null;
+  homeOfficeSqft?: number | null;
+  homeOfficeSimplified?: boolean | null;
+  mileageTracking?: boolean | null;
+  healthInsuranceDeduction?: boolean | null;
+  retirementContribution?: boolean | null;
+
+  // --- Serbia Fields ---
+  // 1. REGIME
+  regime?: "frilenser" | "pausal" | "knjigas" | null;
+  isUnder40?: boolean | null;
+
+  // 2. FRILENSER
+  preferredModel?: "modelA" | "modelB" | null;
+  healthInsuredElsewhere?: boolean | null;
+  activeMonths?: number | null;
+  numberOfClients?: number | null;
+
+  // 3. PAUSAL
+  pausalActivityCode?: string | null;
+  pausalMunicipality?: string | null;
+  pausalTaxCategory?: 1 | 2 | 3 | null;
+  pausalEmployeeCount?: number | null;
+  monthlyPausalTax?: string | null;
+
+  // 4. KNJIGAS
+  businessModel?: "services" | "goods" | "mixed" | null;
+  paysPersonalSalary?: boolean | null;
+  personalSalaryAmount?: string | null;
+  vatThresholdWarning?: boolean | null;
+
+  // 5. VAT
+  isInVatSystem?: boolean | null;
+
+  // 6. INDEPENDENCE TEST
+  independenceTestScore?: number | null;
+  independenceTestCalculatedAt?: Date | null;
+
+  // 7. SHARED FINANCIALS (amounts in RSD)
+  estimatedAnnualGross?: string | null;
+
+  // 8. META
+  onboardingCompletedAt?: Date | null;
+
+  // Common meta
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
 }
