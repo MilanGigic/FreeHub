@@ -7,6 +7,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/lib/useAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function Header() {
   const { user } = useAuth();
@@ -25,8 +26,14 @@ export default function Header() {
       ) : null}
 
       <div className="hidden sm:flex items-center">
-        <h1 className="text-sm font-bold uppercase text-primary tracking-wider px-4">
-          {t("freehub")}
+        <h1 className="text-sm font-bold uppercase text-primary tracking-wider px-4 flex items-center gap-2">
+          <Image
+            src="/freehub-symbol.png"
+            alt="Freehub"
+            width={20}
+            height={20}
+          />{" "}
+          <span className="text-primary">{t("freehub")}</span>
         </h1>
       </div>
 

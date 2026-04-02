@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { taxProfiles } from "@/db/schema";
+import { taxProfiles, usaTaxProfiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/session";
 
@@ -9,12 +9,9 @@ export async function getTaxProfile() {
   const session = await getSession();
   if (!session?.userId) throw new Error("Unauthenticated");
 
-  const [profile] = await db
-    .select()
-    .from(taxProfiles)
-    .where(eq(taxProfiles.userId, session.userId))
-    .limit(1);
-
+  const profile = await db.query.taxProfiles.findFirst({
+    where: eq(taxProfiles.userId, session.userId),
+  });
   return profile ?? null;
 }
 
@@ -31,11 +28,21 @@ export async function upsertTaxProfile(data: {
   const session = await getSession();
   if (!session?.userId) throw new Error("Unauthenticated");
 
-  await db
-    .insert(taxProfiles)
-    .values({ userId: session.userId, ...data })
-    .onConflictDoUpdate({
-      target: taxProfiles.userId,
-      set: data,
-    });
+  const profile = await db.query.taxProfiles.findFirst({
+    where: eq(taxProfiles.userId, session.userId),
+  });
+
+  if (!profile) return { success: false, error: "Profile not found" };
+
+  if (profile.country === "United States") {
+    await db
+      .insert(usaTaxProfiles)
+      .values({ taxProfileId: profile.id, ...data })
+      .onConflictDoUpdate({
+        target: usaTaxProfiles.taxProfileId,
+        set: data,
+      });
+  }
+
+  return { success: true };
 }

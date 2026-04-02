@@ -1,12 +1,10 @@
 TODO:
   - Design Serbian freelancers taxing models
   - Switch from USA market being main market to Serbia market being main market
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                    Creating separate tax models
-                    Update updateStepX.ts functions to support any input they're given
-                                  Finish SRBTaxWizard.ts component
-                    Update messages files to match newly added separate tax wizards
 
+
+Next thing:
+  - Work on taxing models with all the serbianTaxProfile data we've been working on
 
 ------------------------------------------------------------------------------------------
 Pro-Tip for your Developer Workflow:
