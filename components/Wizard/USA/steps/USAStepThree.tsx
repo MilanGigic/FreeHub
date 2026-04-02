@@ -32,12 +32,12 @@ export default function USAStepThree() {
 
   const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const res = await updateStepThree(
+    const res = await updateStepThree({
       homeOfficeSqft,
       homeOfficeSimplified,
       mileageTracking,
       healthInsuranceDeduction,
-    );
+    });
     if (res.success) {
       router.push("/dashboard?wizard=true&step=4");
     } else {

@@ -45,7 +45,7 @@ export default function USAStepTwo() {
 
   const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const res = await updateStepTwo(filingStatus, stateResidence);
+    const res = await updateStepTwo({ filingStatus, stateResidence });
     if (res.success) {
       toast.success(t("filingStatusUpdated"));
       router.push("/dashboard?wizard=true&step=3");
