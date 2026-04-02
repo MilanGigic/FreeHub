@@ -5,45 +5,37 @@ import { serbiaTaxProfiles, taxProfiles, usaTaxProfiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/session";
 
-type UsaTaxProfileResult = {
+export type UsaTaxProfile = typeof usaTaxProfiles.$inferSelect & {
   country: "United States";
-  profile: typeof usaTaxProfiles.$inferSelect;
 };
 
-type SerbiaTaxProfileResult = {
+export type SerbiaTaxProfile = typeof serbiaTaxProfiles.$inferSelect & {
   country: "Serbia";
-  profile: typeof serbiaTaxProfiles.$inferSelect;
 };
 
-export type CountryTaxProfile =
-  | UsaTaxProfileResult
-  | SerbiaTaxProfileResult
-  | null;
+export type CountryTaxProfile = UsaTaxProfile | SerbiaTaxProfile | null;
 
-export async function getTaxProfile(): Promise<CountryTaxProfile> {
-  const session = await getSession();
-  if (!session?.userId) throw new Error("Unauthenticated");
-
+export async function getTaxProfile(
+  userId: string,
+): Promise<CountryTaxProfile> {
+  if (!userId) throw new Error("User ID is required");
   const base = await db.query.taxProfiles.findFirst({
-    where: eq(taxProfiles.userId, session.userId),
+    where: eq(taxProfiles.userId, userId),
   });
-
   if (!base) return null;
 
   if (base.country === "United States") {
     const usaProfile = await db.query.usaTaxProfiles.findFirst({
       where: eq(usaTaxProfiles.taxProfileId, base.id),
     });
-    return usaProfile
-      ? { country: "United States", profile: usaProfile }
-      : null;
+    return usaProfile ? { ...usaProfile, country: "United States" } : null;
   }
 
   if (base.country === "Serbia") {
     const srbProfile = await db.query.serbiaTaxProfiles.findFirst({
       where: eq(serbiaTaxProfiles.taxProfileId, base.id),
     });
-    return srbProfile ? { country: "Serbia", profile: srbProfile } : null;
+    return srbProfile ? { ...srbProfile, country: "Serbia" } : null;
   }
 
   return null;

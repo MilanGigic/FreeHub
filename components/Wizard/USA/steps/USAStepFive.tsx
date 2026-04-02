@@ -1,43 +1,36 @@
 "use client";
 
-import { fetchTaxProfile } from "@/actions/taxProfile/fetchTaxProfile";
-import { useAuth } from "@/lib/useAuth";
 import { TaxProfile } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
+import { CountryTaxProfile } from "@/actions/taxProfile";
 
 export default function USAStepFive() {
-  const { user } = useAuth();
   const [taxProfile, setTaxProfile] = useState<TaxProfile | null>(null);
   const router = useRouter();
   const t = useTranslations("wizard");
   const tCommon = useTranslations("common");
 
   useEffect(() => {
-    (async () => {
-      if (!user) return;
-      const res = await fetchTaxProfile(user?.id);
-      if (res.success) {
-        if (res.taxProfile) {
+    fetch("/api/tax-profile")
+      .then((res) => res.json())
+      .then((profile: CountryTaxProfile) => {
+        if (profile?.country === "United States") {
           setTaxProfile({
-            entityType: res.taxProfile.entityType,
-            filingStatus: res.taxProfile.filingStatus,
-            stateResidence: res.taxProfile.stateResidence,
-            homeOfficeSqft: res.taxProfile.homeOfficeSqft,
-            homeOfficeSimplified: res.taxProfile.homeOfficeSimplified,
-            mileageTracking: res.taxProfile.mileageTracking,
-            healthInsuranceDeduction: res.taxProfile.healthInsuranceDeduction,
-            retirementContribution: res.taxProfile.retirementContribution,
+            entityType: profile.entityType,
+            filingStatus: profile.filingStatus,
+            stateResidence: profile.stateResidence,
+            homeOfficeSqft: profile.homeOfficeSqft,
+            homeOfficeSimplified: profile.homeOfficeSimplified,
+            mileageTracking: profile.mileageTracking,
+            healthInsuranceDeduction: profile.healthInsuranceDeduction,
+            retirementContribution: profile.retirementContribution,
           });
         }
-      } else {
-        console.error("Error fetching tax profile:", res.error);
-        toast.error(res.error);
-      }
-    })();
-  }, [user]);
+      });
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">

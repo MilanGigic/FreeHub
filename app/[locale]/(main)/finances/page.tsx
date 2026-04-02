@@ -23,7 +23,7 @@ export default async function FinancesPage() {
 
   const [snapshot, profile] = await Promise.all([
     getFinancesSnapshot(),
-    getTaxProfile(),
+    getTaxProfile(user.id),
   ]);
 
   const currentBalance = await db

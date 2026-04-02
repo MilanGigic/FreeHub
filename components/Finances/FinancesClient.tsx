@@ -29,21 +29,17 @@ export default function FinancesClient({
     useTaxProfileStore();
 
   useEffect(() => {
-    // Only hydrate the US-specific store fields for US profiles.
-    // Serbia uses a different tax model — extend with a Serbia store later.
     if (profile?.country === "United States") {
       update({
-        entityType: profile.profile.entityType,
-        filingStatus: profile.profile.filingStatus,
-        stateResidence: profile.profile.stateResidence ?? "",
-        homeOfficeSqft: profile.profile.homeOfficeSqft,
-        homeOfficeSimplified: profile.profile.homeOfficeSimplified ?? true,
-        mileageTracking: profile.profile.mileageTracking ?? false,
-        healthInsuranceDeduction:
-          profile.profile.healthInsuranceDeduction ?? false,
+        entityType: profile.entityType,
+        filingStatus: profile.filingStatus,
+        stateResidence: profile.stateResidence ?? "",
+        homeOfficeSqft: profile.homeOfficeSqft,
+        homeOfficeSimplified: profile.homeOfficeSimplified ?? true,
+        mileageTracking: profile.mileageTracking ?? false,
+        healthInsuranceDeduction: profile.healthInsuranceDeduction ?? false,
       });
     }
-
     computeTaxes(snapshot.annualNetProfit);
   }, [profile, snapshot.annualNetProfit, update, computeTaxes]);
 
