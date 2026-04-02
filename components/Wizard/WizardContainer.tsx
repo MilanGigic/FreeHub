@@ -1,9 +1,8 @@
 // app/onboarding/WizardContainer.tsx
 "use client";
 import { useSearchParams } from "next/navigation";
-import Wizard from "./Wizard"; // your reusable engine
-import SerbianTaxWizard from "./wizards/serbian/SerbianTaxWizard";
-import USATaxWizard from "./wizards/usa/USATaxWizard";
+import SerbianTaxWizard from "./SRB/SerbianTaxWizard";
+import USATaxWizard from "./USA/USATaxWizard";
 
 export default function WizardContainer() {
   const searchParams = useSearchParams();
