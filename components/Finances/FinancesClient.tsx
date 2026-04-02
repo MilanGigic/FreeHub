@@ -1,5 +1,6 @@
 "use client";
 
+import { CountryTaxProfile } from "@/actions/taxProfile";
 import FinancesHero from "@/components/Finances/FinancesHero";
 import CashFlow from "@/components/Finances/Main/CashFlow";
 import GoalsCardClient from "@/components/Finances/Main/GoalsCardClient";
@@ -15,12 +16,8 @@ type Props = {
     expectedIncomeNext30Days: number;
     avgMonthlyExpenses: number;
   };
-  profile: {
-    filingStatus: string | null;
-    homeOfficeSqft: number | null;
-    // ...etc
-  } | null;
-  currentBalance: number; // pull this from your bank integration or manual entry
+  profile: CountryTaxProfile;
+  currentBalance: number;
 };
 
 export default function FinancesClient({
@@ -32,10 +29,21 @@ export default function FinancesClient({
     useTaxProfileStore();
 
   useEffect(() => {
-    // 1. Hydrate the profile fields into the store
-    if (profile) update(profile);
+    // Only hydrate the US-specific store fields for US profiles.
+    // Serbia uses a different tax model — extend with a Serbia store later.
+    if (profile?.country === "United States") {
+      update({
+        entityType: profile.profile.entityType,
+        filingStatus: profile.profile.filingStatus,
+        stateResidence: profile.profile.stateResidence ?? "",
+        homeOfficeSqft: profile.profile.homeOfficeSqft,
+        homeOfficeSimplified: profile.profile.homeOfficeSimplified ?? true,
+        mileageTracking: profile.profile.mileageTracking ?? false,
+        healthInsuranceDeduction:
+          profile.profile.healthInsuranceDeduction ?? false,
+      });
+    }
 
-    // 2. Compute taxes from annual net profit
     computeTaxes(snapshot.annualNetProfit);
   }, [profile, snapshot.annualNetProfit, update, computeTaxes]);
 

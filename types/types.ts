@@ -162,7 +162,7 @@ export interface TaxProfile {
   // Base tax profile fields
   id?: string;
   userId?: string;
-  country: string;
+  country?: string | null;
 
   // --- USA Fields ---
   entityType?: string | null;
