@@ -5,8 +5,7 @@ import Header from "@/components/Header";
 import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects";
 import Sidebar from "@/components/Sidebar";
 import { TaxProvider } from "@/components/TaxProvider";
-import Wizard from "@/components/Wizard/Wizard";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 
 function useBootstrapAppData(pathname: string) {
@@ -23,15 +22,12 @@ function MainLayoutContent({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const isWizard = searchParams.get("wizard") === "true";
   useBootstrapAppData(pathname);
 
   return (
     <TaxProvider>
       <div className="w-full min-h-screen h-full flex flex-col background relative">
-        {isWizard ? <Wizard /> : null}
         <Header />
         <div className="w-full flex items-stretch flex-1">
           <div className="sticky top-16 h-[calc(100vh-4rem)] z-20">
