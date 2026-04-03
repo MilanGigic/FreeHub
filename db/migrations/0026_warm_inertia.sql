@@ -1,0 +1,1 @@
+ALTER TABLE "serbia_tax_profiles" ADD COLUMN "business_expenses" numeric(12, 2);

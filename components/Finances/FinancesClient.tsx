@@ -1,5 +1,6 @@
 "use client";
 
+import { computeTaxesAction } from "@/actions/computeTaxes";
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import FinancesHero from "@/components/Finances/FinancesHero";
 import CashFlow from "@/components/Finances/Main/CashFlow";
@@ -25,26 +26,35 @@ export default function FinancesClient({
   profile,
   currentBalance,
 }: Props) {
-  const { update, computeTaxes, computeSafeToSpend, monthlyTaxReserve } =
+  const { setTaxResult, computeSafeToSpend, monthlyTaxReserve } =
     useTaxProfileStore();
 
   useEffect(() => {
-    if (profile?.country === "United States") {
-      update({
-        entityType: profile.entityType,
-        filingStatus: profile.filingStatus,
-        stateResidence: profile.stateResidence ?? "",
-        homeOfficeSqft: profile.homeOfficeSqft,
-        homeOfficeSimplified: profile.homeOfficeSimplified ?? true,
-        mileageTracking: profile.mileageTracking ?? false,
-        healthInsuranceDeduction: profile.healthInsuranceDeduction ?? false,
-      });
+    let cancelled = false;
+
+    async function run() {
+      try {
+        const result = await computeTaxesAction(
+          profile,
+          snapshot.annualNetProfit,
+        );
+
+        if (!cancelled) {
+          setTaxResult(result);
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
-    computeTaxes(snapshot.annualNetProfit);
-  }, [profile, snapshot.annualNetProfit, update, computeTaxes]);
+
+    if (profile) run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [profile, snapshot.annualNetProfit, setTaxResult]);
 
   useEffect(() => {
-    // 3. Compute safe to spend — runs AFTER computeTaxes updates monthlyTaxReserve
     computeSafeToSpend({
       currentBalance,
       avgMonthlyExpenses: snapshot.avgMonthlyExpenses,

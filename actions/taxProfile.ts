@@ -8,22 +8,22 @@ import { getSession } from "@/lib/session";
 export type UsaTaxProfile = typeof usaTaxProfiles.$inferSelect & {
   country: "United States";
 };
-
 export type SerbiaTaxProfile = typeof serbiaTaxProfiles.$inferSelect & {
   country: "Serbia";
 };
-
 export type CountryTaxProfile = UsaTaxProfile | SerbiaTaxProfile | null;
 
 export async function getTaxProfile(
   userId: string,
 ): Promise<CountryTaxProfile> {
   if (!userId) throw new Error("User ID is required");
+
   const base = await db.query.taxProfiles.findFirst({
     where: eq(taxProfiles.userId, userId),
   });
   if (!base) return null;
 
+  // base.country is the source of truth — only fetch what we need
   if (base.country === "United States") {
     const usaProfile = await db.query.usaTaxProfiles.findFirst({
       where: eq(usaTaxProfiles.taxProfileId, base.id),

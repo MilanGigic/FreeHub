@@ -70,6 +70,10 @@ export const serbiaTaxProfiles = pgTable("serbia_tax_profiles", {
     scale: 2,
   }),
   vatThresholdWarning: boolean("vat_threshold_warning").default(false),
+  businessExpenses: numeric("business_expenses", {
+    precision: 12,
+    scale: 2,
+  }),
 
   // 5. VAT
   isInVatSystem: boolean("is_in_vat_system").default(false),

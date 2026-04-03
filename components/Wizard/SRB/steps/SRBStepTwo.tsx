@@ -71,6 +71,25 @@ export default function SRBStepTwo() {
 
   const [grossAnnualIncome, setGrossAnnualIncome] = useState<number>(0);
   const [isEmployed, setIsEmployed] = useState<boolean>(false);
+  const [displayValue, setDisplayValue] = useState<string>("");
+
+  const formatNumber = (value: string): string => {
+    // Strip everything except digits
+    const digits = value.replace(/\D/g, "");
+    if (!digits) return "";
+
+    // Format using Serbian locale — uses . as thousands separator
+    return Number(digits).toLocaleString("sr-RS");
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatNumber(e.target.value);
+
+    setDisplayValue(formatted);
+
+    const raw = Number(e.target.value.replace(/\D/g, ""));
+    setGrossAnnualIncome(raw);
+  };
 
   const cards =
     regime === "frilenser"
@@ -209,9 +228,8 @@ export default function SRBStepTwo() {
                           type="string"
                           placeholder="Iznos"
                           className="w-full text-center text-lg bg-transparent border background-border rounded p-2 text-primary placeholder-gray-600 outline-none focus:border-(--accent-cyan)"
-                          onChange={(e) =>
-                            setGrossAnnualIncome(Number(e.target.value))
-                          }
+                          onChange={(e) => handleChange(e)}
+                          value={displayValue}
                         />
                       </FieldContent>
                     </Field>

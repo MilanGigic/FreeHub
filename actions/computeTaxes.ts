@@ -1,0 +1,210 @@
+"use server";
+
+import { calculateUSTaxes } from "@/utils/taxCalculatorUS";
+import { calculateSRBTaxes } from "@/utils/taxCalculatorSRB";
+import { CountryTaxProfile } from "@/actions/taxProfile";
+import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
+
+type USTaxInput = {
+  country: "US";
+  filingStatus: string | null;
+  homeOfficeSqft: number | null;
+  mileageDeduction?: number;
+  healthInsurance?: number;
+  retirementContribution?: number;
+};
+
+type SRBTaxInput = {
+  country: "SRB";
+  model: SRBModel;
+  isAlreadyEmployed: boolean;
+  isUnder40: boolean;
+  // PAUSAL
+  pausalMonthlyBill?: number;
+  // KNJIGAS
+  monthlyExpenses?: number; // actual business costs
+  monthlySalary?: number; // owner salary (personalSalaryAmount)
+};
+
+export type TaxComputationInput = {
+  annualGross: number;
+} & (USTaxInput | SRBTaxInput);
+
+function mapSrbRegime(regime: string | null | undefined): SRBModel {
+  switch (regime) {
+    case "frilenser":
+      return "MODEL_1";
+    case "pausal":
+      return "PAUSAL";
+    case "knjigas":
+      return "KNJIGAS";
+    default:
+      return "MODEL_1";
+  }
+}
+
+export function mapProfileToInput(
+  profile: CountryTaxProfile,
+  annualGross: number,
+): { input: TaxComputationInput; warnings: string[] } {
+  const warnings: string[] = [];
+
+  if (!profile) throw new Error("Profile is required");
+
+  if (profile.country === "United States") {
+    return {
+      input: {
+        country: "US",
+        annualGross,
+        filingStatus: profile.filingStatus,
+        homeOfficeSqft: profile.homeOfficeSqft,
+      },
+      warnings,
+    };
+  }
+
+  // Serbia
+  let pausalMonthlyBill: number | undefined;
+  if (profile.regime === "pausal") {
+    if (!profile.monthlyPausalTax) {
+      warnings.push(
+        "Nedostaje vrednost paušalnog poreza, koristi se podrazumevana vrednost od 35.000 RSD.",
+      );
+      pausalMonthlyBill = 35000;
+    } else {
+      pausalMonthlyBill = Number(profile.monthlyPausalTax);
+    }
+  }
+
+  return {
+    input: {
+      country: "SRB",
+      annualGross,
+      model: mapSrbRegime(profile.regime),
+      isAlreadyEmployed: profile.healthInsuredElsewhere ?? false,
+      isUnder40: profile.isUnder40 ?? false,
+      pausalMonthlyBill,
+      monthlyExpenses: profile.businessExpenses // ← was personalSalaryAmount, now correct
+        ? Number(profile.businessExpenses)
+        : undefined,
+      monthlySalary: profile.personalSalaryAmount // ← owner salary, separate concept
+        ? Number(profile.personalSalaryAmount)
+        : undefined,
+    },
+    warnings,
+  };
+}
+
+// ─── Calculator ───────────────────────────────────────────────────────────────
+
+function calculateTaxes(
+  input: TaxComputationInput,
+): Omit<TaxResult, "netProfit" | "warnings"> {
+  if (input.country === "US") {
+    const homeOfficeDeduction = input.homeOfficeSqft
+      ? input.homeOfficeSqft * 5
+      : 0;
+
+    const {
+      seTax,
+      qbi: qbiDeduction,
+      federalTax,
+    } = calculateUSTaxes({
+      netProfit: input.annualGross,
+      filingStatus: input.filingStatus,
+      homeOfficeDeduction,
+      mileageDeduction: input.mileageDeduction,
+      healthInsurance: input.healthInsurance,
+      retirementContribution: input.retirementContribution,
+    });
+
+    const totalAnnualTax = seTax + federalTax;
+
+    return {
+      seTax,
+      federalTax,
+      qbiDeduction,
+      totalAnnualTax,
+      monthlyTaxReserve: Math.round(totalAnnualTax / 12),
+      profitAfterTaxes: input.annualGross - totalAnnualTax,
+      quarterlyEstimate: Math.round(totalAnnualTax / 4),
+      effectiveTaxRate:
+        input.annualGross > 0 ? totalAnnualTax / input.annualGross : 0,
+      itemized: {
+        incomeTax: federalTax,
+        pension: seTax,
+        health: 0,
+        expensesDeducted: homeOfficeDeduction,
+      },
+    };
+  }
+
+  // SRB
+  const result = calculateSRBTaxes({
+    annualGross: input.annualGross,
+    model: input.model,
+    isAlreadyEmployed: input.isAlreadyEmployed,
+    isUnder40: input.isUnder40,
+    pausalMonthlyBill: input.pausalMonthlyBill ?? 35000,
+    monthlyExpenses: input.monthlyExpenses ?? 0,
+    monthlySalary: input.monthlySalary,
+  });
+
+  return {
+    seTax: 0,
+    federalTax: 0,
+    qbiDeduction: 0,
+    totalAnnualTax: result.totalAnnualTax,
+    monthlyTaxReserve: result.monthlyReserve,
+    profitAfterTaxes: input.annualGross - result.totalAnnualTax,
+    quarterlyEstimate: result.quarterlyEstimate,
+    effectiveTaxRate: result.effectiveTaxRate,
+    itemized: {
+      incomeTax: result.itemized.incomeTax,
+      pension: result.itemized.pio,
+      health: result.itemized.health,
+      expensesDeducted: result.itemized.expensesDeducted,
+    },
+  };
+}
+
+// ─── Format ───────────────────────────────────────────────────────────────────
+
+function formatTaxResult(
+  computed: Omit<TaxResult, "netProfit" | "warnings">,
+  annualGross: number,
+  warnings: string[],
+): TaxResult {
+  return {
+    ...computed,
+    netProfit: annualGross,
+    warnings,
+  };
+}
+
+// ─── Main export ──────────────────────────────────────────────────────────────
+
+export async function computeTaxesAction(
+  profile: CountryTaxProfile,
+  annualGross: number,
+): Promise<TaxResult> {
+  if (!profile) {
+    return {
+      netProfit: 0,
+      seTax: 0,
+      federalTax: 0,
+      qbiDeduction: 0,
+      totalAnnualTax: 0,
+      monthlyTaxReserve: 0,
+      profitAfterTaxes: 0,
+      quarterlyEstimate: 0,
+      effectiveTaxRate: 0,
+      warnings: [],
+      itemized: { incomeTax: 0, pension: 0, health: 0, expensesDeducted: 0 },
+    };
+  }
+
+  const { input, warnings } = mapProfileToInput(profile, annualGross);
+  const computed = calculateTaxes(input);
+  return formatTaxResult(computed, annualGross, warnings);
+}

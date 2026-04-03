@@ -18,7 +18,7 @@ interface TaxOutputs {
   federalTax: number;
 }
 
-export function calculateTaxes(inputs: TaxInputs): TaxOutputs {
+export function calculateUSTaxes(inputs: TaxInputs): TaxOutputs {
   const { netProfit, filingStatus } = inputs;
   if (netProfit < 400)
     return { seTax: 0, halfSe: 0, agi: 0, qbi: 0, federalTax: 0 }; // No SE under $400
