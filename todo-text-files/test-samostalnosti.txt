@@ -1,0 +1,59 @@
+1. Određivanje radnog vremena i odmora
+
+    Opis: Da li klijent određuje kada moraš biti "online", kada počinješ i završavaš smenu, ili ti je potrebna njihova dozvola za godišnji odmor?
+
+    Logika: Pravi preduzetnik sam upravlja svojim vremenom i garantuje isporuku rezultata u roku, a ne prisustvo u određeno vreme.
+
+2. Korišćenje prostorija i opreme klijenta
+
+    Opis: Da li radiš iz kancelarije klijenta ili koristiš laptop, monitore i specifičan softver koji su oni platili?
+
+    Logika: Ako klijent obezbeđuje "sredstva za rad", to ukazuje na odnos poslodavac-zaposleni. Samostalni preduzetnik ulaže u sopstvenu opremu.
+
+3. Kontrola, obuka i rukovođenje
+
+    Opis: Da li klijent organizuje tvoj radni proces, drži ti obavezne obuke o načinu rada ili imaš "menadžera" koji ti direktno naređuje kako da izvršiš zadatke?
+
+    Logika: Preduzetnik dobija nalog (šta treba uraditi), ali on sam odlučuje o metodologiji (kako će to uraditi).
+
+4. Zabrana angažovanja podizvođača
+
+    Opis: Da li u ugovoru piše da isključivo ti lično moraš da obaviš posao? Da li ti je zabranjeno da unajmiš drugu osobu ili firmu da ti pomogne u realizaciji?
+
+    Logika: Ako klijent insistira isključivo na tebi, to liči na ugovor o radu. Preduzetnik prodaje uslugu svoje firme, koju teoretski može izvršiti bilo ko stručan koga on angažuje.
+
+5. Koncentracija prihoda (70% pravilo)
+
+    Opis: Da li više od 70% tvog ukupnog prihoda u poslednjih 12 meseci dolazi od jednog klijenta?
+
+    Logika: Ovo je čisto finansijski kriterijum. Ako skoro sav novac dobijaš od jednog izvora, ekonomski si zavisan od njega kao zaposleni.
+
+6. Rizik poslovanja
+
+    Opis: Ko snosi štetu ako posao ne bude urađen kako treba? Ako klijent reklamira uslugu, da li ti o svom trošku popravljaš grešku ili klijent preuzima trošak?
+
+    Logika: Preduzetnik snosi poslovni rizik i odgovara svojom imovinom/profitom. Zaposleni dobija platu bez obzira na to da li je firma tog meseca u gubitku.
+
+7. Zabrana konkurencije (Ekskluzivnost)
+
+    Opis: Da li ti je ugovorom zabranjeno da radiš za bilo koga drugog ko se bavi sličnim poslom, čime ti je praktično onemogućeno da imaš druge klijente?
+
+    Logika: Ograničavanje preduzetnika da nalazi nove klijente je tipično za radni odnos gde zaposleni mora biti lojalan samo jednom poslodavcu.
+
+8. Broj radnih dana (130 dana)
+
+    Opis: Da li za tog klijenta radiš kontinuirano više od 130 radnih dana u toku jedne godine? (To je otprilike 6 meseci punog radnog vremena).
+
+    Logika: Dugoročan, kontinuiran rad za jednog klijenta ukazuje na stalnu potrebu za tvojim radnim mestom, što je karakteristika zaposlenja.
+
+9. Obezbeđivanje materijala i alata
+
+    Opis: Da li klijent plaća troškove tvog interneta, licence za softvere (npr. Adobe, Jira, AWS) ili sirovine potrebne za rad?
+
+    Logika: Slično kao kod opreme – ako klijent pokriva tvoje operativne troškove, ti nemaš troškove poslovanja kao preduzetnik, već neto zaradu kao zaposleni.
+
+Rezultat testa:
+
+    0-4 "DA": Ti si Samostalan. Tvoj Path B (Paušalac/Knjigaš) je siguran.
+
+    5-9 "DA": Ti si Nesamostalan. Poreska uprava te može tretirati kao zaposlenog i naplatiti ogromne razlike u porezima i doprinosima unazad. U ovom slučaju, sigurnije je koristiti Path A (Frilenser Model 1 ili 2) jer se na njega ovaj test ne odnosi.

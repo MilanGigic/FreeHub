@@ -1,0 +1,1 @@
+The nbs-client.ts XML parser uses regex-based tag matching because the exact tag names in the NBS SOAP response can vary. Once you can run a test call against their live API, check the actual tag names returned and adjust the regex in parseSoapResponse() — specifically the oznaka|sifra|currency patterns. Everything else is production-ready.

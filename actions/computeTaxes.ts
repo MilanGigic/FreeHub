@@ -43,10 +43,10 @@ function mapSrbRegime(regime: string | null | undefined): SRBModel {
   }
 }
 
-export function mapProfileToInput(
+export async function mapProfileToInput(
   profile: CountryTaxProfile,
   annualGross: number,
-): { input: TaxComputationInput; warnings: string[] } {
+): Promise<{ input: TaxComputationInput; warnings: string[] }> {
   const warnings: string[] = [];
 
   if (!profile) throw new Error("Profile is required");
@@ -76,7 +76,7 @@ export function mapProfileToInput(
     }
   }
 
-  return {
+  return Promise.resolve({
     input: {
       country: "SRB",
       annualGross,
@@ -92,7 +92,7 @@ export function mapProfileToInput(
         : undefined,
     },
     warnings,
-  };
+  });
 }
 
 // ─── Calculator ───────────────────────────────────────────────────────────────
@@ -204,7 +204,7 @@ export async function computeTaxesAction(
     };
   }
 
-  const { input, warnings } = mapProfileToInput(profile, annualGross);
+  const { input, warnings } = await mapProfileToInput(profile, annualGross);
   const computed = calculateTaxes(input);
   return formatTaxResult(computed, annualGross, warnings);
 }

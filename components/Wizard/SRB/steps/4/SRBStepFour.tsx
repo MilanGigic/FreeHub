@@ -1,9 +1,7 @@
 "use client";
 import { useWizardStore } from "@/lib/store/useWizardStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import IndependenceTest from "@/components/Wizard/SRB/IndependenceTest";
-import { useAuth } from "@/lib/useAuth";
-import { fetchTaxProfile } from "@/actions/taxProfile/fetchTaxProfile";
 import { CheckCircle2, ShieldCheck, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FrilenserSummary from "./FrilenserSummary";
@@ -70,8 +68,7 @@ function FinishButton({ onClick }: { onClick: () => void }) {
 // ─── main component ───────────────────────────────────────────────────────────
 
 export default function SRBStepFour() {
-  const { user } = useAuth();
-  const { regime, taxProfile, setTaxProfile } = useWizardStore();
+  const { regime, taxProfile } = useWizardStore();
   const router = useRouter();
 
   // null = not decided yet, true = yes, false = skipped
@@ -79,19 +76,16 @@ export default function SRBStepFour() {
     null,
   );
 
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-      const res = await fetchTaxProfile(user.id);
-      if (res.success && res.taxProfile) setTaxProfile(res.taxProfile);
-    })();
-  }, [setTaxProfile, user]);
-
   const isFrilenser = regime === "frilenser";
   const showResults =
     isFrilenser ||
     doIndependenceTest === false ||
     (doIndependenceTest === true && taxProfile?.independenceTestScore !== null);
+
+  // GLOBAL TAX PROFILE - CountryTaxProfile shape, used for tax calculations app-wide
+  const finish = async () => {
+    router.push("/sr-Latn/dashboard");
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center text-primary gap-6 justify-between">
@@ -134,9 +128,7 @@ export default function SRBStepFour() {
       </div>
 
       {/* Footer actions */}
-      {showResults && (
-        <FinishButton onClick={() => router.push("/sr-Latn/dashboard")} />
-      )}
+      {showResults && <FinishButton onClick={finish} />}
     </div>
   );
 }

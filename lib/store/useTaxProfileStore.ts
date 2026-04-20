@@ -1,3 +1,4 @@
+import { CountryTaxProfile } from "@/actions/taxProfile";
 import { create } from "zustand";
 
 export type TaxSystem = "US" | "SRB";
@@ -34,7 +35,10 @@ export type SafeToSpendResult = {
   cashRunwayDays: number;
 };
 
-export type TaxProfileStore = TaxResult &
+export type TaxProfileStore = {
+  profile: CountryTaxProfile;
+  setProfile: (profile: CountryTaxProfile) => void;
+} & TaxResult &
   SafeToSpendResult & {
     setTaxResult: (result: TaxResult) => void;
     computeSafeToSpend: (inputs: SafeToSpendInputs) => void;
@@ -48,6 +52,8 @@ const DEFAULT_BUFFER_MULTIPLIER = 1.5;
 const FALLBACK_SAFETY_BUFFER = 1000;
 
 // ─── Initial state ────────────────────────────────────────────────────────────
+
+const initialProfile: CountryTaxProfile = null;
 
 const initialResult: TaxResult = {
   netProfit: 0,
@@ -72,6 +78,8 @@ const initialSafeToSpend: SafeToSpendResult = {
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const useTaxProfileStore = create<TaxProfileStore>((set, get) => ({
+  profile: initialProfile,
+  setProfile: (profile: CountryTaxProfile) => set({ profile }),
   ...initialResult,
   ...initialSafeToSpend,
 

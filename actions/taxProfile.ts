@@ -6,11 +6,19 @@ import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/session";
 
 export type UsaTaxProfile = typeof usaTaxProfiles.$inferSelect & {
+  userId: string;
   country: "United States";
+  createdAt: Date;
+  updatedAt: Date | null;
 };
+
 export type SerbiaTaxProfile = typeof serbiaTaxProfiles.$inferSelect & {
+  userId: string;
   country: "Serbia";
+  createdAt: Date;
+  updatedAt: Date | null;
 };
+
 export type CountryTaxProfile = UsaTaxProfile | SerbiaTaxProfile | null;
 
 export async function getTaxProfile(
@@ -23,19 +31,34 @@ export async function getTaxProfile(
   });
   if (!base) return null;
 
-  // base.country is the source of truth — only fetch what we need
   if (base.country === "United States") {
     const usaProfile = await db.query.usaTaxProfiles.findFirst({
       where: eq(usaTaxProfiles.taxProfileId, base.id),
     });
-    return usaProfile ? { ...usaProfile, country: "United States" } : null;
+    if (!usaProfile) return null;
+
+    return {
+      ...usaProfile,
+      userId: base.userId,
+      country: "United States" as const,
+      createdAt: base.createdAt,
+      updatedAt: base.updatedAt,
+    };
   }
 
   if (base.country === "Serbia") {
     const srbProfile = await db.query.serbiaTaxProfiles.findFirst({
       where: eq(serbiaTaxProfiles.taxProfileId, base.id),
     });
-    return srbProfile ? { ...srbProfile, country: "Serbia" } : null;
+    if (!srbProfile) return null;
+
+    return {
+      ...srbProfile,
+      userId: base.userId,
+      country: "Serbia" as const,
+      createdAt: base.createdAt,
+      updatedAt: base.updatedAt,
+    };
   }
 
   return null;

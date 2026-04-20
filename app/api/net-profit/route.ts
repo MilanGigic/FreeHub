@@ -13,6 +13,7 @@ export async function GET(request: Request) {
     searchParams.get("year") || new Date().getFullYear().toString(),
     10,
   );
+  console.log(`Year: ${year}`);
   const startOfYear = new Date(year, 0, 1); // Jan 1, YYYY
   const endOfYear = new Date(year, 11, 31, 23, 59, 59); // Dec 31, YYYY (full day)
   if (!session) {
@@ -23,12 +24,15 @@ export async function GET(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
   const userId = sessionData.userId;
+  console.log(`User ID: ${userId}`);
   const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
+  console.log(`User found: ${user.email}`);
 
   try {
+    console.log("Fetching income total");
     const [incomeResult] = await db
       .select({ total: sql`COALESCE(SUM(${transactions.amount}), 0)` })
       .from(transactions)
@@ -41,6 +45,7 @@ export async function GET(request: Request) {
         ),
       );
 
+    console.log("Fetching expense total");
     const [expenseResult] = await db
       .select({ total: sql`COALESCE(SUM(${transactions.amount}), 0)` })
       .from(transactions)
@@ -57,6 +62,9 @@ export async function GET(request: Request) {
     const totalIncome = Number(incomeResult?.total ?? 0);
     const totalExpenses = Number(expenseResult?.total ?? 0);
     const netProfit = totalIncome - totalExpenses;
+    console.log(
+      `Total income: ${totalIncome}, Total expenses: ${totalExpenses}, Net profit: ${netProfit}`,
+    );
     return new Response(JSON.stringify({ netProfit }), { status: 200 });
   } catch (error) {
     console.error("Error fetching net profit:", error);

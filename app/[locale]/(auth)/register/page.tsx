@@ -117,7 +117,7 @@ export default function RegisterPage() {
               <option value="United States">{t("unitedStates")}</option>
               <option value="Serbia">{t("serbia")}</option>
             </select>
-            <p className="text-xs text-tertiary mt-1">
+            <p className="text-xs primary-slate mt-1">
               {t("countryRestriction")}
               <br />
               {t("countryContactUs")}

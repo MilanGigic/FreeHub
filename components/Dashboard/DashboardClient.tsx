@@ -3,44 +3,39 @@
 import ClientsCard from "@/components/Dashboard/ClientsCard";
 import FinancesCard from "@/components/Dashboard/FinancesCard";
 import ProjectsCard from "@/components/Dashboard/ProjectsCard";
-import { useUIStore } from "@/lib/store/useUIStore";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 
 export default function DashboardClient() {
-  const { setIsRegisterWindowOpen, isRegisterWindowOpen } = useUIStore();
-  const t = useTranslations("dashboard");
+  const { profile } = useTaxProfileStore();
+
+  if (profile) {
+    if (profile.country === "Serbia") {
+      if (profile.regime !== "frilenser") {
+        if (
+          profile.independenceTestScore === null ||
+          profile.independenceTestScore === 0
+        ) {
+          return (
+            <div className="w-full h-full">
+              {/* FINISH AND POLISH UP THIS UI - IT SHOULD CHECK IF THERE IS INDEPENDENCE TEST SCORE AND IF NOT, SHOW THIS UI AND ASK THEM TO DO THE TEST - IT CAN OF COURSE BE OPTIONAL AND IF THEY WANT TO SKIP IT, THEY CAN DO SO */}
+
+              {/* <h1>
+              Ako želite da iskoristite sve mogućnosti FREEHUB-a, molimo vas da
+              uradite test nezavisnosti.
+              </h1>
+
+            <Link href="/sr-Latn/dashboard/independence-test">
+              Uradi test nezavisnosti
+              </Link> */}
+            </div>
+          );
+        }
+      }
+    }
+  }
 
   return (
     <div className="w-full h-full relative">
-      {isRegisterWindowOpen ? (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/20 backdrop-blur-xs w-full h-full p-4">
-          <div className="flex flex-col items-center justify-center w-full h-full max-w-md mx-auto">
-            <h1 className="text-2xl font-bold text-primary">
-              {t("registerAccount")}
-            </h1>
-            <p className="text-lg font-semibold primary-slate mb-4">
-              {t("registerAccountDescription")}
-            </p>
-            <div className="w-full flex flex-col gap-2">
-              <Link
-                href="/register"
-                onClick={() => setIsRegisterWindowOpen(false)}
-                className="py-2 px-4 text-(--accent-cyan) text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer text-center"
-              >
-                {t("register")}
-              </Link>
-              <button
-                onClick={() => setIsRegisterWindowOpen(false)}
-                className="primary-red py-2 px-4 text-lg font-bold uppercase border background-border rounded-lg w-full background-elevated hover:scale-105 transition-all duration-300 cursor-pointer"
-              >
-                {t("close")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       <div className="w-full h-full flex flex-col gap-4 primary-slate">
         <div className="flex flex-col xl:flex-row gap-4 xl:h-[550px]">
           <FinancesCard />
@@ -51,4 +46,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-

@@ -4,10 +4,7 @@ import { db } from "@/db";
 import { clients, invoices, projects } from "@/db/schema";
 import { and, eq, or, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
-
-type DashboardData = {
-  clients: Awaited<ReturnType<typeof db.select>> extends infer T ? T : never;
-};
+import { getTaxProfile } from "../taxProfile";
 
 const DASHBOARD_TAG = "dashboard-data";
 
@@ -18,65 +15,72 @@ const fetchDashboardDataCached = unstable_cache(
     }
 
     try {
-      const [clientsList, projectsList, activeProjectsList, outstandingAgg] =
-        await Promise.all([
-          db.select().from(clients).where(eq(clients.userId, userId)),
-          db
-            .select({
-              id: projects.id,
-              userId: projects.userId,
-              clientId: projects.clientId,
-              // clientName is only needed in some project UIs; keep it simple here
-              clientName: sql<string>`''`,
-              name: projects.name,
-              description: projects.description,
-              totalRevenue: projects.totalRevenue,
-              totalExpenses: projects.totalExpenses,
-              totalProfit: projects.totalProfit,
-              totalMargin: projects.totalMargin,
-              totalHoursWorked: projects.totalHoursWorked,
-              status: projects.status,
-              createdAt: projects.createdAt,
-              updatedAt: projects.updatedAt,
-            })
-            .from(projects)
-            .where(eq(projects.userId, userId)),
-          db
-            .select({
-              id: projects.id,
-              userId: projects.userId,
-              clientId: projects.clientId,
-              clientName: sql<string>`''`,
-              name: projects.name,
-              description: projects.description,
-              totalRevenue: projects.totalRevenue,
-              totalExpenses: projects.totalExpenses,
-              totalProfit: projects.totalProfit,
-              totalMargin: projects.totalMargin,
-              totalHoursWorked: projects.totalHoursWorked,
-              status: projects.status,
-              createdAt: projects.createdAt,
-              updatedAt: projects.updatedAt,
-            })
-            .from(projects)
-            .where(
-              and(eq(projects.userId, userId), eq(projects.status, "active")),
+      const [
+        clientsList,
+        projectsList,
+        activeProjectsList,
+        outstandingAgg,
+        taxProfile,
+      ] = await Promise.all([
+        db.select().from(clients).where(eq(clients.userId, userId)),
+        db
+          .select({
+            id: projects.id,
+            userId: projects.userId,
+            clientId: projects.clientId,
+            // clientName is only needed in some project UIs; keep it simple here
+            clientName: sql<string>`''`,
+            name: projects.name,
+            description: projects.description,
+            totalRevenue: projects.totalRevenue,
+            totalExpenses: projects.totalExpenses,
+            totalProfit: projects.totalProfit,
+            totalMargin: projects.totalMargin,
+            totalHoursWorked: projects.totalHoursWorked,
+            status: projects.status,
+            createdAt: projects.createdAt,
+            updatedAt: projects.updatedAt,
+          })
+          .from(projects)
+          .where(eq(projects.userId, userId)),
+        db
+          .select({
+            id: projects.id,
+            userId: projects.userId,
+            clientId: projects.clientId,
+            clientName: sql<string>`''`,
+            name: projects.name,
+            description: projects.description,
+            totalRevenue: projects.totalRevenue,
+            totalExpenses: projects.totalExpenses,
+            totalProfit: projects.totalProfit,
+            totalMargin: projects.totalMargin,
+            totalHoursWorked: projects.totalHoursWorked,
+            status: projects.status,
+            createdAt: projects.createdAt,
+            updatedAt: projects.updatedAt,
+          })
+          .from(projects)
+          .where(
+            and(eq(projects.userId, userId), eq(projects.status, "active")),
+          ),
+        db
+          .select({
+            outstandingTotal: sql<string>`coalesce(sum(${invoices.totalAmount}::numeric), 0)`,
+            outstandingCount: sql<number>`count(*) filter (where ${invoices.status} in ('sent','overdue'))`,
+            overdueTotal: sql<string>`coalesce(sum(${invoices.totalAmount}::numeric) filter (where ${invoices.status} = 'overdue'), 0)`,
+            overdueCount: sql<number>`count(*) filter (where ${invoices.status} = 'overdue')`,
+          })
+          .from(invoices)
+          .where(
+            and(
+              eq(invoices.userId, userId),
+              or(eq(invoices.status, "sent"), eq(invoices.status, "overdue")),
             ),
-          db
-            .select({
-              outstandingTotal: sql<string>`coalesce(sum(${invoices.totalAmount}::numeric), 0)`,
-              outstandingCount: sql<number>`count(*) filter (where ${invoices.status} in ('sent','overdue'))`,
-              overdueTotal: sql<string>`coalesce(sum(${invoices.totalAmount}::numeric) filter (where ${invoices.status} = 'overdue'), 0)`,
-              overdueCount: sql<number>`count(*) filter (where ${invoices.status} = 'overdue')`,
-            })
-            .from(invoices)
-            .where(
-              and(
-                eq(invoices.userId, userId),
-                or(eq(invoices.status, "sent"), eq(invoices.status, "overdue")),
-              ),
-            ),
-        ]);
+          ),
+
+        getTaxProfile(userId),
+      ]);
 
       const agg = outstandingAgg[0];
 
@@ -94,6 +98,7 @@ const fetchDashboardDataCached = unstable_cache(
             data: Number(agg?.overdueTotal ?? 0).toFixed(2),
             count: Number(agg?.overdueCount ?? 0),
           },
+          taxProfile: taxProfile,
         },
       };
     } catch (error) {
@@ -111,4 +116,3 @@ const fetchDashboardDataCached = unstable_cache(
 export async function fetchDashboardData(userId: string) {
   return fetchDashboardDataCached(userId);
 }
-

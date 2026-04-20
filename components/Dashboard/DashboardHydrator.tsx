@@ -6,6 +6,8 @@ import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import type { Client, Project } from "@/types/types";
+import { CountryTaxProfile } from "@/actions/taxProfile";
+import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 
 type DashboardHydrationPayload = {
   clients: Client[];
@@ -13,6 +15,7 @@ type DashboardHydrationPayload = {
   activeProjects: Project[];
   allOutstandingInvoices: { data: string; count: number };
   allOverdueInvoices: { data: string; count: number };
+  taxProfile: CountryTaxProfile;
 };
 
 export default function DashboardHydrator({
@@ -33,7 +36,11 @@ export default function DashboardHydrator({
     useInvoiceStore
       .getState()
       .setAllOutstandingInvoices(payload.allOutstandingInvoices);
-    useInvoiceStore.getState().setAllOverdueInvoices(payload.allOverdueInvoices);
+    useInvoiceStore
+      .getState()
+      .setAllOverdueInvoices(payload.allOverdueInvoices);
+
+    useTaxProfileStore.getState().setProfile(payload.taxProfile);
 
     // Helpful baseline for finance UIs that use the "balance" field.
     const totalProfit = payload.projects.reduce(
@@ -45,4 +52,3 @@ export default function DashboardHydrator({
 
   return null;
 }
-

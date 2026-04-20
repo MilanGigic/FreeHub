@@ -42,6 +42,6 @@ export async function updateStepFour(retirementContribution: boolean) {
           : "An error occurred while updating step four",
     };
   } finally {
-    revalidatePath("/dashboard?wizard=true&step=5");
+    revalidatePath("/dashboard");
   }
 }
