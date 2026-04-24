@@ -35,7 +35,7 @@ export function MunicipalitySelect({ value, onChange }: Props) {
                   onChange(m.code);
                   setQuery("");
                 }}
-                className="px-4 py-2 border background-border rounded-lg hover:border-(--accent-cyan) cursor-pointer bg-(--background-elevated)/60 backdrop-blur-xs text-primary"
+                className="px-4 py-2 border background-border rounded-lg hover:border-(--accent-cyan) cursor-pointer bg-(--background-elevated)/60 hover:bg-(--accent-cyan)/60 backdrop-blur-xs text-primary"
               >
                 {m.name}
               </div>

@@ -8,12 +8,17 @@ import { useAuth } from "@/lib/useAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const { user } = useAuth();
   const { isSidebarOpen, sidebarOpen } = useUIStore();
   const t = useTranslations("navigation");
   const tAuth = useTranslations("auth");
+
+  const pathname = usePathname();
+
+  const isProfilePage = pathname.includes("profile");
 
   return (
     <div className="w-full flex px-4 py-2 gap-2 border-b background-border sticky top-0 z-30 background backdrop-blur-sm">
@@ -43,15 +48,24 @@ export default function Header() {
           {user ? (
             <Link
               href="/profile"
-              className="flex items-center gap-2 hover:primary-cyan transition-all"
+              className="flex items-center gap-2 hover:primary-cyan transition-all p-2"
             >
-              <User
-                size={20}
-                className="text-primary cursor-pointer hover:primary-cyan transition-all"
-              />
-              <span className="text-sm text-primary font-semibold hidden sm:inline">
-                {user.userName}
-              </span>
+              {isProfilePage ? (
+                <User
+                  size={24}
+                  className="cursor-pointer transition-all text-(--accent-cyan)"
+                />
+              ) : (
+                <>
+                  <User
+                    size={20}
+                    className="text-primary cursor-pointer hover:primary-cyan transition-all"
+                  />
+                  <span className="text-sm text-primary font-semibold hidden sm:inline">
+                    {user.userName}
+                  </span>
+                </>
+              )}
             </Link>
           ) : (
             <Link

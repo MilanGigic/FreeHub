@@ -4,39 +4,47 @@ import ClientsCard from "@/components/Dashboard/ClientsCard";
 import FinancesCard from "@/components/Dashboard/FinancesCard";
 import ProjectsCard from "@/components/Dashboard/ProjectsCard";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
+import { ArrowRightFromLine } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardClient() {
   const { profile } = useTaxProfileStore();
 
-  if (profile) {
-    if (profile.country === "Serbia") {
-      if (profile.regime !== "frilenser") {
-        if (
-          profile.independenceTestScore === null ||
-          profile.independenceTestScore === 0
-        ) {
-          return (
-            <div className="w-full h-full">
-              {/* FINISH AND POLISH UP THIS UI - IT SHOULD CHECK IF THERE IS INDEPENDENCE TEST SCORE AND IF NOT, SHOW THIS UI AND ASK THEM TO DO THE TEST - IT CAN OF COURSE BE OPTIONAL AND IF THEY WANT TO SKIP IT, THEY CAN DO SO */}
-
-              {/* <h1>
-              Ako želite da iskoristite sve mogućnosti FREEHUB-a, molimo vas da
-              uradite test nezavisnosti.
-              </h1>
-
-            <Link href="/sr-Latn/dashboard/independence-test">
-              Uradi test nezavisnosti
-              </Link> */}
-            </div>
-          );
-        }
-      }
-    }
-  }
+  const testAlert =
+    !!profile &&
+    profile.country === "Serbia" &&
+    profile.regime !== "frilenser" &&
+    !profile.independenceTestCalculatedAt;
 
   return (
     <div className="w-full h-full relative">
-      <div className="w-full h-full flex flex-col gap-4 primary-slate">
+      <div className="w-full h-full flex flex-col gap-4 primary-slate relative">
+        {testAlert &&
+          profile &&
+          profile.country === "Serbia" &&
+          profile.regime !== "frilenser" && (
+            <div className="bg-(--bg-elevated) border border-(--accent-amber) p-4 rounded-2xl absolute bottom-16">
+              {!profile.independenceTestCalculatedAt && (
+                <div className="flex flex-col items-center gap-4">
+                  <h1 className="text-xl primary-red font-bold text-center px-4">
+                    Primetili smo da niste uradili test nezavisnosti. Da bismo
+                    vam pomogli da iskoristite sve mogućnosti Freehuba,
+                    preporučujemo da uradite test nezavisnosti. Ako želite,
+                    možete ga preskočiti, ali imajte na umu da će vam test
+                    pomoći da bolje razumete svoje poreske obaveze i kako da ih
+                    optimizujete.
+                  </h1>
+                  <Link
+                    href="/profile/independence-test"
+                    className="text-xl font-bold uppercase hover:underline hover:text-(--accent-cyan) transition-all duration-300 flex items-center gap-2"
+                  >
+                    Idi na test nezavisnosti
+                    <ArrowRightFromLine className="w-6 h-6" />
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         <div className="flex flex-col xl:flex-row gap-4 xl:h-[550px]">
           <FinancesCard />
           <ClientsCard />
