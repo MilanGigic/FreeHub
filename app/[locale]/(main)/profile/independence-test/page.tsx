@@ -1,8 +1,12 @@
 "use client";
 
 import QuestionCard from "@/components/Profile/IndependenceTest/QuestionCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useIndependenceTestStore } from "@/lib/store/useIndependenceTestStore";
+import { useRouter } from "next/navigation";
+import { CountryTaxProfile } from "@/actions/taxProfile";
+import { updateIndependenceTest } from "@/actions/taxProfile/updateIndependenceTest";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -104,104 +108,6 @@ const QUESTIONS: Question[] = [
 
 const TOTAL = QUESTIONS.length;
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-// function QuestionCard({
-//   question,
-//   index,
-//   answer,
-//   isLogicOpen,
-//   onAnswer,
-//   onToggleLogic,
-// }: QuestionCardProps) {
-//   const isAnswered = answer !== undefined;
-//   const isYes = answer === true;
-//   const isNo = answer === false;
-
-//   return (
-//     <div
-//       className={[
-//         "rounded-[var(--radius-lg)] border p-4 transition-colors duration-200",
-//         "bg-[var(--bg-elevated)]",
-//         isYes
-//           ? "border-[var(--accent-red)]"
-//           : isNo
-//             ? "border-[var(--accent-green)]"
-//             : "border-[var(--border-default)]",
-//       ].join(" ")}
-//     >
-//       <div className="flex gap-3">
-//         {/* Number badge */}
-//         <span
-//           className={[
-//             "mt-0.5 flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-colors duration-200",
-//             isYes
-//               ? "bg-[var(--accent-red)] text-white"
-//               : isNo
-//                 ? "bg-[var(--accent-green)] text-white"
-//                 : "bg-[var(--border-interactive)] text-[var(--text-tertiary)]",
-//           ].join(" ")}
-//         >
-//           {index + 1}
-//         </span>
-
-//         <div className="min-w-0 flex-1">
-//           {/* Title */}
-//           <p className="mb-1 text-[13px] font-semibold leading-snug text-[var(--text-primary)]">
-//             {question.title}
-//           </p>
-
-//           {/* Description */}
-//           <p className="mb-3 text-[12.5px] leading-relaxed text-[var(--text-secondary)]">
-//             {question.description}
-//           </p>
-
-//           {/* Answer buttons + logic toggle */}
-//           <div className="mb-2 flex items-center gap-2">
-//             <button
-//               onClick={() => onAnswer(question.id, true)}
-//               className={[
-//                 "rounded-md border px-4 py-1.5 text-[12.5px] font-semibold transition-all duration-150",
-//                 isYes
-//                   ? "border-[var(--accent-red)] bg-[var(--tag-expense-bg)] text-[var(--accent-red)]"
-//                   : "border-[var(--border-interactive)] bg-transparent text-[var(--text-tertiary)] hover:border-[var(--accent-red)] hover:text-[var(--accent-red)]",
-//               ].join(" ")}
-//             >
-//               Da
-//             </button>
-
-//             <button
-//               onClick={() => onAnswer(question.id, false)}
-//               className={[
-//                 "rounded-md border px-4 py-1.5 text-[12.5px] font-semibold transition-all duration-150",
-//                 isNo
-//                   ? "border-[var(--accent-green)] bg-[var(--tag-income-bg)] text-[var(--accent-green)]"
-//                   : "border-[var(--border-interactive)] bg-transparent text-[var(--text-tertiary)] hover:border-[var(--accent-green)] hover:text-[var(--accent-green)]",
-//               ].join(" ")}
-//             >
-//               Ne
-//             </button>
-
-//             <button
-//               onClick={() => onToggleLogic(question.id)}
-//               className="ml-auto text-[11.5px] font-medium text-[var(--accent-cyan)] hover:opacity-75"
-//             >
-//               {isLogicOpen ? "Sakrij" : "Zašto?"}
-//             </button>
-//           </div>
-
-//           {/* Logic explanation */}
-//           {isLogicOpen && (
-//             <div className="mt-1 rounded-md border border-[var(--border-default)] bg-[var(--bg-main)] px-3 py-2.5 text-[12px] leading-relaxed text-[var(--text-tertiary)]">
-//               💡 {question.logic}
-//             </div>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 // ─── Result screen ────────────────────────────────────────────────────────────
 
 interface ResultScreenProps {
@@ -288,28 +194,41 @@ export default function IndependenceTestPage({
   onComplete,
   onDismiss,
 }: IndependenceTestProps) {
-  const [answers, setAnswers] = useState<Answers>({});
-  const [expandedLogic, setExpandedLogic] = useState<number | null>(null);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const router = useRouter();
 
-  const answeredCount = Object.keys(answers).length;
-  const yesCount = Object.values(answers).filter(Boolean).length;
-  const allAnswered = answeredCount === TOTAL;
-  const isIndependent = yesCount <= 4;
-  const progressPercent = (answeredCount / TOTAL) * 100;
+  const [taxProfile, setTaxProfile] = useState<CountryTaxProfile>();
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAnswer = (id: number, value: boolean): void => {
-    setAnswers((prev) => ({ ...prev, [id]: value }));
-  };
+  const {
+    answers,
+    expandedLogic,
+    submitted,
+    answeredCount,
+    yesCount,
+    allAnswered,
+    isIndependent,
+    progressPercent,
+    setAnswer,
+    toggleLogic,
+    submit,
+  } = useIndependenceTestStore();
 
-  const handleToggleLogic = (id: number): void => {
-    setExpandedLogic((prev) => (prev === id ? null : id));
-  };
-
-  const handleSubmit = (): void => {
+  const handleSubmit = async () => {
     if (!allAnswered) return;
-    setSubmitted(true);
-    onComplete?.({ yesCount, isIndependent });
+    submit(); // calls the store
+
+    await updateIndependenceTest(yesCount() / TOTAL, new Date()); // THIS MATH IS QUESTIONABLE, LOOK INTO IT
+
+    onComplete?.({
+      yesCount: yesCount(),
+      isIndependent: isIndependent(),
+    });
+  };
+
+  const handleDismiss = (): void => {
+    onDismiss;
+
+    router.push("/profile");
   };
 
   return (
@@ -327,7 +246,7 @@ export default function IndependenceTestPage({
                 Test samostalnosti
               </h1>
               <p className="mt-1 text-[12px] text-[var(--text-tertiary)]">
-                {answeredCount} / {TOTAL} odgovoreno
+                {answeredCount()} / {TOTAL}
               </p>
             </div>
 
@@ -345,7 +264,7 @@ export default function IndependenceTestPage({
           <div className="h-[4px] overflow-hidden rounded-full bg-[var(--border-default)]">
             <motion.div
               className="h-full bg-[var(--accent-cyan)]"
-              animate={{ width: `${progressPercent}%` }}
+              animate={{ width: `${progressPercent()}%` }}
               transition={{ type: "spring", stiffness: 80 }}
             />
           </div>
@@ -361,8 +280,8 @@ export default function IndependenceTestPage({
                 index={idx}
                 answer={answers[q.id]}
                 isLogicOpen={expandedLogic === q.id}
-                onAnswer={handleAnswer}
-                onToggleLogic={handleToggleLogic}
+                onAnswer={setAnswer}
+                onToggleLogic={toggleLogic}
               />
             ))}
           </div>
@@ -371,7 +290,10 @@ export default function IndependenceTestPage({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <ResultScreen yesCount={yesCount} isIndependent={isIndependent} />
+            <ResultScreen
+              yesCount={yesCount()}
+              isIndependent={isIndependent()}
+            />
           </motion.div>
         )}
 
@@ -381,17 +303,17 @@ export default function IndependenceTestPage({
             <>
               <button
                 onClick={handleSubmit}
-                disabled={!allAnswered}
+                disabled={!allAnswered()}
                 className={[
                   "w-full max-w-sm rounded-lg px-6 py-3 text-[14px] font-semibold text-white transition-all",
-                  allAnswered
+                  allAnswered()
                     ? "bg-[var(--accent-cyan)] hover:opacity-90"
                     : "bg-[var(--border-default)] text-[var(--text-disabled)] cursor-not-allowed",
                 ].join(" ")}
               >
-                {allAnswered
+                {allAnswered()
                   ? "Vidi rezultat →"
-                  : `Još ${TOTAL - answeredCount} pitanja`}
+                  : `Još ${TOTAL - answeredCount()} pitanja`}
               </button>
 
               {onDismiss && (
@@ -405,7 +327,7 @@ export default function IndependenceTestPage({
             </>
           ) : (
             <button
-              onClick={onDismiss}
+              onClick={() => handleDismiss()}
               className="w-full max-w-sm rounded-lg bg-[var(--accent-cyan)] px-6 py-3 text-[14px] font-semibold text-white hover:opacity-90"
             >
               Zatvori

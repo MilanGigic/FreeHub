@@ -3,12 +3,14 @@
 import ClientsCard from "@/components/Dashboard/ClientsCard";
 import FinancesCard from "@/components/Dashboard/FinancesCard";
 import ProjectsCard from "@/components/Dashboard/ProjectsCard";
+import { useIndependenceTestStore } from "@/lib/store/useIndependenceTestStore";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { ArrowRightFromLine } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardClient() {
   const { profile } = useTaxProfileStore();
+  const { showFlag, setShowFlag } = useIndependenceTestStore();
 
   const testAlert =
     !!profile &&
@@ -22,11 +24,18 @@ export default function DashboardClient() {
         {testAlert &&
           profile &&
           profile.country === "Serbia" &&
-          profile.regime !== "frilenser" && (
+          profile.regime !== "frilenser" &&
+          showFlag && (
             <div className="bg-(--bg-elevated) border border-(--accent-amber) p-4 rounded-2xl absolute bottom-16">
               {!profile.independenceTestCalculatedAt && (
                 <div className="flex flex-col items-center gap-4">
-                  <h1 className="text-xl primary-red font-bold text-center px-4">
+                  <button
+                    onClick={() => setShowFlag(false)}
+                    className="text-sm primary-red font-semibold uppercase tracking-wide border border-(--text-primary) hover:border-(--accent-red) px-4 py-2 rounded-lg hover:text-(--text-primary) hover:bg-(--accent-red)/10 transition-all duration-200 cursor-pointer"
+                  >
+                    Ne prikazuj više.
+                  </button>
+                  <h1 className="text-xl primary-amber font-bold text-center px-4">
                     Primetili smo da niste uradili test nezavisnosti. Da bismo
                     vam pomogli da iskoristite sve mogućnosti Freehuba,
                     preporučujemo da uradite test nezavisnosti. Ako želite,
