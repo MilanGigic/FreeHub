@@ -1,12 +1,11 @@
 "use client";
 
 import QuestionCard from "@/components/Profile/IndependenceTest/QuestionCard";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useIndependenceTestStore } from "@/lib/store/useIndependenceTestStore";
 import { useRouter } from "next/navigation";
-import { CountryTaxProfile } from "@/actions/taxProfile";
 import { updateIndependenceTest } from "@/actions/taxProfile/updateIndependenceTest";
+import { CheckCircle, CheckIcon, TriangleAlert, XIcon } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -119,16 +118,12 @@ function ResultScreen({ yesCount, isIndependent }: ResultScreenProps) {
   return (
     <div className="flex flex-col items-center gap-4 px-2 py-2 text-center">
       {/* Icon */}
-      <div
-        className={[
-          "flex h-[72px] w-[72px] items-center justify-center rounded-full text-3xl",
-          isIndependent
-            ? "bg-[var(--tag-income-bg)]"
-            : "bg-[var(--tag-expense-bg)]",
-        ].join(" ")}
-      >
-        {isIndependent ? "✓" : "⚠"}
-      </div>
+
+      {isIndependent ? (
+        <CheckCircle className="w-[72px] h-[72px] text-(--accent-green)" />
+      ) : (
+        <TriangleAlert className="w-[72px] h-[72px] text-(--accent-red)" />
+      )}
 
       {/* Verdict */}
       <div>
@@ -160,17 +155,21 @@ function ResultScreen({ yesCount, isIndependent }: ResultScreenProps) {
           <p className="text-2xl font-bold text-[var(--accent-red)]">
             {yesCount}
           </p>
-          <p className="text-[11px] text-[var(--text-tertiary)]">Da</p>
+          <p className="text-sm uppercase font-semibold text-[var(--text-tertiary)]">
+            Da
+          </p>
         </div>
         <div className="h-8 w-px bg-[var(--border-default)]" />
         <div className="text-center">
           <p className="text-2xl font-bold text-[var(--accent-green)]">
             {TOTAL - yesCount}
           </p>
-          <p className="text-[11px] text-[var(--text-tertiary)]">Ne</p>
+          <p className="text-sm uppercase font-semibold text-[var(--text-tertiary)]">
+            Ne
+          </p>
         </div>
         <div className="h-8 w-px bg-[var(--border-default)]" />
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center">
           <p
             className={[
               "text-2xl font-bold",
@@ -179,9 +178,11 @@ function ResultScreen({ yesCount, isIndependent }: ResultScreenProps) {
                 : "text-[var(--accent-red)]",
             ].join(" ")}
           >
-            {isIndependent ? "✓" : "✗"}
+            {isIndependent ? <CheckIcon /> : <XIcon />}
           </p>
-          <p className="text-[11px] text-[var(--text-tertiary)]">Rezultat</p>
+          <p className="text-sm uppercase font-semibold text-[var(--text-tertiary)]">
+            Rezultat
+          </p>
         </div>
       </div>
     </div>
@@ -195,9 +196,6 @@ export default function IndependenceTestPage({
   onDismiss,
 }: IndependenceTestProps) {
   const router = useRouter();
-
-  const [taxProfile, setTaxProfile] = useState<CountryTaxProfile>();
-  const [error, setError] = useState<string | null>(null);
 
   const {
     answers,
@@ -217,7 +215,7 @@ export default function IndependenceTestPage({
     if (!allAnswered) return;
     submit(); // calls the store
 
-    await updateIndependenceTest(yesCount() / TOTAL, new Date()); // THIS MATH IS QUESTIONABLE, LOOK INTO IT
+    await updateIndependenceTest(yesCount(), new Date());
 
     onComplete?.({
       yesCount: yesCount(),
