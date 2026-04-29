@@ -67,6 +67,7 @@
     "viewAllClients": "Pogledaj sve klijente",
     "noProjectsYet": "Još nema projekata",
     "noClientsYet": "Još nema klijenata",
+    "clickBelowNewProject": "Kliknite ispod da započnete novi projekat",
     "active": "aktivni",
     "total": "ukupno",
     "proj": "proj"
@@ -226,6 +227,7 @@
     "project": "projekat",
     "projects": "projekata",
     "noProjectsFound": "Nisu pronađeni projekti",
+    "noProjectsStarted": "Niste započeli nijedan projekat za sada",
     "totalProjects": "Ukupno projekata",
     "activeInProgress": "Aktivni / U toku",
     "totalRevenue": "Ukupni prihod",

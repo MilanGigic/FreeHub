@@ -1,7 +1,11 @@
 Do this first — without it nothing else matters:
-The independence test for Serbian freelancers. You have independenceTestScore and numberOfClients in the schema but they're completely unused. In Serbia, failing the independence test means your client pays your taxes instead of you — that's a career-ending surprise for a user. This needs to be calculated and surfaced as a warning before anything else.
+The independence test for Serbian freelancers. You have independenceTestScore and numberOfClients in the schema but they're completely unused. In Serbia, failing the independence test means your client pays your taxes instead of you — that's a career-ending surprise for a user. This needs to be calculated and surfaced as a warning before anything else. ---> DONE
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Do this second — core product reliability:
 Real paušal tax lookup. Right now you're using a hardcoded 35000 fallback and approximate 25/60/15 ratios. The actual amount depends on pausalActivityCode, pausalMunicipality, and pausalTaxCategory — all of which you're storing but ignoring. Your municipalities table exists but is empty. Until this is populated and wired up, the Paušal calculation is essentially a guess.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Do this third — make the finances page actually useful:
 Right now FinancesClient displays components like CashFlow, ProjectProfitability, and RecentTransactions but they're disconnected from the tax calculations. A user should be able to see their safe-to-spend updated in real time as transactions come in, not just on page load. This means wiring computeSafeToSpend to live transaction data rather than a static snapshot.
 After that — trust and growth:

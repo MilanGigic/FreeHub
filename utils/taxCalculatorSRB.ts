@@ -1,5 +1,4 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
-
 // MODEL_1 — quarterly thresholds
 const M1_THRESHOLD_Q = 110647;
 const M1_INCOME_TAX_RATE = 0.2;
@@ -130,32 +129,52 @@ function calcModel2(
   };
 }
 
+// IN ORDER FOR DATA TO RETURN CORRECT VALUES - WE NEED TO MAKE SURE ALL THE PARAMETERS ARE EXISTING. MEANING, FIRST CHECK WHETHER THERE IS MUNICIPALITY AND ACTIVITY CODES IN DB, IF NOT, ASK USER TO UPDATE THEM ON SPOT. IF THEY CLICK CANCEL --------
+// --------> RETURN A FALLBACK - "We can't provide you with data that will likely be incorrect - Please finish setting up your profile"
+
 function calcPausal(
   annualGross: number,
-  pausalMonthlyBill: number,
+  pausalMonthlyBill: number | undefined,
   warnings: string[],
-) {
+): {
+  monthlyTotal: number;
+  quarterlyTotal: number;
+  annualTotal: number;
+} | null {
+  // Step 1 — Precondition: bill must be a usable number
+  if (
+    pausalMonthlyBill === undefined ||
+    pausalMonthlyBill === null ||
+    pausalMonthlyBill <= 0 ||
+    !isFinite(pausalMonthlyBill)
+  ) {
+    warnings.push(
+      "Paušalni mesečni iznos nije validan. Proverite unesenu vrednost.",
+    );
+    return null;
+  }
+
+  // Step 2 — Business rule checks (regulatory constraints, not math)
   if (annualGross > PAUSAL_ANNUAL_CAP) {
     warnings.push(
       `Godišnji prihod ${annualGross.toLocaleString("sr-RS")} RSD prelazi limit od 6.000.000 RSD za paušalce. Potrebno je preći na knjigaša.`,
     );
   }
+
   if (annualGross < PAUSAL_ANNUAL_FLOOR) {
     warnings.push(
       `Godišnji prihod je ispod 1.000.000 RSD. Možda niste u mogućnosti da koristite paušalni režim.`,
     );
   }
 
-  // Bill is fixed — not derived from income
-  // Ratios are approximations; real split depends on municipality + activity code
-  const quarterlyBill = pausalMonthlyBill * 3;
+  // Step 3 — Compute totals (the only thing we know for certain)
+  // Paušal is a fixed obligation — independent of income.
+  // The internal split (PIO / health / tax) varies per municipality
+  // and activity code, so we deliberately do not model it here.
   return {
-    incomeTax: quarterlyBill * 0.25,
-    pio: quarterlyBill * 0.6,
-    health: quarterlyBill * 0.15,
-    expensesDeducted: 0,
-    // Return the actual total separately since ratios are approximate
-    quarterlyTotal: quarterlyBill,
+    monthlyTotal: pausalMonthlyBill,
+    quarterlyTotal: pausalMonthlyBill * 3,
+    annualTotal: pausalMonthlyBill * 12,
   };
 }
 
@@ -208,9 +227,27 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
 
     case "PAUSAL": {
       const p = calcPausal(annualGross, inputs.pausalMonthlyBill, warnings);
-      itemized = scaleToAnnual(p);
-      // Use quarterlyTotal not the sum of itemized ratios — ratios are approximate
-      totalAnnualTax = p.quarterlyTotal * 4;
+
+      // Step 2 — Handle null (invalid bill): return safe zeroed fallback
+      if (p === null) {
+        return {
+          totalAnnualTax: 0,
+          quarterlyEstimate: 0,
+          monthlyReserve: 0,
+          effectiveTaxRate: 0,
+          itemized: { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 },
+          warnings,
+        };
+      }
+
+      // Step 3 — annualTotal is already correct — don't recompute
+      totalAnnualTax = p.annualTotal;
+
+      // Step 4 — Itemized is intentionally zeroed
+      // The internal split (PIO / health / tax) varies per municipality
+      // and activity code — we don't model what we don't know.
+      itemized = { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 };
+
       break;
     }
 

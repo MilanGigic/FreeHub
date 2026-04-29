@@ -20,6 +20,8 @@ function calculateProfitMargin(project: Project) {
 
 export default function Projects() {
   const t = useTranslations("jobsAndProjects");
+  const p = useTranslations("projects");
+  const n = useTranslations("navigation");
   const {
     jobsAndProjectsSlideOverOpen,
     setIsNewProjectModalOpen,
@@ -42,6 +44,30 @@ export default function Projects() {
       }
     })();
   }, [selectedClient, setClientProjects]);
+
+  if (clientProjects.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center p-8">
+        <div className="flex flex-col items-center">
+          <h1 className="text-primary text-2xl font-semibold tracking-wide uppercase">
+            {p("noProjectsStarted")}
+          </h1>
+          <p className="primary-slate text-lg">{n("clickBelowNewProject")}</p>
+        </div>
+        <div className="flex items-start gap-2 relative px-2 md:px-0 md:max-w-md w-full">
+          <button
+            className={`primary-green p-2 w-full rounded-lg border background-border outline-none transition-all duration-300 ease-out uppercase font-semibold tracking-wide cursor-pointer  
+                ${isNewProjectModalOpen ? "bg-(--accent-green)/40 border-(--accent-green)" : "hover:border-(--accent-green) hover:bg-(--accent-green)/20"}
+              `}
+            onClick={() => setIsNewProjectModalOpen(true)}
+          >
+            {t("newProject")}
+          </button>
+          {isNewProjectModalOpen ? <NewProjectModal /> : null}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col md:flex-row gap-2 md:gap-4">

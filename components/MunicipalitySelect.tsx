@@ -9,7 +9,7 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-export function MunicipalitySelect({ value, onChange }: Props) {
+export function MunicipalitySelect({ onChange }: Props) {
   const [query, setQuery] = useState("");
 
   const filtered = MUNICIPALITIES.filter((m: MunicipalitySeed) =>

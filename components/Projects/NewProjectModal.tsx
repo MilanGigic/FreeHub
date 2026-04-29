@@ -11,12 +11,16 @@ import { useUIStore } from "@/lib/store/useUIStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useTranslations } from "next-intl";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { Spinner } from "../ui/spinner";
 
 export default function NewProjectModal() {
   const t = useTranslations("projects");
   const { user } = useAuth();
-  const { setIsNewProjectModalLoading, setIsNewProjectModalOpen } =
-    useUIStore();
+  const {
+    setIsNewProjectModalLoading,
+    setIsNewProjectModalOpen,
+    isNewProjectModalLoading,
+  } = useUIStore();
   const { setProjects } = useDataStore();
   const { setClientProjects } = useClientStore();
   const [error, setError] = useState<string | null>(null);
@@ -194,9 +198,15 @@ export default function NewProjectModal() {
       <div className="flex flex-col gap-2 md:gap-4 w-full">
         <button
           type="submit"
-          className="primary-green p-2 rounded-lg border background-border outline-none focus-border-accent transition-all duration-300 ease-out"
+          className="primary-green p-2 rounded-lg border text-center background-border hover:border-(--accent-green) outline-none focus-border-accent transition-all duration-300 ease-out cursor-pointer"
         >
-          {t("createProject")}
+          {isNewProjectModalLoading ? (
+            <p className="w-full text-center flex justify-center items-center">
+              <Spinner className="size-6" />
+            </p>
+          ) : (
+            <p>{t("createProject")}</p>
+          )}
         </button>
       </div>
     </form>

@@ -65,7 +65,7 @@ export default function PausalCard3({
             Izaberite opštinu: {municipality}
           </h1>
         </div>
-        <MunicipalitySelect value={municipality} onChange={setMunicipality} />
+        <MunicipalitySelect onChange={setMunicipality} />
       </div>
 
       <div className="flex flex-col border background-border rounded-lg p-4 gap-2 background-elevated">

@@ -58,7 +58,6 @@ export const serbiaTaxProfiles = pgTable("serbia_tax_profiles", {
   // 3. PAUSAL
   pausalActivityCode: text("pausal_activity_code"), // e.g. "62.01"
   pausalMunicipality: text("pausal_municipality"),
-  pausalTaxCategory: integer("pausal_tax_category"), // 1 | 2 | 3 — from municipality table
   pausalEmployeeCount: integer("pausal_employee_count").default(0),
   monthlyPausalTax: numeric("monthly_pausal_tax", { precision: 12, scale: 2 }),
 
@@ -91,6 +90,35 @@ export const serbiaTaxProfiles = pgTable("serbia_tax_profiles", {
   // 8. META
   onboardingCompletedAt: timestamp("onboarding_completed_at"),
 });
+
+export const pausalRates = pgTable(
+  "pausal_rates",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    activityCode: text("activity_code").notNull(), // "62.01"
+    municipalityCode: text("municipality_code")
+      .notNull()
+      .references(() => municipalities.code),
+
+    totalMonthly: numeric("total_monthly", {
+      precision: 12,
+      scale: 2,
+    }).notNull(),
+
+    // Optional (only if you have real data)
+    incomeTax: numeric("income_tax", { precision: 12, scale: 2 }),
+    pio: numeric("pio", { precision: 12, scale: 2 }),
+    health: numeric("health", { precision: 12, scale: 2 }),
+
+    year: integer("year").notNull(),
+  },
+  (table) => ({
+    pausalActivityMunicipalityYearIdx: uniqueIndex(
+      "pausal_acitivty_municipality_idx",
+    ).on(table.activityCode, table.municipalityCode, table.year),
+  }),
+);
 
 export const dailyExchangeRates = pgTable(
   "daily_exchange_rates",

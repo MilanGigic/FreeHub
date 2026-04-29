@@ -4,6 +4,24 @@ import { calculateUSTaxes } from "@/utils/taxCalculatorUS";
 import { calculateSRBTaxes } from "@/utils/taxCalculatorSRB";
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
+import { PausalResolutionSource, resolvePausalTax } from "@/lib/pausalResolver";
+
+export const DEFAULT_TAX_COMPUTATION_RESULT: {
+  input: TaxComputationInput;
+  warnings: string[];
+} = {
+  input: {
+    country: "SRB",
+    annualGross: 0,
+    model: "PAUSAL",
+    isAlreadyEmployed: false,
+    isUnder40: false,
+    pausalMonthlyBill: undefined,
+    monthlyExpenses: undefined,
+    monthlySalary: undefined,
+  },
+  warnings: [],
+};
 
 type USTaxInput = {
   country: "US";
@@ -43,12 +61,20 @@ function mapSrbRegime(regime: string | null | undefined): SRBModel {
   }
 }
 
+export type MapProfileResult = {
+  input: TaxComputationInput;
+  warnings: string[];
+  meta: {
+    isComputable: boolean;
+    pausalSource?: PausalResolutionSource; // only present for PAUSAL regime
+  };
+};
+
 export async function mapProfileToInput(
   profile: CountryTaxProfile,
   annualGross: number,
-): Promise<{ input: TaxComputationInput; warnings: string[] }> {
+): Promise<MapProfileResult> {
   const warnings: string[] = [];
-
   if (!profile) throw new Error("Profile is required");
 
   if (profile.country === "United States") {
@@ -60,23 +86,37 @@ export async function mapProfileToInput(
         homeOfficeSqft: profile.homeOfficeSqft,
       },
       warnings,
+      meta: { isComputable: true },
     };
   }
 
   // Serbia
   let pausalMonthlyBill: number | undefined;
+  let pausalSource: PausalResolutionSource | undefined;
+
   if (profile.regime === "pausal") {
-    if (!profile.monthlyPausalTax) {
-      warnings.push(
-        "Nedostaje vrednost paušalnog poreza, koristi se podrazumevana vrednost od 35.000 RSD.",
-      );
-      pausalMonthlyBill = 35000;
-    } else {
-      pausalMonthlyBill = Number(profile.monthlyPausalTax);
+    if (!profile.pausalActivityCode || !profile.pausalMunicipality) {
+      return {
+        ...DEFAULT_TAX_COMPUTATION_RESULT,
+        meta: { isComputable: false, pausalSource: "unknown" },
+      };
     }
+
+    const resolution = await resolvePausalTax({
+      activityCode: profile.pausalActivityCode,
+      municipality: profile.pausalMunicipality,
+      monthlyPausalTax: profile.monthlyPausalTax
+        ? Number(profile.monthlyPausalTax)
+        : undefined,
+    });
+
+    if (resolution.warning) warnings.push(resolution.warning);
+
+    pausalMonthlyBill = resolution.amount;
+    pausalSource = resolution.source;
   }
 
-  return Promise.resolve({
+  return {
     input: {
       country: "SRB",
       annualGross,
@@ -84,15 +124,20 @@ export async function mapProfileToInput(
       isAlreadyEmployed: profile.healthInsuredElsewhere ?? false,
       isUnder40: profile.isUnder40 ?? false,
       pausalMonthlyBill,
-      monthlyExpenses: profile.businessExpenses // ← was personalSalaryAmount, now correct
+      monthlyExpenses: profile.businessExpenses
         ? Number(profile.businessExpenses)
         : undefined,
-      monthlySalary: profile.personalSalaryAmount // ← owner salary, separate concept
+      monthlySalary: profile.personalSalaryAmount
         ? Number(profile.personalSalaryAmount)
         : undefined,
     },
     warnings,
-  });
+    meta: {
+      // Unknown source means calcPausal will return null — result will be zeroed
+      isComputable: pausalSource !== "unknown",
+      pausalSource,
+    },
+  };
 }
 
 // ─── Calculator ───────────────────────────────────────────────────────────────
