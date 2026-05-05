@@ -37,7 +37,7 @@ type ComputedTaxes = {
 };
 
 export type TaxComputationInput = {
-  annualGross: number;
+  annualGross: string;
 } & (USTaxInput | SRBTaxInput);
 
 function mapSrbRegime(regime: string | null | undefined): SRBModel {
@@ -64,19 +64,16 @@ export type MapProfileResult = {
 
 export async function mapProfileToInput(
   profile: CountryTaxProfile,
-  annualGross: number,
+  annualGross?: string,
 ): Promise<MapProfileResult> {
   const warnings: string[] = [];
   if (!profile) throw new Error("Profile is required");
-
-  console.log("mapProfileToInput - profile:", profile);
-  console.log("mapProfileToInput - annualGross:", annualGross);
 
   if (profile.country === "United States") {
     return {
       input: {
         country: "US",
-        annualGross,
+        annualGross: annualGross ?? "0",
         filingStatus: profile.filingStatus,
         homeOfficeSqft: profile.homeOfficeSqft,
       },
@@ -91,9 +88,6 @@ export async function mapProfileToInput(
 
   if (profile.regime === "pausal") {
     if (!profile.pausalActivityCode || !profile.pausalMunicipality) {
-      console.log(
-        "mapProfileToInput - PAUSAL regime but missing activityCode or municipality",
-      );
       return {
         ...DEFAULT_TAX_COMPUTATION_RESULT,
         meta: { isComputable: false, pausalSource: "unknown" },
@@ -108,8 +102,6 @@ export async function mapProfileToInput(
         : undefined,
     });
 
-    console.log("mapProfileToInput - PAUSAL resolution:", resolution);
-
     if (resolution.warning) warnings.push(resolution.warning);
 
     pausalMonthlyBill = resolution.amount;
@@ -123,7 +115,7 @@ export async function mapProfileToInput(
   return {
     input: {
       country: "SRB",
-      annualGross,
+      annualGross: profile.estimatedAnnualGross ?? "0",
       model: mapSrbRegime(profile.regime),
       isAlreadyEmployed: profile.healthInsuredElsewhere ?? false,
       isUnder40: profile.isUnder40 ?? false,
@@ -149,7 +141,6 @@ export async function mapProfileToInput(
 function calculateTaxes(
   input: TaxComputationInput,
 ): Omit<TaxResult, "netProfit" | "warnings"> {
-  console.log("calculateTaxes - input:", input);
 
   if (input.country === "US") {
     const homeOfficeDeduction = input.homeOfficeSqft
@@ -161,7 +152,7 @@ function calculateTaxes(
       qbi: qbiDeduction,
       federalTax,
     } = calculateUSTaxes({
-      netProfit: input.annualGross,
+      netProfit: Number(input.annualGross),
       filingStatus: input.filingStatus,
       homeOfficeDeduction,
       mileageDeduction: input.mileageDeduction,
@@ -170,12 +161,6 @@ function calculateTaxes(
     });
 
     const totalAnnualTax = seTax + federalTax;
-    console.log("calculateTaxes - US taxes:", {
-      seTax,
-      federalTax,
-      qbiDeduction,
-      totalAnnualTax,
-    });
 
     return {
       seTax,
@@ -183,10 +168,10 @@ function calculateTaxes(
       qbiDeduction,
       totalAnnualTax,
       monthlyTaxReserve: Math.round(totalAnnualTax / 12),
-      profitAfterTaxes: input.annualGross - totalAnnualTax,
+      profitAfterTaxes: Number(input.annualGross) - totalAnnualTax,
       quarterlyEstimate: Math.round(totalAnnualTax / 4),
       effectiveTaxRate:
-        input.annualGross > 0 ? totalAnnualTax / input.annualGross : 0,
+        Number(input.annualGross) > 0 ? totalAnnualTax / Number(input.annualGross) : 0,
       itemized: {
         incomeTax: federalTax,
         pension: seTax,
@@ -198,7 +183,7 @@ function calculateTaxes(
 
   // SRB
   const result = calculateSRBTaxes({
-    annualGross: input.annualGross,
+    annualGross: Number(input.annualGross),
     model: input.model,
     isAlreadyEmployed: input.isAlreadyEmployed,
     isUnder40: input.isUnder40,
@@ -207,15 +192,13 @@ function calculateTaxes(
     monthlySalary: input.monthlySalary,
   });
 
-  console.log("calculateTaxes - SRB taxes result:", result);
-
   return {
     seTax: 0,
     federalTax: 0,
     qbiDeduction: 0,
     totalAnnualTax: result.totalAnnualTax,
     monthlyTaxReserve: result.monthlyReserve,
-    profitAfterTaxes: input.annualGross - result.totalAnnualTax,
+    profitAfterTaxes: Number(input.annualGross) - result.totalAnnualTax,
     quarterlyEstimate: result.quarterlyEstimate,
     effectiveTaxRate: result.effectiveTaxRate,
     itemized: {
@@ -231,15 +214,14 @@ function calculateTaxes(
 
 function formatTaxResult(
   computed: Omit<TaxResult, "netProfit" | "warnings">,
-  annualGross: number,
+  annualGross: string,
   warnings: string[],
 ): TaxResult {
   const formatted = {
     ...computed,
-    netProfit: annualGross,
+    netProfit: Number(annualGross),
     warnings,
   };
-  console.log("formatTaxResult - formatted TaxResult:", formatted);
   return formatted;
 }
 
@@ -247,13 +229,10 @@ function formatTaxResult(
 
 export async function computeTaxesAction(
   profile: CountryTaxProfile,
-  annualGross: number,
+  annualGross: string,
 ): Promise<ComputedTaxes> {
-  console.log("computeTaxesAction called with profile:", profile);
-  console.log("computeTaxesAction called with annualGross:", annualGross);
 
   if (!profile) {
-    console.log("computeTaxesAction - profile is missing");
     return {
       result: {
         netProfit: 0,
@@ -275,26 +254,11 @@ export async function computeTaxesAction(
     };
   }
 
-  const { input, warnings, meta } = await mapProfileToInput(
-    profile,
-    annualGross,
-  );
-  console.log("computeTaxesAction - mapProfileToInput result:", {
-    input,
-    warnings,
-    meta,
-  });
+  const { input, warnings, meta } = await mapProfileToInput(profile);
 
   const computed = calculateTaxes(input);
 
-  console.log("computeTaxesAction - calculateTaxes result:", computed);
-
-  const result = formatTaxResult(computed, annualGross, warnings);
-
-  console.log("computeTaxesAction - final result:", {
-    result,
-    meta,
-  });
+  const result = formatTaxResult(computed, input.annualGross, warnings);
 
   return {
     result,

@@ -96,28 +96,8 @@ export const pausalRates = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
 
-    activityCode: text("activity_code").notNull(), // "62.01"
-    municipalityCode: text("municipality_code")
-      .notNull()
-      .references(() => municipalities.code),
-
-    totalMonthly: numeric("total_monthly", {
-      precision: 12,
-      scale: 2,
-    }).notNull(),
-
-    // Optional (only if you have real data)
-    incomeTax: numeric("income_tax", { precision: 12, scale: 2 }),
-    pio: numeric("pio", { precision: 12, scale: 2 }),
-    health: numeric("health", { precision: 12, scale: 2 }),
-
-    year: integer("year").notNull(),
-  },
-  (table) => ({
-    pausalActivityMunicipalityYearIdx: uniqueIndex(
-      "pausal_acitivty_municipality_idx",
-    ).on(table.activityCode, table.municipalityCode, table.year),
-  }),
+    activityCode: text("activity_code").notNull(),
+  }
 );
 
 export const dailyExchangeRates = pgTable(
