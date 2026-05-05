@@ -7,7 +7,7 @@ import { getStatusColor } from "@/utils/getStatusColor";
 import { formatMoney } from "@/utils/formatMoney";
 import { ArrowRight, House, Wallet, Briefcase, Users } from "lucide-react";
 import { Tabs } from "@/types/types";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useSidebarHover } from "@/lib/hooks/useSidebarHover";
@@ -16,6 +16,10 @@ import { useLocale, useTranslations } from "next-intl";
 export default function DesktopSidebar() {
   const pathname = usePathname();
   const locale = useLocale();
+
+  const searchParams = useSearchParams();
+
+  const financesActiveTab = searchParams.get("tab");
 
   // Strip the locale prefix for clean comparison
   const pathnameWithoutLocale = pathname.replace(`/${locale}`, "");
@@ -228,10 +232,43 @@ export default function DesktopSidebar() {
         </div>
       )}
 
+      {hoveredTab?.name === "finances" && (
+        <div
+          className="absolute left-full w-72 background-elevated border-r border-y background-border rounded-r-lg shadow-xl shadow-black/50 z-50 overflow-hidden"
+          style={{ top: Math.max(0, hoveredTab.y - 40) }}
+          onMouseEnter={handleFlyoutEnter}
+          onMouseLeave={scheduleClose}
+        >
+          <div className="px-4 py-3 border-b background-border">
+            <div className="flex items-center justify-between flex-col gap-2">
+              <Link
+                className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "details" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
+                href="/finances?tab=details"
+              >
+                Details
+              </Link>
+              <Link
+                className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "taxes" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
+                href="/finances?tab=taxes"
+              >
+                Taxes
+              </Link>
+              <Link
+                className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "transactions" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
+                href="/finances?tab=transactions"
+              >
+                Transactions
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Simple tooltip for other tabs */}
       {hoveredTab &&
         hoveredTab.name !== "projects" &&
-        hoveredTab.name !== "clients" && (
+        hoveredTab.name !== "clients" &&
+        hoveredTab.name !== "finances" && (
           <div
             className="absolute left-full px-3 py-1.5 background-elevated border-r border-y background-border rounded-r-lg text-xs font-semibold uppercase text-primary whitespace-nowrap z-50 pointer-events-none"
             style={{ top: hoveredTab.y }}
@@ -244,7 +281,11 @@ export default function DesktopSidebar() {
         {tabs.map((tab) => (
           <Link
             key={tab.key}
-            href={`/${locale}/${tab.route}`}
+            href={
+              tab.key === "finances"
+                ? `/${locale}/finances?tab=details`
+                : `/${locale}/${tab.route}`
+            }
             className={`w-full h-12 flex flex-col items-center justify-center cursor-pointer 
               ${
                 pathnameWithoutLocale.includes(`/${tab.route}`)

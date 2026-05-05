@@ -15,7 +15,7 @@ export function useNetProfit(year = 2026) {
         const { netProfit } = await res.json();
 
         const result = await computeTaxesAction(profile, netProfit);
-        setTaxResult(result);
+        setTaxResult(result.result);
       } catch (error) {
         console.error("Error fetching net profit:", error);
       }

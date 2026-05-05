@@ -5,23 +5,7 @@ import { calculateSRBTaxes } from "@/utils/taxCalculatorSRB";
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
 import { PausalResolutionSource, resolvePausalTax } from "@/lib/pausalResolver";
-
-export const DEFAULT_TAX_COMPUTATION_RESULT: {
-  input: TaxComputationInput;
-  warnings: string[];
-} = {
-  input: {
-    country: "SRB",
-    annualGross: 0,
-    model: "PAUSAL",
-    isAlreadyEmployed: false,
-    isUnder40: false,
-    pausalMonthlyBill: undefined,
-    monthlyExpenses: undefined,
-    monthlySalary: undefined,
-  },
-  warnings: [],
-};
+import { DEFAULT_TAX_COMPUTATION_RESULT } from "@/lib/utils";
 
 type USTaxInput = {
   country: "US";
@@ -42,6 +26,14 @@ type SRBTaxInput = {
   // KNJIGAS
   monthlyExpenses?: number; // actual business costs
   monthlySalary?: number; // owner salary (personalSalaryAmount)
+};
+
+type ComputedTaxes = {
+  result: TaxResult;
+  meta: {
+    isComputable: boolean;
+    pausalSource?: PausalResolutionSource;
+  };
 };
 
 export type TaxComputationInput = {
@@ -77,6 +69,9 @@ export async function mapProfileToInput(
   const warnings: string[] = [];
   if (!profile) throw new Error("Profile is required");
 
+  console.log("mapProfileToInput - profile:", profile);
+  console.log("mapProfileToInput - annualGross:", annualGross);
+
   if (profile.country === "United States") {
     return {
       input: {
@@ -90,12 +85,15 @@ export async function mapProfileToInput(
     };
   }
 
-  // Serbia
+  // ─── Serbia ───────────────────────────────────────────────────────────────────
   let pausalMonthlyBill: number | undefined;
   let pausalSource: PausalResolutionSource | undefined;
 
   if (profile.regime === "pausal") {
     if (!profile.pausalActivityCode || !profile.pausalMunicipality) {
+      console.log(
+        "mapProfileToInput - PAUSAL regime but missing activityCode or municipality",
+      );
       return {
         ...DEFAULT_TAX_COMPUTATION_RESULT,
         meta: { isComputable: false, pausalSource: "unknown" },
@@ -110,11 +108,17 @@ export async function mapProfileToInput(
         : undefined,
     });
 
+    console.log("mapProfileToInput - PAUSAL resolution:", resolution);
+
     if (resolution.warning) warnings.push(resolution.warning);
 
     pausalMonthlyBill = resolution.amount;
     pausalSource = resolution.source;
   }
+
+  // WORK ON THIS...
+  // BUGS NOW ARE THAT ITS MOSTLY PAUSAL-RELATED, SO IT DOESN'T DO ANYTHING FOR OTHER MODELS
+  // AFTER THIS IS FIXED, POLISH UP THE UI FOR FINANCES PAGE.
 
   return {
     input: {
@@ -145,6 +149,8 @@ export async function mapProfileToInput(
 function calculateTaxes(
   input: TaxComputationInput,
 ): Omit<TaxResult, "netProfit" | "warnings"> {
+  console.log("calculateTaxes - input:", input);
+
   if (input.country === "US") {
     const homeOfficeDeduction = input.homeOfficeSqft
       ? input.homeOfficeSqft * 5
@@ -164,6 +170,12 @@ function calculateTaxes(
     });
 
     const totalAnnualTax = seTax + federalTax;
+    console.log("calculateTaxes - US taxes:", {
+      seTax,
+      federalTax,
+      qbiDeduction,
+      totalAnnualTax,
+    });
 
     return {
       seTax,
@@ -195,6 +207,8 @@ function calculateTaxes(
     monthlySalary: input.monthlySalary,
   });
 
+  console.log("calculateTaxes - SRB taxes result:", result);
+
   return {
     seTax: 0,
     federalTax: 0,
@@ -220,11 +234,13 @@ function formatTaxResult(
   annualGross: number,
   warnings: string[],
 ): TaxResult {
-  return {
+  const formatted = {
     ...computed,
     netProfit: annualGross,
     warnings,
   };
+  console.log("formatTaxResult - formatted TaxResult:", formatted);
+  return formatted;
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
@@ -232,24 +248,56 @@ function formatTaxResult(
 export async function computeTaxesAction(
   profile: CountryTaxProfile,
   annualGross: number,
-): Promise<TaxResult> {
+): Promise<ComputedTaxes> {
+  console.log("computeTaxesAction called with profile:", profile);
+  console.log("computeTaxesAction called with annualGross:", annualGross);
+
   if (!profile) {
+    console.log("computeTaxesAction - profile is missing");
     return {
-      netProfit: 0,
-      seTax: 0,
-      federalTax: 0,
-      qbiDeduction: 0,
-      totalAnnualTax: 0,
-      monthlyTaxReserve: 0,
-      profitAfterTaxes: 0,
-      quarterlyEstimate: 0,
-      effectiveTaxRate: 0,
-      warnings: [],
-      itemized: { incomeTax: 0, pension: 0, health: 0, expensesDeducted: 0 },
+      result: {
+        netProfit: 0,
+        seTax: 0,
+        federalTax: 0,
+        qbiDeduction: 0,
+        totalAnnualTax: 0,
+        monthlyTaxReserve: 0,
+        profitAfterTaxes: 0,
+        quarterlyEstimate: 0,
+        effectiveTaxRate: 0,
+        warnings: [],
+        itemized: { incomeTax: 0, pension: 0, health: 0, expensesDeducted: 0 },
+      },
+      meta: {
+        isComputable: false,
+        pausalSource: "unknown",
+      },
     };
   }
 
-  const { input, warnings } = await mapProfileToInput(profile, annualGross);
+  const { input, warnings, meta } = await mapProfileToInput(
+    profile,
+    annualGross,
+  );
+  console.log("computeTaxesAction - mapProfileToInput result:", {
+    input,
+    warnings,
+    meta,
+  });
+
   const computed = calculateTaxes(input);
-  return formatTaxResult(computed, annualGross, warnings);
+
+  console.log("computeTaxesAction - calculateTaxes result:", computed);
+
+  const result = formatTaxResult(computed, annualGross, warnings);
+
+  console.log("computeTaxesAction - final result:", {
+    result,
+    meta,
+  });
+
+  return {
+    result,
+    meta,
+  };
 }
