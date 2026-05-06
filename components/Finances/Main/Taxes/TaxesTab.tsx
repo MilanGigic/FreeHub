@@ -88,7 +88,7 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
 
           {/* Data Source */}
           <div className="p-4 rounded-xl border background-elevated flex flex-col gap-2">
-            <span className="text-sm text-secondary">Izvor podataka</span>
+            <span className="text-sm primary-slate">Izvor podataka</span>
 
             <div className="flex items-center gap-2 text-sm">
               {pausalSource === "official" && (

@@ -141,7 +141,6 @@ export async function mapProfileToInput(
 function calculateTaxes(
   input: TaxComputationInput,
 ): Omit<TaxResult, "netProfit" | "warnings"> {
-
   if (input.country === "US") {
     const homeOfficeDeduction = input.homeOfficeSqft
       ? input.homeOfficeSqft * 5
@@ -171,7 +170,9 @@ function calculateTaxes(
       profitAfterTaxes: Number(input.annualGross) - totalAnnualTax,
       quarterlyEstimate: Math.round(totalAnnualTax / 4),
       effectiveTaxRate:
-        Number(input.annualGross) > 0 ? totalAnnualTax / Number(input.annualGross) : 0,
+        Number(input.annualGross) > 0
+          ? totalAnnualTax / Number(input.annualGross)
+          : 0,
       itemized: {
         incomeTax: federalTax,
         pension: seTax,
@@ -229,9 +230,7 @@ function formatTaxResult(
 
 export async function computeTaxesAction(
   profile: CountryTaxProfile,
-  annualGross: string,
 ): Promise<ComputedTaxes> {
-
   if (!profile) {
     return {
       result: {

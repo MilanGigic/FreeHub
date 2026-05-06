@@ -1,15 +1,30 @@
 import {
   boolean,
   date,
+  index,
   integer,
   numeric,
+  pgEnum,
   pgTable,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { users } from "./schema";
+
+export const PausalResolutionSource = pgEnum("pausal_resolution_source", [
+  "user",
+  "admin",
+  "imported",
+]);
+
+export const ConfidenceLevel = pgEnum("confidence_level", [
+  "low",
+  "medium",
+  "high",
+]);
 
 export const taxProfiles = pgTable("tax_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -91,13 +106,89 @@ export const serbiaTaxProfiles = pgTable("serbia_tax_profiles", {
   onboardingCompletedAt: timestamp("onboarding_completed_at"),
 });
 
-export const pausalRates = pgTable(
-  "pausal_rates",
+// Purpose: Store real-world inputs, not “final truth”
+export const pausalObservations = pgTable(
+  "pausal_observations",
   {
     id: uuid("id").defaultRandom().primaryKey(),
 
     activityCode: text("activity_code").notNull(),
-  }
+    municipalityCode: text("municipality_code")
+      .references(() => municipalities.code)
+      .notNull(),
+    year: integer("year").notNull(),
+
+    amountMonthly: numeric("amount_monthly", {
+      precision: 12,
+      scale: 2,
+    }).notNull(),
+
+    source: PausalResolutionSource("source").notNull(),
+    sourceUserId: uuid("source_user_id"),
+
+    isVerified: boolean("is_verified").default(false),
+
+    // 0 → unknown
+    // 1–50 → low trust
+    // 51–80 → medium
+    // 81–100 → high
+    confidenceScore: integer("confidence_score").default(0),
+
+    note: text("note"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      userActivityMunicipalityYearIdx: uniqueIndex(
+        "user_activity_municipality_year_idx",
+      ).on(
+        table.sourceUserId,
+        table.activityCode,
+        table.municipalityCode,
+        table.year,
+      ),
+    };
+  },
+);
+
+// This table is: derived, recomputed periodically, safe to use in UI
+export const pausalAggregates = pgTable(
+  "pausal_aggregates",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    activityCode: text("activity_code").notNull(),
+    municipalityCode: text("municipality_code").notNull(),
+    year: integer("year").notNull(),
+
+    medianAmount: numeric("median_amount", {
+      precision: 12,
+      scale: 2,
+    }).notNull(),
+    meanAmount: numeric("mean_amount", { precision: 12, scale: 2 }).notNull(),
+
+    minAmount: numeric("min_amount", { precision: 12, scale: 2 }).notNull(),
+    maxAmount: numeric("max_amount", { precision: 12, scale: 2 }).notNull(),
+
+    sampleSize: integer("sample_size").notNull(),
+
+    confidenceLevel: ConfidenceLevel("confidence_level").notNull(),
+
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      aggregateLookupIdx: index("aggregate_lookup_idx").on(
+        table.activityCode,
+        table.municipalityCode,
+        table.year,
+      ),
+      activityMunicipalityYearUnique: unique(
+        "activity_municipality_year_unique",
+      ).on(table.activityCode, table.municipalityCode, table.year),
+    };
+  },
 );
 
 export const dailyExchangeRates = pgTable(
