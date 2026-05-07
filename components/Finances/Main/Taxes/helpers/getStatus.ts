@@ -1,6 +1,8 @@
+import { PausalResolutionSource } from "@/lib/pausalResolver";
+
 export function getStatus(
   isComputable: boolean,
-  source?: "official" | "user" | "unknown",
+  source?: PausalResolutionSource,
 ) {
   if (!isComputable) {
     return {
@@ -12,7 +14,7 @@ export function getStatus(
     };
   }
 
-  if (source === "official") {
+  if (source === "verified") {
     return {
       label: "Verifikovan obračun",
       description: "Bazirano na zvaničnim podacima",

@@ -72,10 +72,14 @@ export default function TransactionSimulator() {
         toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
     })();
-  }, [user, setTransactions]);
+  }, [user, setTransactions, tCommon]);
 
-  const { safeToSpend, netProfit, effectiveTaxRate } = useTaxProfileStore();
-  const taxRate = effectiveTaxRate > 0 ? effectiveTaxRate : 0.3;
+  const { safeToSpend, taxResult } = useTaxProfileStore();
+  const taxRate =
+    taxResult.effectiveTaxRate > 0 ? taxResult.effectiveTaxRate : 0.3;
+
+  const { netProfit } = taxResult;
+  const { amount } = safeToSpend;
 
   const monthlyExpenses = useMemo(() => {
     const cutoff = new Date(new Date().setDate(new Date().getDate() - 30));
@@ -91,7 +95,7 @@ export default function TransactionSimulator() {
   const handleSimulate = () => {
     if (!form.amount || form.amount <= 0) return;
     const res = simulate(form, {
-      safeToSpend,
+      amount,
       netProfit,
       monthlyExpenses,
       taxRate,
@@ -107,7 +111,11 @@ export default function TransactionSimulator() {
       const res = await commitTransaction(user.id, {
         type: form.type,
         amount: form.amount,
-        note: form.note || (form.type === "expense" ? t("simulatedExpense") : t("simulatedIncome")),
+        note:
+          form.note ||
+          (form.type === "expense"
+            ? t("simulatedExpense")
+            : t("simulatedIncome")),
         deductible: form.deductible,
         projectId: selectedProject?.id ?? "",
       });
@@ -277,7 +285,8 @@ export default function TransactionSimulator() {
             {form.isRecurring && (
               <div className="flex justify-between px-2.5 py-2 rounded-md bg-white/5 border background-border text-xs primary-slate">
                 <span>
-                  {t("monthlyImpact")} <DeltaBadge value={result.monthlyImpact} />
+                  {t("monthlyImpact")}{" "}
+                  <DeltaBadge value={result.monthlyImpact} />
                 </span>
                 <span>
                   {t("annualImpact")} <DeltaBadge value={result.annualImpact} />

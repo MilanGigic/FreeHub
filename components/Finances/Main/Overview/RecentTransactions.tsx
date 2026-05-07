@@ -47,7 +47,7 @@ export default function RecentTransactions() {
         toast.error(res.error?.message || tCommon("anErrorOccurred"));
       }
     })();
-  }, [user]);
+  }, [user, tCommon]);
 
   const filteredTransactions = useMemo(
     () => filterTransactions(recentTransactions, transactionType),
@@ -107,7 +107,9 @@ export default function RecentTransactions() {
             <h1 className="text-primary text-sm font-medium w-full text-center">
               {transaction.note || tCommon("noNote")}{" "}
               <span className="primary-slate text-xs font-semibold background-elevated border background-border rounded-lg p-1">
-                {transaction.type === "income" ? t("incomeType") : t("expenseType")}
+                {transaction.type === "income"
+                  ? t("incomeType")
+                  : t("expenseType")}
               </span>
             </h1>
             <h1

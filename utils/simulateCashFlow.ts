@@ -17,7 +17,7 @@ export type SimulationResult = {
 export function simulate(
   input: SimulationInput,
   current: {
-    safeToSpend: number;
+    amount: number;
     netProfit: number;
     monthlyExpenses: number;
     taxRate: number; // 0–1 e.g. 0.25
@@ -28,7 +28,7 @@ export function simulate(
     input.type === "income" ? input.amount * current.taxRate : 0;
   const netChange = sign * input.amount - taxImpact;
 
-  const newSafeToSpend = current.safeToSpend + netChange;
+  const newSafeToSpend = current.amount + netChange;
   const netProfitChange = netChange;
 
   const monthlyExpensesAfter =

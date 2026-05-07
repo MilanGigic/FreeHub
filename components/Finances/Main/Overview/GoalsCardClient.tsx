@@ -63,10 +63,12 @@ export default function GoalsCardClient() {
           setTransactions(transactionsRes.data);
         }
       } else {
-        toast.error(transactionsRes.error?.message || tCommon("anErrorOccurred"));
+        toast.error(
+          transactionsRes.error?.message || tCommon("anErrorOccurred"),
+        );
       }
     })();
-  }, [user, setTransactions]);
+  }, [user, setTransactions, tCommon]);
 
   const handleCreate = () => {
     if (!form.name || !form.targetAmount) return;
@@ -261,7 +263,8 @@ export default function GoalsCardClient() {
                       ${saved.toLocaleString()}
                     </span>
                     <span>
-                      {tCommon("of")} ${target.toLocaleString()} ({percent.toFixed(0)}%)
+                      {tCommon("of")} ${target.toLocaleString()} (
+                      {percent.toFixed(0)}%)
                     </span>
                   </div>
 
@@ -269,7 +272,8 @@ export default function GoalsCardClient() {
                     <p className="text-xs primary-slate">
                       {t("savePerWeek")}{" "}
                       <span className="primary-amber">
-                        ${weekly.toFixed(0)}{t("perWeek")}
+                        ${weekly.toFixed(0)}
+                        {t("perWeek")}
                       </span>{" "}
                       {t("toHitDeadline")}
                     </p>

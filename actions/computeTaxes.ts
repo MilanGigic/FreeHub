@@ -102,7 +102,8 @@ export async function mapProfileToInput(
         : undefined,
     });
 
-    if (resolution.warning) warnings.push(resolution.warning);
+    if (resolution.warnings.length > 0)
+      resolution.warnings.map((w) => warnings.push(w));
 
     pausalMonthlyBill = resolution.amount;
     pausalSource = resolution.source;

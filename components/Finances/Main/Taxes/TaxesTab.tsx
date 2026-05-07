@@ -4,20 +4,15 @@ import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import MetricCard from "./helpers/MetricCard";
 import { getStatus } from "./helpers/getStatus";
 import ActionItem from "./helpers/ActionItem";
+import { PausalResolutionSource } from "@/lib/pausalResolver";
 
 type Props = {
   isComputable: boolean;
-  pausalSource?: "official" | "user" | "unknown";
+  pausalSource?: PausalResolutionSource;
 };
 
 export default function TaxesTab({ isComputable, pausalSource }: Props) {
-  const {
-    totalAnnualTax,
-    monthlyTaxReserve,
-    quarterlyEstimate,
-    effectiveTaxRate,
-    warnings,
-  } = useTaxProfileStore();
+  const { taxResult } = useTaxProfileStore();
 
   const status = getStatus(isComputable, pausalSource);
 
@@ -70,19 +65,19 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <MetricCard
               label="Mesečna rezerva"
-              value={`$${monthlyTaxReserve.toLocaleString()}`}
+              value={`${taxResult.monthlyTaxReserve.toLocaleString()} RSD`}
             />
             <MetricCard
               label="Kvartalno plaćanje"
-              value={`$${quarterlyEstimate.toLocaleString()}`}
+              value={`${taxResult.quarterlyEstimate.toLocaleString()} RSD`}
             />
             <MetricCard
               label="Godišnji porez"
-              value={`$${totalAnnualTax.toLocaleString()}`}
+              value={`${taxResult.totalAnnualTax.toLocaleString()} RSD`}
             />
             <MetricCard
               label="Efektivna stopa"
-              value={`${(effectiveTaxRate * 100).toFixed(2)}%`}
+              value={`${(taxResult.effectiveTaxRate * 100).toFixed(2)}%`}
             />
           </div>
 
@@ -91,7 +86,7 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
             <span className="text-sm primary-slate">Izvor podataka</span>
 
             <div className="flex items-center gap-2 text-sm">
-              {pausalSource === "official" && (
+              {pausalSource === "verified" && (
                 <span className="text-green-400">● Zvanični podaci</span>
               )}
               {pausalSource === "user" && (
@@ -104,9 +99,9 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
           </div>
 
           {/* Warnings */}
-          {warnings.length > 0 && (
+          {taxResult.warnings.length > 0 && (
             <div className="flex flex-col gap-2">
-              {warnings.map((w, i) => (
+              {taxResult.warnings.map((w, i) => (
                 <div
                   key={i}
                   className="p-3 rounded-lg border text-sm text-yellow-300 bg-yellow-500/10 border-yellow-500/20"
@@ -125,7 +120,7 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
               <ActionItem text="Dodajte opštinu i šifru delatnosti za precizan obračun." />
             )}
 
-            {pausalSource === "official" && (
+            {pausalSource === "verified" && (
               <ActionItem text="Podaci su validni — nema dodatnih akcija." />
             )}
 

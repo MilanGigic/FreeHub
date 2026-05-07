@@ -1,0 +1,2 @@
+DROP INDEX "user_activity_municipality_year_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "user_activity_municipality_year_idx" ON "pausal_observations" USING btree ("source_user_id","activity_code","municipality_code","year","amount_monthly");

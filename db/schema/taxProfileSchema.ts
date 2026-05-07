@@ -147,6 +147,7 @@ export const pausalObservations = pgTable(
         table.activityCode,
         table.municipalityCode,
         table.year,
+        table.amountMonthly,
       ),
     };
   },

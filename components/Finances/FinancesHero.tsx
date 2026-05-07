@@ -6,18 +6,12 @@ import { useTranslations } from "next-intl";
 
 export default function FinancesHero() {
   const t = useTranslations("finances");
-  const {
-    safeToSpend,
-    safetyBuffer,
-    cashRunwayDays,
-    effectiveTaxRate,
-    monthlyTaxReserve,
-  } = useTaxProfileStore();
+  const { safeToSpend, taxResult } = useTaxProfileStore();
 
   const stats = [
     {
       label: t("taxReserved"),
-      value: `$${Number(monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `$${Number(taxResult.monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Shield,
       color: "text-(--accent-amber)",
       bg: "bg-(--accent-amber)/10",
@@ -25,7 +19,7 @@ export default function FinancesHero() {
     },
     {
       label: t("safetyBuffer"),
-      value: `$${Number(safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `$${Number(safeToSpend.safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       icon: Wallet,
       color: "text-(--accent-purple)",
       bg: "bg-(--accent-purple)/10",
@@ -33,7 +27,7 @@ export default function FinancesHero() {
     },
     {
       label: t("cashRunwayDays"),
-      value: cashRunwayDays,
+      value: safeToSpend.cashRunwayDays,
       icon: Clock,
       color: "text-(--accent-cyan)",
       bg: "bg-(--accent-cyan)/10",
@@ -41,7 +35,7 @@ export default function FinancesHero() {
     },
     {
       label: t("effectiveTaxRate"),
-      value: `${(Number(effectiveTaxRate) * 100).toFixed(2)}%`,
+      value: `${(Number(taxResult.effectiveTaxRate) * 100).toFixed(2)}%`,
       icon: TrendingDown,
       color: "text-(--accent-red)",
       bg: "bg-(--accent-red)/10",
@@ -64,7 +58,7 @@ export default function FinancesHero() {
           <div>
             <p className="text-5xl font-bold text-(--accent-cyan) leading-none tabular-nums">
               $
-              {safeToSpend.toLocaleString("en-US", {
+              {safeToSpend.amount.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
               })}
             </p>
@@ -78,9 +72,7 @@ export default function FinancesHero() {
             <div className="w-1.5 h-1.5 rounded-full bg-(--accent-cyan) animate-pulse" />
             <p className="text-xs text-primary">{t("liveBalance")}</p>
           </div>
-          <p className="text-primary text-xs">
-            {t("safeToSpendDescription")}
-          </p>
+          <p className="text-primary text-xs">{t("safeToSpendDescription")}</p>
         </div>
       </div>
       {/* Supporting stats — 2x2 grid */}
