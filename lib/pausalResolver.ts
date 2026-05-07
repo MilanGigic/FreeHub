@@ -3,19 +3,19 @@
 import { db } from "@/db";
 import { pausalObservations } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { findMedianQuickSelect } from "./findMedian";
 
-const PAUSAL_SOFT_MIN = 10_000;
-const PAUSAL_SOFT_MAX = 150_000;
+function getConfidenceFromSampleSize(count: number) {
+  if (count >= 20) return "high";
+  if (count >= 5) return "medium";
+  return "low";
+}
 
-async function lookupPausalFromDB(
+async function computeVerifiedMedianObservation(
   activityCode: string,
   municipalityCode: string,
-): Promise<{ amount: number; suspicious: boolean; count: number } | null> {
+): Promise<{ amount: number; count: number } | null> {
   const currentYear = new Date().getFullYear();
-
-  console.log(
-    `[lookupPausalFromDB] Called with activityCode=${activityCode}, municipalityCode=${municipalityCode}, currentYear=${currentYear}`,
-  );
 
   const row = await db
     .select()
@@ -25,62 +25,43 @@ async function lookupPausalFromDB(
         eq(pausalObservations.activityCode, activityCode),
         eq(pausalObservations.municipalityCode, municipalityCode),
         eq(pausalObservations.year, currentYear),
+        eq(pausalObservations.isVerified, true),
       ),
     );
 
-  console.log(`[lookupPausalFromDB] Queried rows:`, row);
-
   if (!row.length || row[0].amountMonthly === null) {
-    console.log(`[lookupPausalFromDB] No rows found or amountMonthly is null`);
     return null;
   }
 
   let medianAmount: number = 0;
 
-  if (row.length >= 1) {
-    const sorted = row.sort(
-      (a, b) => Number(a.amountMonthly) - Number(b.amountMonthly),
-    );
-    const mid = Math.floor(sorted.length / 2);
-
-    medianAmount = mid;
-    console.log(
-      `[lookupPausalFromDB] Calculated median index: mid=${mid}, medianAmount=${medianAmount}, sorted=`,
-      sorted,
-    );
+  if (row.length > 1) {
+    const amounts = row.map((r) => Number(r.amountMonthly));
+    medianAmount = findMedianQuickSelect(amounts);
   } else {
-    const median = row[0].amountMonthly;
-
-    medianAmount = Number(median);
-    console.log(
-      `[lookupPausalFromDB] Only one row, medianAmount=${medianAmount}`,
-    );
+    medianAmount = Number(row[0].amountMonthly);
   }
 
   const amount = medianAmount;
-  console.log(`[lookupPausalFromDB] Final amount: ${amount}`);
   if (!isFinite(amount) || amount <= 0) {
-    console.log(`[lookupPausalFromDB] Amount is not finite or <= 0: ${amount}`);
     return null;
   }
 
-  const suspicious = amount < PAUSAL_SOFT_MIN || amount > PAUSAL_SOFT_MAX;
-  console.log(
-    `[lookupPausalFromDB] Suspicious: ${suspicious}, Count: ${row.length}`,
-  );
-
   return {
     amount,
-    suspicious,
     count: row.length,
   };
 }
 
-export type PausalResolutionSource = "official" | "user" | "unknown";
+export type PausalResolutionSource =
+  | "verified"
+  | "aggregate"
+  | "user"
+  | "unknown";
 
-type PausalResolution = {
+export type PausalResolution = {
   amount?: number;
-  source: "verified" | "official" | "aggregate" | "user" | "unknown";
+  source: PausalResolutionSource;
   confidence: "high" | "medium" | "low" | "none";
   suspicious: boolean;
   warnings: string[];
@@ -90,20 +71,18 @@ type PausalResolution = {
   };
 };
 
+const PAUSAL_SOFT_MIN = 10_000;
+const PAUSAL_SOFT_MAX = 150_000;
+
 export async function resolvePausalTax(profile: {
   activityCode?: string;
   municipality?: string;
   monthlyPausalTax?: number;
 }): Promise<PausalResolution> {
-  console.log(`[resolvePausalTax] Called with profile:`, profile);
-
   const warnings: string[] = [];
 
   if (!profile.activityCode || !profile.municipality) {
     warnings.push("Nedostaje šifra delatnosti ili opština.");
-    console.log(
-      `[resolvePausalTax] Missing activityCode or municipality. Returning unknown.`,
-    );
     return {
       source: "unknown",
       confidence: "none",
@@ -113,40 +92,34 @@ export async function resolvePausalTax(profile: {
     };
   }
 
-  const official = await lookupPausalFromDB(
+  const official = await computeVerifiedMedianObservation(
     profile.activityCode,
     profile.municipality,
   );
 
-  console.log(`[resolvePausalTax] Official DB result:`, official);
+  let suspicious: boolean = false;
 
   if (official !== null) {
-    if (official.suspicious) {
+    suspicious =
+      official.amount < PAUSAL_SOFT_MIN || official.amount > PAUSAL_SOFT_MAX;
+
+    if (suspicious) {
       warnings.push(
         `Iznos iz baze (${official.amount.toLocaleString("sr-RS")} RSD) je van očekivanog opsega. Proverite šifru delatnosti i opštinu.`,
       );
-      console.log(`[resolvePausalTax] Warning: Amount out of expected range.`);
     }
 
     if (official.amount > 100_000) {
       warnings.push("Iznos je izuzetno visok. Proverite da li je ispravan.");
-      console.log(`[resolvePausalTax] Warning: Amount is extremely high.`);
     }
-
-    if (!profile.municipality) {
-      warnings.push("Opština nije definisana.");
-      console.log(`[resolvePausalTax] Warning: Municipality not defined.`);
-    }
-
-    console.log(`[resolvePausalTax] Returning result with verified source.`);
 
     return {
       amount: official.amount,
       source: "verified",
       // Not blocking — caller decides what to do with this flag
-      suspicious: false,
-      warnings: [],
-      confidence: "high",
+      suspicious,
+      warnings,
+      confidence: getConfidenceFromSampleSize(official.count),
       meta: {
         sampleSize: official.count,
         basedOn: "verified data",
@@ -162,14 +135,11 @@ export async function resolvePausalTax(profile: {
     warnings.push(
       "Koristi se vrednost koju ste uneli ručno. Preporučujemo da unesete opštinu i šifru delatnosti za tačan iznos.",
     );
-    console.log(
-      `[resolvePausalTax] Using user-provided monthlyPausalTax: ${profile.monthlyPausalTax}`,
-    );
     return {
       amount: profile.monthlyPausalTax,
       source: "user",
       confidence: "low",
-      suspicious: true,
+      suspicious,
       warnings,
       meta: {
         basedOn: `${profile.monthlyPausalTax} `,
@@ -181,13 +151,10 @@ export async function resolvePausalTax(profile: {
   warnings.push(
     "Nemamo podatke za ovu kombinaciju opštine i šifre delatnosti. Unesite paušalni iznos ručno ili ažurirajte profil.",
   );
-  console.log(
-    `[resolvePausalTax] No data found for combination. Returning unknown.`,
-  );
   return {
     source: "unknown",
     confidence: "none",
-    suspicious: true,
+    suspicious,
     warnings,
     meta: {},
   };
