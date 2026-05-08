@@ -24,6 +24,7 @@ export default function DesktopSidebar() {
   // Strip the locale prefix for clean comparison
   const pathnameWithoutLocale = pathname.replace(`/${locale}`, "");
   const t = useTranslations("navigation");
+  const f = useTranslations("finances");
 
   const { projects } = useDataStore();
   const { clients } = useClientStore();
@@ -245,19 +246,19 @@ export default function DesktopSidebar() {
                 className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "details" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
                 href="/finances?tab=details"
               >
-                Details
+                {f("details")}
               </Link>
               <Link
                 className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "taxes" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
                 href="/finances?tab=taxes"
               >
-                Taxes
+                {f("taxes")}
               </Link>
               <Link
                 className={`text-sm font-bold  uppercase tracking-wider border-b background-border ${financesActiveTab === "transactions" ? "text-(--accent-cyan) border-(--accent-cyan)" : "hover:text-(--accent-cyan) hover:border-(--accent-cyan) text-primary"} transition-all duration-300 w-full py-2`}
                 href="/finances?tab=transactions"
               >
-                Transactions
+                {f("transactions")}
               </Link>
             </div>
           </div>

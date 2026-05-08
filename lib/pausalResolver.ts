@@ -1,3 +1,5 @@
+"use server";
+
 // ─── Pausal Tax Resolver ───────────────────────────────────────────────────────
 
 import { db } from "@/db";
@@ -11,7 +13,7 @@ function getConfidenceFromSampleSize(count: number) {
   return "low";
 }
 
-async function computeVerifiedMedianObservation(
+export async function computeVerifiedMedianObservation(
   activityCode: string,
   municipalityCode: string,
 ): Promise<{ amount: number; count: number } | null> {

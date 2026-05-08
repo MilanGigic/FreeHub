@@ -109,10 +109,6 @@ export async function mapProfileToInput(
     pausalSource = resolution.source;
   }
 
-  // WORK ON THIS...
-  // BUGS NOW ARE THAT ITS MOSTLY PAUSAL-RELATED, SO IT DOESN'T DO ANYTHING FOR OTHER MODELS
-  // AFTER THIS IS FIXED, POLISH UP THE UI FOR FINANCES PAGE.
-
   return {
     input: {
       country: "SRB",

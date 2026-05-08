@@ -13,8 +13,7 @@ export default function FinancesCard() {
   const { projects } = useDataStore();
   const { user } = useAuth();
 
-  const { netProfit, monthlyTaxReserve, safeToSpend, computeSafeToSpend } =
-    useTaxProfileStore(); // Extend store with income/expenses
+  const { taxResult, safeToSpend, computeSafeToSpend } = useTaxProfileStore(); // Extend store with income/expenses
   const { avgMonthlyExpenses } = useDataStore();
   const t = useTranslations("dashboard");
 
@@ -40,7 +39,7 @@ export default function FinancesCard() {
   );
   const profitMargin =
     numericTotalIncome > 0
-      ? ((netProfit / numericTotalIncome) * 100).toFixed(1)
+      ? ((taxResult.netProfit / numericTotalIncome) * 100).toFixed(1)
       : 0;
 
   if (!user)
@@ -76,7 +75,7 @@ export default function FinancesCard() {
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("netProfit")}{" "}
               <span className="font-bold primary-green">
-                ${Number(netProfit).toLocaleString()}
+                ${Number(taxResult.netProfit).toLocaleString()}
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
@@ -86,13 +85,13 @@ export default function FinancesCard() {
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("taxReserved")}{" "}
               <span className="font-bold primary-amber">
-                ${Number(monthlyTaxReserve).toLocaleString()}
+                ${Number(taxResult.monthlyTaxReserve).toLocaleString()}
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("safeToSpend")}{" "}
               <span className="font-bold primary-cyan">
-                ${Number(safeToSpend).toLocaleString()}
+                ${Number(safeToSpend.amount).toLocaleString()}
               </span>
             </p>
           </main>

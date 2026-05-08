@@ -480,7 +480,10 @@
     "toHitDeadline": "da biste stigli do roka",
     "conservative": "Konzervativno",
     "moderate": "Umereno",
-    "aggressive": "Agresivno"
+    "aggressive": "Agresivno",
+    "details": "Detaljno",
+    "taxes": "Takse",
+    "transactions": "Transakcije"
   },
   "wizard": {
     "welcomeTitle": "Dobrodošli u Freehub",

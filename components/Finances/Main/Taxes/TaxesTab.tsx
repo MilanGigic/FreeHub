@@ -2,9 +2,9 @@
 
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import MetricCard from "./helpers/MetricCard";
-import { getStatus } from "./helpers/getStatus";
 import ActionItem from "./helpers/ActionItem";
 import { PausalResolutionSource } from "@/lib/pausalResolver";
+import TaxesHero from "./TaxesHero";
 
 type Props = {
   isComputable: boolean;
@@ -14,27 +14,14 @@ type Props = {
 export default function TaxesTab({ isComputable, pausalSource }: Props) {
   const { taxResult } = useTaxProfileStore();
 
-  const status = getStatus(isComputable, pausalSource);
-
   return (
     <div className="flex flex-col gap-6">
       {/* ─── Status Bar ───────────────────────────────────────────── */}
-      <div
-        className={`p-4 rounded-xl border flex items-center justify-between flex-col gap-4 ${status.container}`}
-      >
-        <div className="flex flex-col items-center w-full">
-          <span className={`text-2xl font-medium ${status.text}`}>
-            {status.label}
-          </span>
-          <span className="text-lg primary-slate">{status.description}</span>
-        </div>
-
-        {status.cta && (
-          <button className="px-4 py-2 rounded-lg bg-(--accent-amber)/20 border border-(--accent-amber) text-primary hover:bg-(--accent-amber)/40 cursor-pointer transition-all duration-300">
-            Dopuni profil
-          </button>
-        )}
-      </div>
+      <TaxesHero
+        isComputable={isComputable}
+        pausalSource={pausalSource}
+        taxResult={taxResult}
+      />
 
       {/* ─── Blocking State ───────────────────────────────────────── */}
       {!isComputable && (
@@ -62,24 +49,7 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
       {isComputable && (
         <>
           {/* Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <MetricCard
-              label="Mesečna rezerva"
-              value={`${taxResult.monthlyTaxReserve.toLocaleString()} RSD`}
-            />
-            <MetricCard
-              label="Kvartalno plaćanje"
-              value={`${taxResult.quarterlyEstimate.toLocaleString()} RSD`}
-            />
-            <MetricCard
-              label="Godišnji porez"
-              value={`${taxResult.totalAnnualTax.toLocaleString()} RSD`}
-            />
-            <MetricCard
-              label="Efektivna stopa"
-              value={`${(taxResult.effectiveTaxRate * 100).toFixed(2)}%`}
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
 
           {/* Data Source */}
           <div className="p-4 rounded-xl border background-elevated flex flex-col gap-2">
@@ -97,6 +67,8 @@ export default function TaxesTab({ isComputable, pausalSource }: Props) {
               )}
             </div>
           </div>
+
+          {/* WORK ON THIS PART NEXT */}
 
           {/* Warnings */}
           {taxResult.warnings.length > 0 && (

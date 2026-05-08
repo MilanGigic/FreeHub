@@ -11,6 +11,7 @@ import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import TaxesTab from "./Main/Taxes/TaxesTab";
 import { useTaxCalculation } from "./Main/Taxes/helpers/useTaxCalculation";
+import { useTranslations } from "next-intl";
 
 const tabs = ["Details", "Taxes", "Transactions"];
 
@@ -33,6 +34,7 @@ export default function FinancesClient({
 
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab");
+  const f = useTranslations("finances");
 
   const router = useRouter();
 
@@ -47,7 +49,7 @@ export default function FinancesClient({
             className={`border rounded-lg background-border background-elevated transition-all duration-300 cursor-pointer px-4 py-2 ${activeTab === tab.toLowerCase() ? "bg-(--accent-cyan)/20 border-(--accent-cyan)" : "hover:bg-(--accent-cyan)/20 hover:border-(--accent-cyan)"}`}
             onClick={() => router.push(`/finances?tab=${tab.toLowerCase()}`)}
           >
-            <h1 className="text-primary">{tab}</h1>
+            <h1 className="text-primary">{f(tab.toLowerCase())}</h1>
           </div>
         ))}
       </div>
