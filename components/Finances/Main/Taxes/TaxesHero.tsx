@@ -76,10 +76,6 @@ export default function TaxesHero({
           </div>
         </div>
 
-        <div className="w-full border-b border-(--accent-slate) p-4">
-          <h1 className="primary-slate">Bazirano na verifikovanim prijavama</h1>
-        </div>
-
         <div className="background-elevated border background-border rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-zinc-600 transition-colors duration-200">
           <p className="primary-purple text-5xl font-bold tracking-tight flex items-center gap-2">
             <Wallet />
