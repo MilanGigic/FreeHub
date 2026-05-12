@@ -1,6 +1,6 @@
 "use client";
 
-type Props = {
+type TaxRunwayCardProps = {
   currentBalance: number;
   monthlyTaxReserve: number;
 };
@@ -8,7 +8,7 @@ type Props = {
 export default function TaxRunwayCard({
   currentBalance,
   monthlyTaxReserve,
-}: Props) {
+}: TaxRunwayCardProps) {
   // ─── Core calculation ─────────────────────────────────────────────
   // How many months of taxes can user survive if income stops today
 
