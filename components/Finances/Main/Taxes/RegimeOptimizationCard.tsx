@@ -12,7 +12,7 @@ export default function RegimeOptimizationCard({
   const PAUSAL_TO_KNJIGAS_LIMIT = 6000000;
 
   return (
-    <div className="flex flex-col gap-4 border border-(--accent-cyan)/30 background-elevated rounded-2xl p-4 hover:border-zinc-600 transition-all duration-300">
+    <div className="flex flex-col gap-4 border border-white/5 hover:border-(--accent-cyan)/30 background-elevated rounded-2xl p-4  transition-all duration-300">
       <div className="flex flex-col">
         <span className="text-sm uppercase tracking-wide primary-slate">
           Optimalnost režima

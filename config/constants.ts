@@ -27,6 +27,47 @@ export const TAX_CONSTANTS = {
   },
 };
 
+// ─── Transaction Categories ───────────────────────────────────────────────────
+
+export const transactionCategories = [
+  "salary",
+  "freelance_income",
+  "client_payment",
+  "subscription",
+  "software",
+  "hosting",
+  "domain",
+  "marketing",
+  "advertising",
+  "equipment",
+  "office",
+  "coworking",
+  "internet",
+  "phone",
+  "education",
+  "course",
+  "book",
+  "travel",
+  "transport",
+  "food",
+  "meal",
+  "health",
+  "insurance",
+  "tax",
+  "bank_fee",
+  "withdrawal",
+  "transfer",
+  "investment",
+  "savings",
+  "refund",
+  "gift",
+  "entertainment",
+  "gaming",
+  "other",
+] as const;
+
+export type TransactionCategory = (typeof transactionCategories)[number];
+
 // db/seed/data/municipalities.ts
 
 export type MunicipalitySeed = {

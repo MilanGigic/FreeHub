@@ -62,7 +62,9 @@ export default function ConfidenceLevelCard({
       };
 
   return (
-    <div className="flex flex-col gap-4 border border-(--accent-amber)/30 background-elevated rounded-2xl p-4 hover:border-zinc-600 transition-all duration-300">
+    <div
+      className={`flex flex-col gap-4 border border-white/5 background-elevated rounded-2xl p-4 hover:border-(--accent-amber)/30 transition-all duration-300`}
+    >
       <div className="flex items-start justify-between">
         <div>
           <span className="text-sm uppercase tracking-wide primary-slate">
@@ -83,7 +85,6 @@ export default function ConfidenceLevelCard({
       <div className="w-full border-b border-(--accent-slate) pb-2">
         <h1 className="primary-slate">
           Bazirano na {count} verifikovanih prijava
-          {/* ADD THE COUNT OF SUBMITS USED */}
         </h1>
       </div>
     </div>

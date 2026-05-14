@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import TaxesTab from "./Main/Taxes/TaxesTab";
 import { useTaxCalculation } from "./Main/Taxes/helpers/useTaxCalculation";
 import { useTranslations } from "next-intl";
+import TransactionsTab from "./Main/Transactions/TransactionsTab";
 
 const tabs = ["Details", "Taxes", "Transactions"];
 
@@ -87,11 +88,7 @@ export default function FinancesClient({
           pausalSource={taxMeta.pausalSource}
         />
       ) : (
-        activeTab === "transactions" && (
-          <>
-            <h1>Transactions</h1>
-          </>
-        )
+        activeTab === "transactions" && <TransactionsTab />
       )}
     </div>
   );

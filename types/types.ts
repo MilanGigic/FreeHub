@@ -83,9 +83,14 @@ export interface Transaction {
   type: "income" | "expense";
   amount: string;
   deductible: boolean;
+  category: string;
+  isRecurring: boolean | null;
+  merchantName: string | null;
   note: string | null;
   createdAt: Date;
   updatedAt: Date;
+  transactionDate: Date;
+  projectName: string;
 }
 
 export type Conservativeness = "conservative" | "moderate" | "aggressive";

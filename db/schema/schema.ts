@@ -46,6 +46,43 @@ export const invoiceStatusEnum = pgEnum("invoice_status", [
   "paid",
 ]);
 
+export const transactionCategoryEnum = pgEnum("transaction_category", [
+  "salary",
+  "freelance_income",
+  "client_payment",
+  "subscription",
+  "software",
+  "hosting",
+  "domain",
+  "marketing",
+  "advertising",
+  "equipment",
+  "office",
+  "coworking",
+  "internet",
+  "phone",
+  "education",
+  "course",
+  "book",
+  "travel",
+  "transport",
+  "food",
+  "meal",
+  "health",
+  "insurance",
+  "tax",
+  "bank_fee",
+  "withdrawal",
+  "transfer",
+  "investment",
+  "savings",
+  "refund",
+  "gift",
+  "entertainment",
+  "gaming",
+  "other",
+]);
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").unique().notNull(),
@@ -168,9 +205,14 @@ export const transactions = pgTable("transactions", {
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
   deductible: boolean("deductible").notNull().default(false),
+  category: transactionCategoryEnum("category").notNull().default("other"),
+  title: text("title").notNull(),
+  isRecurring: boolean("is_recurring").default(false),
+  merchantName: text("merchant_name"),
   note: text("note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  transactionDate: timestamp("transaction_date").notNull(),
 });
 
 export const conservativenessEnum = pgEnum("conservativeness", [

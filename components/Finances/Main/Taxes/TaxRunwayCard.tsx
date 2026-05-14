@@ -22,27 +22,27 @@ export default function TaxRunwayCard({
       ? {
           label: "Odlična sigurnost",
           color: "primary-green",
-          border: "border-(--accent-green)/30",
+          border: "border-(--accent-green)/60",
           bg: "bg-(--accent-green)/10",
         }
       : runwayMonths >= 6
         ? {
             label: "Stabilna rezerva",
             color: "primary-cyan",
-            border: "border-(--accent-cyan)/30",
+            border: "border-(--accent-cyan)/60",
             bg: "bg-(--accent-cyan)/10",
           }
         : runwayMonths >= 3
           ? {
               label: "Srednji rizik",
               color: "primary-amber",
-              border: "border-(--accent-amber)/30",
+              border: "border-(--accent-amber)/60",
               bg: "bg-(--accent-amber)/10",
             }
           : {
               label: "Niska rezerva",
               color: "primary-red",
-              border: "border-(--accent-red)/30",
+              border: "border-(--accent-red)/60",
               bg: "bg-(--accent-red)/10",
             };
 
