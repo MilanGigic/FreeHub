@@ -3,7 +3,8 @@
 import { commitTransaction } from "@/actions/finances/commitTransaction";
 import { fetchProjectById } from "@/actions/projects/fetchProjectById";
 import { useAuth } from "@/lib/useAuth";
-import { Project, Transaction } from "@/types/types";
+import { Project } from "@/types/types";
+import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -35,8 +36,7 @@ export default function AddTransactionModal({
   const p = useTranslations("projects");
 
   const { user } = useAuth();
-  const { transactions, setTransactions, projects, setProjects } =
-    useDataStore();
+  const { setTransactions, projects, setProjects } = useDataStore();
 
   const { setSelectedProject } = useProjectStore();
 
@@ -99,7 +99,7 @@ export default function AddTransactionModal({
       onClose();
       toast.success(t("transactionAddedSuccess"));
       if (res.data) {
-        setTransactions([...transactions, res.data as Transaction]);
+        setTransactions(res.data);
         console.log("Transaction added to store:", res.data);
       }
       const refreshed = await fetchProjectById(form.projectId);
@@ -140,7 +140,13 @@ export default function AddTransactionModal({
   }, [user, setProjects]);
 
   return (
-    <div className="absolute top-16 right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col animate-flip-down duration-1000">
+    <motion.div
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -100, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 90, damping: 15 }}
+      className="absolute top-16 right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col z-50"
+    >
       <button onClick={onClose} className="absolute top-4 right-4 p-1">
         <X className="w-8 h-8 text-primary transition-all border background-border rounded-full hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red) duration-300" />
       </button>
@@ -340,6 +346,6 @@ export default function AddTransactionModal({
           {isLoading ? <Spinner /> : tCommon("confirm")}
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 }

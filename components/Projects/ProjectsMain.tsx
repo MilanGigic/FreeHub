@@ -119,9 +119,7 @@ export default function ProjectsMain() {
                 }`}
                 onClick={() => setShow(status as ProjectStatus)}
               >
-                <p className="text-primary">
-                  {statusLabels[status]}
-                </p>
+                <p className="text-primary">{statusLabels[status]}</p>
               </div>
             ))}
           </div>
@@ -147,7 +145,8 @@ export default function ProjectsMain() {
               />
             )}
             <p className="border background-border text-primary px-2 background-elevated flex items-center gap-0.5 w-40 justify-center">
-              {filteredProjects.length} {filteredProjects.length === 1 ? t("project") : t("projects")}
+              {filteredProjects.length}{" "}
+              {filteredProjects.length === 1 ? t("project") : t("projects")}
             </p>
             <button
               className="primary-cyan text-sm font-semibold uppercase rounded-lg hover:bg-(--accent-cyan)/30 transition-all duration-300 ease-out flex items-center gap-0.5 h-full px-2 cursor-pointer w-xs justify-center py-2"
