@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { clients, projects } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export async function fetchAllProjects(userId: string) {
   if (!userId) {
@@ -15,7 +15,7 @@ export async function fetchAllProjects(userId: string) {
         id: projects.id,
         userId: projects.userId,
         clientId: projects.clientId,
-        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        clientName: clients.clientName,
         name: projects.name,
         description: projects.description,
         totalRevenue: projects.totalRevenue,

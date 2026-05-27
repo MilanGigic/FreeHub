@@ -1,0 +1,5 @@
+CREATE TYPE "public"."transaction_category" AS ENUM('salary', 'freelance_income', 'client_payment', 'subscription', 'software', 'hosting', 'domain', 'marketing', 'advertising', 'equipment', 'office', 'coworking', 'internet', 'phone', 'education', 'course', 'book', 'travel', 'transport', 'food', 'meal', 'health', 'insurance', 'tax', 'bank_fee', 'withdrawal', 'transfer', 'investment', 'savings', 'refund', 'gift', 'entertainment', 'gaming', 'other');--> statement-breakpoint
+ALTER TABLE "transactions" ALTER COLUMN "category" SET DEFAULT 'other'::"public"."transaction_category";--> statement-breakpoint
+ALTER TABLE "transactions" ALTER COLUMN "category" SET DATA TYPE "public"."transaction_category" USING "category"::"public"."transaction_category";--> statement-breakpoint
+ALTER TABLE "transactions" ADD COLUMN "client_id" uuid;--> statement-breakpoint
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_client_id_clients_id_fk" FOREIGN KEY ("client_id") REFERENCES "public"."clients"("id") ON DELETE set null ON UPDATE no action;

@@ -30,8 +30,7 @@ export type SerbianMunicipality = {
 };
 
 export type ClientForm = {
-  firstName: string;
-  lastName: string;
+  clientName: string;
   email: string;
   currency: string;
   status: string;
@@ -54,8 +53,7 @@ export interface User {
 export interface Client {
   id: string;
   userId: string;
-  firstName: string;
-  lastName: string;
+  clientName: string;
   email: string;
   currency: "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD";
   status: "active" | "paused" | "archived";
@@ -90,7 +88,8 @@ export interface Transaction {
   createdAt: Date;
   updatedAt: Date;
   transactionDate: Date;
-  projectName: string;
+  projectName?: string | null;
+  clientName?: string | null;
 }
 
 export type Conservativeness = "conservative" | "moderate" | "aggressive";
@@ -123,6 +122,8 @@ export interface Project {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// FIX THE ISSUES WITH NEWLY ADDED CLIENTNAME INSTEAD OF FIRSTNAME AND LASTNAME
 
 export interface ProjectCalendar {
   id: string;

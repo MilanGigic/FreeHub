@@ -120,7 +120,12 @@
     "banking": "Bankarske usluge",
     "clientPayment": "Isplata od strane klijenta",
     "selectCategory": "Izaberite kategoriju",
-    "categories": "Kategorije"
+    "categories": "Kategorije",
+    "optional": "Opciono",
+    "project": "Projekat",
+    "amountRange": "Iznos",
+    "client": "Klijent",
+    "clients": "Klijenti"
   },
   "auth": {
     "login": "Prijava",
@@ -290,7 +295,9 @@
     "detailProfitMargin": "Profitna marža",
     "detailCreated": "Kreiran",
     "detailUpdated": "Ažuriran",
-    "selectProject": "Izaberite projekat"
+    "selectProject": "Izaberite projekat",
+    "projectProfitabilityTracking": "Dodajte transakciju uz neki projekat zbog praćenja profitabilnosti",
+    "clientProfitabilityTracking": "Dodajte transakciju uz nekog klijenta zbog praćenja profitabilnosti"
   },
   "calendar": {
     "months": {
@@ -351,6 +358,10 @@
     "incomeOption": "Prihod",
     "expenseOption": "Trošak",
     "deductible": "Odbitni",
+    "deductibleOnly": "Samo odbitni",
+    "recurringOnly": "Samo ponavaljajući",
+    "hasNotesOnly": "Samo sa napomenama",
+    "resetFilters": "Resetuj filtere",
     "addTransactionButton": "Dodaj transakciju",
     "transactionAddedSuccess": "Transakcija je uspešno dodata",
     "totalRevenue": "Ukupni prihod:",
@@ -358,6 +369,7 @@
     "netProfit": "Neto dobit:",
     "effectiveRate": "Efektivna stopa:",
     "transactionDate": "Datum transakcije",
+    "moreFilters": "Više filtera",
     "categories": {
       "salary": "Plata",
       "freelance_income": "Frilens prihod",

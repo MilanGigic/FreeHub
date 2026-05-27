@@ -99,8 +99,7 @@ export const clients = pgTable("clients", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
+  clientName: text("client_name").notNull(),
   email: text("email").unique().notNull(),
   currency: currencyEnum("currency").notNull().default("USD"),
   status: clientStatusEnum("status").notNull().default("active"),
@@ -200,6 +199,9 @@ export const transactions = pgTable("transactions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   projectId: uuid("project_id").references(() => projects.id, {
+    onDelete: "set null",
+  }),
+  clientId: uuid("client_id").references(() => clients.id, {
     onDelete: "set null",
   }),
   type: projectFinanceTypeEnum("type").notNull().default("income"),

@@ -7,17 +7,20 @@ export type DatePreset = "7d" | "30d" | "month" | "year";
 
 type TransactionFilters = {
   search: string | null;
-
   type: FiltersType | null;
-
   category: string | null;
 
-  deductibleOnly: boolean | null;
+  deductibleOnly: boolean;
+  recurringOnly: boolean;
+  hasNotesOnly: boolean;
 
-  projectId: string | null;
+  projectName: string | null;
+  clientName: string | null;
+
+  minAmount: number | null;
+  maxAmount: number | null;
 
   datePreset: DatePreset | null;
-
   customDateRange: DateRange | null;
 };
 
@@ -33,8 +36,13 @@ const initialFilters: TransactionFilters = {
   search: null,
   type: null,
   category: null,
-  deductibleOnly: null,
-  projectId: null,
+  deductibleOnly: false,
+  recurringOnly: false,
+  hasNotesOnly: false,
+  projectName: null,
+  clientName: null,
+  minAmount: null,
+  maxAmount: null,
   datePreset: null,
   customDateRange: null,
 };

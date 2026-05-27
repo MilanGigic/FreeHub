@@ -15,8 +15,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
   const { setClients } = useClientStore();
   const t = useTranslations("clients");
   const [clientForm, setClientForm] = useState<ClientForm>({
-    firstName: "",
-    lastName: "",
+    clientName: "",
     email: "",
     currency: "",
     status: "",
@@ -43,8 +42,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
         toast.success(t("clientAddedSuccess"));
         setIsLoading(false);
         setClientForm({
-          firstName: "",
-          lastName: "",
+          clientName: "",
           email: "",
           currency: "",
           status: "",
@@ -106,29 +104,11 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                   id="firstName"
                   type="text"
                   placeholder={t("firstName")}
-                  value={clientForm.firstName ? clientForm.firstName : ""}
+                  value={clientForm.clientName ? clientForm.clientName : ""}
                   onChange={(e) =>
-                    setClientForm({ ...clientForm, firstName: e.target.value })
+                    setClientForm({ ...clientForm, clientName: e.target.value })
                   }
                   className="rounded-md background-elevated w-full border background-border text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
-                />
-              </div>
-              <div className="flex flex-col gap-2 md:gap-4 w-full items-center">
-                <label
-                  htmlFor="lastName"
-                  className="text-primary uppercase font-semibold"
-                >
-                  {t("lastName")}
-                </label>
-                <input
-                  id="lastName"
-                  type="text"
-                  placeholder={t("lastName")}
-                  value={clientForm.lastName ? clientForm.lastName : ""}
-                  onChange={(e) =>
-                    setClientForm({ ...clientForm, lastName: e.target.value })
-                  }
-                  className="rounded-md background-elevated border background-border w-full text-center p-4 outline-none text-sm text-primary focus-border-accent transition-all"
                 />
               </div>
 
@@ -172,7 +152,9 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
                 </select>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full items-center justify-between border-b-2 background-border pb-4">
-                <h1 className="text-primary uppercase font-semibold">{t("statusLabel")}</h1>
+                <h1 className="text-primary uppercase font-semibold">
+                  {t("statusLabel")}
+                </h1>
                 <select
                   name="status"
                   id="status"

@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/useAuth";
 import { Project } from "@/types/types";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
 import { useDataStore } from "@/lib/store/useDataStore";
@@ -23,7 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { transactionCategories } from "@/config/constants";
-import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
+import useFetchAllProjects from "./hooks/useFetchAllProjects";
+import useFetchAllClients from "../Clients/hooks/(clients)/useFetchAllClients";
+import { useClientStore } from "@/lib/store/useClientStore";
 
 export default function AddTransactionModal({
   onClose,
@@ -36,12 +38,12 @@ export default function AddTransactionModal({
   const p = useTranslations("projects");
 
   const { user } = useAuth();
-  const { setTransactions, projects, setProjects } = useDataStore();
+  const { setTransactions, projects } = useDataStore();
+  const { clients } = useClientStore();
 
   const { setSelectedProject } = useProjectStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState<{
     type: "income" | "expense";
@@ -49,6 +51,7 @@ export default function AddTransactionModal({
     title: string;
     merchant: string;
     projectId: string;
+    clientId: string;
     note: string;
     transactionDate: string;
     deductible: boolean;
@@ -58,6 +61,7 @@ export default function AddTransactionModal({
     title: "",
     merchant: "",
     projectId: "",
+    clientId: "",
     note: "",
     transactionDate: "",
     deductible: false,
@@ -73,10 +77,7 @@ export default function AddTransactionModal({
       console.log("No user found, returning early from submit.");
       return;
     }
-    if (!form.projectId) {
-      console.log("No projectId found, returning early from submit.");
-      return;
-    }
+
     setIsLoading(true);
     const transactionData = {
       type: form.type,
@@ -87,7 +88,8 @@ export default function AddTransactionModal({
       note: form.note || "",
       transactionDate: form.transactionDate,
       deductible: form.deductible,
-      projectId: form.projectId,
+      projectId: form.projectId ? form.projectId : null,
+      clientId: form.clientId ? form.clientId : null,
     };
     console.log("Submitting transaction with data:", transactionData);
 
@@ -117,27 +119,8 @@ export default function AddTransactionModal({
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      if (!user) return;
-
-      const res = await fetchAllProjects(user.id);
-
-      if (res.success) {
-        if (res.data) {
-          if (res.data.length > 0) {
-            setProjects(res.data);
-          } else {
-            setError("No projects found");
-          }
-        } else {
-          setError("No projects found");
-        }
-      } else {
-        setError(res.error as string);
-      }
-    })();
-  }, [user, setProjects]);
+  useFetchAllProjects();
+  useFetchAllClients();
 
   return (
     <motion.div
@@ -145,7 +128,7 @@ export default function AddTransactionModal({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -100, opacity: 0 }}
       transition={{ type: "spring", stiffness: 90, damping: 15 }}
-      className="absolute top-16 right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col z-50"
+      className="absolute top-full right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col z-50"
     >
       <button onClick={onClose} className="absolute top-4 right-4 p-1">
         <X className="w-8 h-8 text-primary transition-all border background-border rounded-full hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red) duration-300" />
@@ -250,9 +233,6 @@ export default function AddTransactionModal({
               setForm({ ...form, transactionDate: e.target.value })
             }
           />
-
-          {/* FIX THIS ISSUE */}
-          {/* THEN UPDATE commitTransaction.ts CODE TO MATCH NEW TRANSACTIONS TABLE */}
         </div>
 
         <div className="flex flex-col gap-4">
@@ -290,9 +270,13 @@ export default function AddTransactionModal({
             </SelectContent>
           </Select>
         </div>
+
         <div className="flex flex-col gap-4">
-          <h1 className="text-lg font-semibold uppercase primary-slate">
-            {p("title")}
+          <h1 className="text-lg font-semibold uppercase primary-slate flex flex-col">
+            {p("title")}{" "}
+            <span className="text-sm font-normal tracking-wider primary-slate">
+              ({tCommon("optional")})
+            </span>
           </h1>
           <Select
             value={form.projectId}
@@ -322,6 +306,49 @@ export default function AddTransactionModal({
               </SelectGroup>
             </SelectContent>
           </Select>
+          <p className="text-sm uppercase primary-slate">
+            {p("projectProfitabilityTracking")}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h1 className="text-lg font-semibold uppercase primary-slate flex flex-col">
+            {p("selectClient")}{" "}
+            <span className="text-sm font-normal tracking-wider primary-slate">
+              ({tCommon("optional")})
+            </span>
+          </h1>
+          <Select
+            value={form.clientId}
+            onValueChange={(value) => setForm({ ...form, clientId: value })}
+          >
+            <SelectTrigger
+              className="w-full text-primary h-full border-b-2 pb-2"
+              type="button"
+            >
+              <SelectValue
+                className="text-primary"
+                placeholder={p("selectClient")}
+              />
+            </SelectTrigger>
+            <SelectContent className="text-primary background-elevated">
+              <SelectGroup className="max-h-[300px] overflow-y-scroll p-2 border background-border background-elevated">
+                <SelectLabel>{tCommon("clients")}</SelectLabel>
+                {clients.map((client) => (
+                  <SelectItem
+                    key={client.id}
+                    value={client.id}
+                    className="p-2 cursor-pointer hover:bg-white/15 transition-all duration-300"
+                  >
+                    {client.clientName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-sm uppercase primary-slate">
+            {p("clientProfitabilityTracking")}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">

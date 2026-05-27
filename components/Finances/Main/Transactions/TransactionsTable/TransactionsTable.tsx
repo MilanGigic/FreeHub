@@ -87,17 +87,62 @@ export default function TransactionsTable({
         value: getPresetRange(filters.datePreset),
       });
     }
+    if (filters.projectName) {
+      nextFilters.push({
+        id: "projectName",
+        value: filters.projectName,
+      });
+    }
+    if (filters.clientName) {
+      nextFilters.push({
+        id: "clientName",
+        value: filters.clientName,
+      });
+    }
+    if (filters.minAmount) {
+      nextFilters.push({
+        id: "minAmount",
+        value: filters.minAmount,
+      });
+    }
+    if (filters.maxAmount) {
+      nextFilters.push({
+        id: "maxAmount",
+        value: filters.maxAmount,
+      });
+    }
+
+    if (filters.deductibleOnly) {
+      nextFilters.push({
+        id: "deductible",
+        value: true,
+      });
+    }
+
+    if (filters.recurringOnly) {
+      nextFilters.push({
+        id: "isRecurring",
+        value: true,
+      });
+    }
+
+    if (filters.hasNotesOnly) {
+      nextFilters.push({
+        id: "note",
+        value: true,
+      });
+    }
 
     setColumnFilters(nextFilters);
   }, [filters]);
 
   return (
-    <Table className="text-primary">
+    <Table className="text-primary background-elevated border background-border">
       <TableCaption>A list of your transactions.</TableCaption>
 
       {/* {isLoading && } */}
 
-      <TableHeader>
+      <TableHeader className="">
         {table.getHeaderGroups().map((hg) => (
           <TableRow key={hg.id}>
             {hg.headers.map((header) => {
@@ -134,7 +179,7 @@ export default function TransactionsTable({
 
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id} className="text-center">
+          <TableRow key={row.id} className="text-center hover:bg-white/15">
             {row.getVisibleCells().map((cell) => {
               const value = flexRender(
                 cell.column.columnDef.cell,

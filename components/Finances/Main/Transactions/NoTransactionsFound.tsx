@@ -20,21 +20,6 @@ export default function NoTransactionsFound() {
           Add your first transaction to begin generating cash flow insights, tax
           estimates, and profitability analytics.
         </p>
-
-        <button
-          onClick={() => setOpenTransactionModal(true)}
-          className={`text-primary uppercase tracking-wide font-bold p-4 border rounded-2xl 
-      ${openTransactionModal ? "bg-(--accent-green)/40" : "bg-(--accent-green)/20 border-(--accent-green) hover:bg-(--accent-green)/40"}
-      transition-all duration-300`}
-        >
-          {t("addTransactionButton")}
-        </button>
-      </div>
-
-      <div className="relative w-2xl h-full">
-        {openTransactionModal && (
-          <AddTransactionModal onClose={() => setOpenTransactionModal(false)} />
-        )}
       </div>
     </div>
   );

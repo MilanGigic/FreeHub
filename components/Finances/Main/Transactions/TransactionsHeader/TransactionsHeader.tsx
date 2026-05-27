@@ -9,13 +9,20 @@ import DateFilter from "./DateFilter";
 import AddTransactionModal from "@/components/Projects/AddTransactionModal";
 import { useTranslations } from "next-intl";
 
+import MoreFilters from "./MoreFilters";
+import { useAuth } from "@/lib/useAuth";
+
 export default function TransactionsHeader() {
+  const { user } = useAuth();
+
   const t = useTranslations("transactions");
   const [openFilters, setOpenFilters] = useState<
     "type" | "category" | "date" | null
   >(null);
   const [openTransactionModal, setOpenTransactionModal] =
     useState<boolean>(false);
+
+  const [showMoreFilters, setShowMoreFilters] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col items-center justify-center w-full gap-4">
@@ -55,17 +62,27 @@ export default function TransactionsHeader() {
           >
             {t("addTransactionButton")}
           </button>
-          <div className="relative w-2xl h-full">
+          <motion.div
+            layout="position"
+            transition={{
+              layout: { type: "spring", stiffness: 300, damping: 25 },
+            }}
+            style={{ backgroundColor: "transparent" }}
+            className="relative w-2xl"
+          >
             {openTransactionModal && (
               <AddTransactionModal
                 onClose={() => setOpenTransactionModal(false)}
               />
             )}
-          </div>
+          </motion.div>
         </motion.div>
 
-        <div>
-          <button>More Filters:</button>
+        <div className="relative">
+          <button onClick={() => setShowMoreFilters(!showMoreFilters)}>
+            {t("moreFilters")}:
+          </button>
+          {showMoreFilters && <MoreFilters user={user} />}
         </div>
       </motion.div>
     </div>

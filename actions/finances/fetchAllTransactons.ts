@@ -33,7 +33,7 @@ export async function fetchAllTransactions(userId: string) {
       })
       .from(transactions)
       .where(eq(transactions.userId, userId))
-      .innerJoin(projects, eq(transactions.projectId, projects.id));
+      .leftJoin(projects, eq(transactions.projectId, projects.id));
 
     return {
       message: `Found ${data.length} transactions`,

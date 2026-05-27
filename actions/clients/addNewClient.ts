@@ -7,22 +7,21 @@ import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 
 export async function addNewClient(clientForm: ClientForm, userId: string) {
-  const { firstName, lastName, email, currency, status, startDate, endDate } =
+  const { clientName, email, currency, status, startDate, endDate } =
     clientForm;
 
   if (!userId) {
     return { success: false, error: "User ID is required" };
   }
 
-  if (!firstName || !lastName || !email || !currency || !status || !startDate) {
+  if (!clientName || !email || !currency || !status || !startDate) {
     return { success: false, error: "All fields are required" };
   }
 
   try {
     await db.insert(clients).values({
       userId,
-      firstName,
-      lastName,
+      clientName,
       email,
       currency: currency as "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD",
       status: status as "active" | "paused" | "archived",

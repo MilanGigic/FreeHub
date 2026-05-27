@@ -44,7 +44,7 @@ export default function TransactionsTab() {
 
   return (
     <div className="w-full h-full flex">
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col gap-4">
         {/* HEADER */}
         <TransactionsHeader />
 

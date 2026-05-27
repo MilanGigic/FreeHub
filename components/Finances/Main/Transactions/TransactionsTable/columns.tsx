@@ -14,7 +14,7 @@ export const getColumns = (
       const type = row.original.type;
 
       return (
-        <div className="font-medium flex items-center gap-1">
+        <div className="font-medium flex items-center justify-center gap-1">
           {type === "income" ? (
             <div className="w-2 h-2 rounded-full bg-(--accent-green)" />
           ) : (
@@ -47,13 +47,52 @@ export const getColumns = (
   {
     accessorKey: "projectName",
     header: "Project",
+    cell: ({ row }) => (
+      <span
+        className={`${row.original.projectName ? "" : "primary-slate italic uppercase"}`}
+      >
+        {row.original.projectName ?? "General"}
+      </span>
+    ),
   },
+  {
+    accessorKey: "clientName",
+    header: "Client",
+    cell: ({ row }) => (
+      <span
+        className={`${row.original.clientName ? "" : "primary-slate italic uppercase"}`}
+      >
+        {row.original.clientName ?? "General"}
+      </span>
+    ),
+  },
+
+  // NEED TO DISPLAY CLIENT NAME - NOT CLIENT ID
+  // FIX THE FILTERS AS WELL
 
   {
     accessorKey: "deductible",
     header: "Deductible",
+
+    filterFn: (row, columnId, value) => {
+      if (!value) return true;
+
+      return row.getValue(columnId) === true;
+    },
+
     cell: ({ row }) => (row.original.deductible ? "Yes" : "No"),
-    enableSorting: true,
+  },
+  {
+    accessorKey: "isRecurring",
+    header: "Recurring",
+
+    filterFn: (row, columnId, value) => {
+      if (!value) return true;
+
+      return row.getValue(columnId) === true;
+    },
+
+    cell: ({ row }) => (row.original.isRecurring ? "Yes" : "No"),
   },
 
   {
@@ -83,7 +122,14 @@ export const getColumns = (
 
   {
     accessorKey: "note",
-    header: "Note",
+
+    filterFn: (row, columnId, value) => {
+      if (!value) return true;
+
+      const note = row.getValue(columnId);
+
+      return typeof note === "string" && note.trim().length > 0;
+    },
     enableSorting: false,
   },
 ];

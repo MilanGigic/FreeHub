@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { projectFinance, projects, transactions } from "@/db/schema";
+import { clients, projectFinance, projects, transactions } from "@/db/schema";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 import { TransactionCategory } from "@/config/constants";
@@ -15,7 +15,8 @@ type CommitTransactionProps = {
   note: string;
   transactionDate: string;
   deductible: boolean;
-  projectId: string;
+  projectId: string | null;
+  clientId: string | null;
 };
 
 export async function commitTransaction(
@@ -26,6 +27,7 @@ export async function commitTransaction(
     await db.insert(transactions).values({
       userId,
       projectId: data.projectId,
+      clientId: data.clientId,
       type: data.type,
       amount: String(data.amount),
       deductible: data.deductible,
@@ -36,27 +38,99 @@ export async function commitTransaction(
       note: data.note,
     });
 
-    const newTransaction = await db
-      .select({
-        id: transactions.id,
-        userId: transactions.userId,
-        projectId: transactions.projectId,
-        type: transactions.type,
-        amount: transactions.amount,
-        deductible: transactions.deductible,
-        category: transactions.category,
-        title: transactions.title,
-        isRecurring: transactions.isRecurring,
-        merchantName: transactions.merchantName,
-        note: transactions.note,
-        createdAt: transactions.createdAt,
-        updatedAt: transactions.updatedAt,
-        transactionDate: transactions.transactionDate,
-        projectName: projects.name,
-      })
-      .from(transactions)
-      .where(eq(transactions.userId, userId))
-      .innerJoin(projects, eq(transactions.projectId, projects.id));
+    let newTransaction;
+
+    if (data.projectId && data.clientId) {
+      newTransaction = await db
+        .select({
+          id: transactions.id,
+          userId: transactions.userId,
+          projectId: transactions.projectId,
+          type: transactions.type,
+          amount: transactions.amount,
+          deductible: transactions.deductible,
+          category: transactions.category,
+          title: transactions.title,
+          isRecurring: transactions.isRecurring,
+          merchantName: transactions.merchantName,
+          note: transactions.note,
+          createdAt: transactions.createdAt,
+          updatedAt: transactions.updatedAt,
+          transactionDate: transactions.transactionDate,
+          projectName: projects.name,
+          clientName: clients.clientName,
+          clientId: clients.id,
+        })
+        .from(transactions)
+        .where(eq(transactions.userId, userId))
+        .leftJoin(projects, eq(transactions.projectId, projects.id))
+        .leftJoin(clients, eq(transactions.clientId, clients.id));
+    } else if (data.projectId && !data.clientId) {
+      newTransaction = await db
+        .select({
+          id: transactions.id,
+          userId: transactions.userId,
+          projectId: transactions.projectId,
+          type: transactions.type,
+          amount: transactions.amount,
+          deductible: transactions.deductible,
+          category: transactions.category,
+          title: transactions.title,
+          isRecurring: transactions.isRecurring,
+          merchantName: transactions.merchantName,
+          note: transactions.note,
+          createdAt: transactions.createdAt,
+          updatedAt: transactions.updatedAt,
+          transactionDate: transactions.transactionDate,
+          projectName: projects.name,
+        })
+        .from(transactions)
+        .where(eq(transactions.userId, userId))
+        .leftJoin(projects, eq(transactions.projectId, projects.id));
+    } else if (data.clientId && !data.projectId) {
+      newTransaction = await db
+        .select({
+          id: transactions.id,
+          userId: transactions.userId,
+          projectId: transactions.projectId,
+          type: transactions.type,
+          amount: transactions.amount,
+          deductible: transactions.deductible,
+          category: transactions.category,
+          title: transactions.title,
+          isRecurring: transactions.isRecurring,
+          merchantName: transactions.merchantName,
+          note: transactions.note,
+          createdAt: transactions.createdAt,
+          updatedAt: transactions.updatedAt,
+          transactionDate: transactions.transactionDate,
+          clientName: clients.clientName,
+          clientId: clients.id,
+        })
+        .from(transactions)
+        .where(eq(transactions.userId, userId))
+        .leftJoin(clients, eq(transactions.clientId, clients.id));
+    } else {
+      newTransaction = await db
+        .select({
+          id: transactions.id,
+          userId: transactions.userId,
+          projectId: transactions.projectId,
+          type: transactions.type,
+          amount: transactions.amount,
+          deductible: transactions.deductible,
+          category: transactions.category,
+          title: transactions.title,
+          isRecurring: transactions.isRecurring,
+          merchantName: transactions.merchantName,
+          note: transactions.note,
+          createdAt: transactions.createdAt,
+          updatedAt: transactions.updatedAt,
+          transactionDate: transactions.transactionDate,
+        })
+        .from(transactions)
+        .where(eq(transactions.userId, userId));
+    }
 
     if (data.projectId) {
       await db.insert(projectFinance).values({

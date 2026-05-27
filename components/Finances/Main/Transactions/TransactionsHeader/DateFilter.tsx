@@ -81,7 +81,10 @@ export default function DateFilter({
                       className={`flex items-center gap-2 uppercase cursor-pointer px-2 ${filters.datePreset === date ? "bg-cyan-500/15 text-cyan-300" : "text-zinc-500 hover:text-zinc-200"} transition-all duration-300`}
                       onClick={() =>
                         setFilters({
-                          datePreset: date as DatePreset,
+                          datePreset:
+                            filters.datePreset === date
+                              ? null
+                              : (date as DatePreset),
                           customDateRange: null,
                         })
                       }

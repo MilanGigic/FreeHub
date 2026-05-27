@@ -141,7 +141,7 @@ export default function NewProjectModal() {
               value={client.id}
               className="text-primary background-elevated border background-border rounded-lg p-2"
             >
-              {client.firstName} {client.lastName}
+              {client.clientName}
             </option>
           ))}
         </select>

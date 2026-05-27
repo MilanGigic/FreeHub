@@ -225,6 +225,20 @@
       "when": 1778670934715,
       "tag": "0031_vengeful_dorian_gray",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1779489144833,
+      "tag": "0032_clumsy_northstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1779490866549,
+      "tag": "0033_mute_diamondback",
+      "breakpoints": true
     }
   ]
 }
