@@ -370,6 +370,12 @@
     "effectiveRate": "Efektivna stopa:",
     "transactionDate": "Datum transakcije",
     "moreFilters": "Više filtera",
+    "projectName": "Naziv projekta",
+    "merchantName": "Naziv trgovca",
+    "category": "Kategorija",
+    "note": "Napomena",
+    "title": "Naziv",
+    "selectSearchableColumn": "Izaberite kolonu za filtriranje",
     "categories": {
       "salary": "Plata",
       "freelance_income": "Frilens prihod",

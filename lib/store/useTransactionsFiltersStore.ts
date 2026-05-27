@@ -1,3 +1,4 @@
+import { SearchableColumn } from "@/components/Finances/Main/Transactions/TransactionsHeader/SearchFilter";
 import { DateRange } from "react-day-picker";
 import { create } from "zustand";
 
@@ -5,8 +6,7 @@ export type FiltersType = "all" | "income" | "expense";
 
 export type DatePreset = "7d" | "30d" | "month" | "year";
 
-type TransactionFilters = {
-  search: string | null;
+export type TransactionFilters = {
   type: FiltersType | null;
   category: string | null;
 
@@ -22,6 +22,9 @@ type TransactionFilters = {
 
   datePreset: DatePreset | null;
   customDateRange: DateRange | null;
+
+  search: string | null;
+  searchColumn: SearchableColumn | null;
 };
 
 type TransactionsFiltersStore = {
@@ -33,7 +36,6 @@ type TransactionsFiltersStore = {
 };
 
 const initialFilters: TransactionFilters = {
-  search: null,
   type: null,
   category: null,
   deductibleOnly: false,
@@ -45,6 +47,8 @@ const initialFilters: TransactionFilters = {
   maxAmount: null,
   datePreset: null,
   customDateRange: null,
+  search: null,
+  searchColumn: null,
 };
 
 export const useTransactionsFiltersStore = create<TransactionsFiltersStore>(

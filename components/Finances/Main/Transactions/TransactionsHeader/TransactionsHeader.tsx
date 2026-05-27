@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import TypeFilter from "./TypeFilter";
@@ -11,6 +10,7 @@ import { useTranslations } from "next-intl";
 
 import MoreFilters from "./MoreFilters";
 import { useAuth } from "@/lib/useAuth";
+import SearchFilter from "./SearchFilter";
 
 export default function TransactionsHeader() {
   const { user } = useAuth();
@@ -26,7 +26,7 @@ export default function TransactionsHeader() {
 
   return (
     <div className="flex flex-col items-center justify-center w-full gap-4">
-      <Input className="text-primary border background-border rounded-2xl" />
+      <SearchFilter />
       <motion.div
         layout="position"
         className="primary-slate flex gap-4 justify-between w-full items-center"

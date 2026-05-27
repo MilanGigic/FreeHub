@@ -54,6 +54,15 @@ export const getColumns = (
         {row.original.projectName ?? "General"}
       </span>
     ),
+    filterFn: (row, columnId, value) => {
+      const cellValue = row.getValue(columnId);
+
+      if (!cellValue) return false;
+
+      return String(cellValue)
+        .toLowerCase()
+        .includes(String(value).toLowerCase());
+    },
   },
   {
     accessorKey: "clientName",
@@ -65,6 +74,15 @@ export const getColumns = (
         {row.original.clientName ?? "General"}
       </span>
     ),
+    filterFn: (row, columnId, value) => {
+      const cellValue = row.getValue(columnId);
+
+      if (!cellValue) return false;
+
+      return String(cellValue)
+        .toLowerCase()
+        .includes(String(value).toLowerCase());
+    },
   },
 
   // NEED TO DISPLAY CLIENT NAME - NOT CLIENT ID
@@ -122,14 +140,15 @@ export const getColumns = (
 
   {
     accessorKey: "note",
-
-    filterFn: (row, columnId, value) => {
-      if (!value) return true;
-
-      const note = row.getValue(columnId);
-
-      return typeof note === "string" && note.trim().length > 0;
-    },
     enableSorting: false,
+    filterFn: (row, columnId, value) => {
+      const cellValue = row.getValue(columnId);
+
+      if (!cellValue) return false;
+
+      return String(cellValue)
+        .toLowerCase()
+        .includes(String(value).toLowerCase());
+    },
   },
 ];

@@ -20,10 +20,10 @@ import {
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import { getColumns } from "@/components/Finances/Main/Transactions/TransactionsTable/columns";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTransactionsFiltersStore } from "@/lib/store/useTransactionsFiltersStore";
 import { useTranslations } from "next-intl";
-import { getPresetRange } from "@/components/Wizard/SRB/steps/4/helpers";
+import useBuildColumnFilters from "@/lib/transactions/useBuildColumnFilters";
 
 type TransactionsTableProps = {
   transactions: Transaction[];
@@ -57,85 +57,7 @@ export default function TransactionsTable({
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  useEffect(() => {
-    const nextFilters: ColumnFiltersState = [];
-
-    if (filters.type) {
-      nextFilters.push({
-        id: "type",
-        value: filters.type,
-      });
-    }
-
-    if (filters.category) {
-      nextFilters.push({
-        id: "category",
-        value: filters.category,
-      });
-    }
-
-    if (filters.customDateRange) {
-      nextFilters.push({
-        id: "transactionDate",
-        value: filters.customDateRange,
-      });
-    }
-
-    if (filters.datePreset) {
-      nextFilters.push({
-        id: "transactionDate",
-        value: getPresetRange(filters.datePreset),
-      });
-    }
-    if (filters.projectName) {
-      nextFilters.push({
-        id: "projectName",
-        value: filters.projectName,
-      });
-    }
-    if (filters.clientName) {
-      nextFilters.push({
-        id: "clientName",
-        value: filters.clientName,
-      });
-    }
-    if (filters.minAmount) {
-      nextFilters.push({
-        id: "minAmount",
-        value: filters.minAmount,
-      });
-    }
-    if (filters.maxAmount) {
-      nextFilters.push({
-        id: "maxAmount",
-        value: filters.maxAmount,
-      });
-    }
-
-    if (filters.deductibleOnly) {
-      nextFilters.push({
-        id: "deductible",
-        value: true,
-      });
-    }
-
-    if (filters.recurringOnly) {
-      nextFilters.push({
-        id: "isRecurring",
-        value: true,
-      });
-    }
-
-    if (filters.hasNotesOnly) {
-      nextFilters.push({
-        id: "note",
-        value: true,
-      });
-    }
-
-    setColumnFilters(nextFilters);
-  }, [filters]);
-
+  useBuildColumnFilters({ filters, setColumnFilters });
   return (
     <Table className="text-primary background-elevated border background-border">
       <TableCaption>A list of your transactions.</TableCaption>
