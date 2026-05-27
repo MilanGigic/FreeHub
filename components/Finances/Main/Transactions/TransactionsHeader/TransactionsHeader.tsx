@@ -79,7 +79,10 @@ export default function TransactionsHeader() {
         </motion.div>
 
         <div className="relative">
-          <button onClick={() => setShowMoreFilters(!showMoreFilters)}>
+          <button
+            className="h-10 px-4 flex items-center gap-2 text-xl transition-colors duration-200"
+            onClick={() => setShowMoreFilters(!showMoreFilters)}
+          >
             {t("moreFilters")}:
           </button>
           {showMoreFilters && <MoreFilters user={user} />}

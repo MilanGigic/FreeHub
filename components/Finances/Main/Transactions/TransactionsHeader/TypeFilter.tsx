@@ -3,6 +3,7 @@ import {
   useTransactionsFiltersStore,
 } from "@/lib/store/useTransactionsFiltersStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 export type FilterProps = {
   openFilters: "type" | "category" | "date" | null;
   setOpenFilters: (openFilters: "type" | "category" | "date" | null) => void;
@@ -15,6 +16,7 @@ export default function TypeFilter({
   setOpenFilters,
 }: FilterProps) {
   const { filters, setFilters } = useTransactionsFiltersStore();
+  const t = useTranslations("transactions");
   return (
     <motion.div
       layout="position"
@@ -33,7 +35,7 @@ export default function TypeFilter({
           openFilters === "type" ? setOpenFilters(null) : setOpenFilters("type")
         }
       >
-        Type{" "}
+        {t("type")}{" "}
         {filters.type ? (
           <span className="text-cyan-300 bg-cyan-500/15 uppercase">
             - {filters.type}

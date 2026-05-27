@@ -47,3 +47,11 @@ TODO: Work on Profile page where user can see all their tax profile data and upd
 ----- Create zustand store for independence test questions and store answers in the store. ********
 
 TODO: Work on Finances page. Refactor it so it has different tabs with more in details financial data. Add a section for tax optimization where user can see personalized tips and recommendations based on their financial data. Also add a section for tax deadlines where user can see upcoming tax deadlines and set reminders for them.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TODO: Add caching all across Transactions page
+TODO: Make Transactions page mobile-ui friendly

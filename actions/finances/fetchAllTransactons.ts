@@ -1,8 +1,6 @@
 "use server";
 
-import { db } from "@/db";
-import { projects, transactions } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getCachedTransactions } from "@/lib/cache/transactions";
 
 export async function fetchAllTransactions(userId: string) {
   if (!userId)
@@ -13,27 +11,7 @@ export async function fetchAllTransactions(userId: string) {
     };
 
   try {
-    const data = await db
-      .select({
-        id: transactions.id,
-        userId: transactions.userId,
-        projectId: transactions.projectId,
-        type: transactions.type,
-        amount: transactions.amount,
-        deductible: transactions.deductible,
-        category: transactions.category,
-        title: transactions.title,
-        isRecurring: transactions.isRecurring,
-        merchantName: transactions.merchantName,
-        note: transactions.note,
-        createdAt: transactions.createdAt,
-        updatedAt: transactions.updatedAt,
-        transactionDate: transactions.transactionDate,
-        projectName: projects.name,
-      })
-      .from(transactions)
-      .where(eq(transactions.userId, userId))
-      .leftJoin(projects, eq(transactions.projectId, projects.id));
+    const data = await getCachedTransactions(userId);
 
     return {
       message: `Found ${data.length} transactions`,

@@ -85,9 +85,6 @@ export const getColumns = (
     },
   },
 
-  // NEED TO DISPLAY CLIENT NAME - NOT CLIENT ID
-  // FIX THE FILTERS AS WELL
-
   {
     accessorKey: "deductible",
     header: "Deductible",

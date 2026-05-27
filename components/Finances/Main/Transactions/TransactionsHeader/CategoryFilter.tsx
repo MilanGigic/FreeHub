@@ -22,6 +22,7 @@ export default function CategoryFilter({
 }: FilterProps) {
   const { filters, setFilters } = useTransactionsFiltersStore();
   const tCategories = useTranslations("transactions.categories");
+  const t = useTranslations("transactions");
   const tCommon = useTranslations("common");
 
   const [selectedCategory, setSelectedCategory] =
@@ -47,7 +48,7 @@ export default function CategoryFilter({
             : setOpenFilters("category")
         }
       >
-        Category{" "}
+        {t("category")}{" "}
         {filters.category ? (
           <span className="text-green-300 bg-cyan-500/15 uppercase">
             - {tCategories(filters.category)}

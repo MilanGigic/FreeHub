@@ -1,9 +1,8 @@
 "use client";
 
-import { fetchAllProjects } from "@/actions/projects/fetchAllProjects";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { User } from "@/types/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectItem,
@@ -21,6 +20,7 @@ import useFetchAllProjects from "@/components/Projects/hooks/useFetchAllProjects
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
+import { motion } from "framer-motion";
 
 export default function MoreFilters({ user }: { user: User | null }) {
   const { projects } = useDataStore();
@@ -60,7 +60,13 @@ export default function MoreFilters({ user }: { user: User | null }) {
   useFetchAllProjects();
 
   return (
-    <div className="absolute right-0 top-full z-50 w-xs background-elevated border rounded-2xl border-white/8 p-4 flex flex-col gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ type: "spring", stiffness: 90, damping: 15 }}
+      className="absolute right-0 top-full z-50 w-xs background-elevated border rounded-2xl border-white/8 p-4 flex flex-col gap-4"
+    >
       <div>
         <h1 className="text-primary uppercase tracking-wider">
           {tCommon("project")}
@@ -211,6 +217,6 @@ export default function MoreFilters({ user }: { user: User | null }) {
       <button className="border p-2 rounded-2xl" onClick={() => resetFilters()}>
         {t("resetFilters")}
       </button>
-    </div>
+    </motion.div>
   );
 }

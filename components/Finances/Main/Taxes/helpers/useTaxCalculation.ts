@@ -34,7 +34,7 @@ export const useTaxCalculation = ({
     return () => {
       cancelled = true;
     };
-  }, [profile, snapshot.annualNetProfit, setTaxResult, setTaxMeta]);
+  }, [profile, setTaxResult, setTaxMeta]);
 
   useEffect(() => {
     computeSafeToSpend({

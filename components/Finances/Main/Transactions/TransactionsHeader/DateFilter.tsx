@@ -16,6 +16,7 @@ import {
   DatePreset,
   useTransactionsFiltersStore,
 } from "@/lib/store/useTransactionsFiltersStore";
+import { useTranslations } from "next-intl";
 
 const DATE_FILTERS = ["7d", "30d", "month", "year"];
 
@@ -24,6 +25,8 @@ export default function DateFilter({
   setOpenFilters,
 }: FilterProps) {
   const { filters, setFilters } = useTransactionsFiltersStore();
+
+  const t = useTranslations("transactions");
 
   const [showCustomDate, setShowCustomDate] = useState<boolean>(false);
   const [customDate, setCustomDate] = useState<DateRange | undefined>({
@@ -49,7 +52,7 @@ export default function DateFilter({
           openFilters === "date" ? setOpenFilters(null) : setOpenFilters("date")
         }
       >
-        Date
+        {t("date")}
       </button>
       <AnimatePresence mode="popLayout">
         {openFilters === "date" && (
@@ -89,14 +92,14 @@ export default function DateFilter({
                         })
                       }
                     >
-                      {date}
+                      {t(`${date}`)}
                     </button>
                   ))}
                   <button
                     className={`flex items-center gap-2 uppercase cursor-pointer px-2 ${showCustomDate ? "bg-cyan-500/15 text-cyan-300" : "text-zinc-500 hover:text-zinc-200"} transition-all duration-300`}
                     onClick={() => setShowCustomDate(!showCustomDate)}
                   >
-                    custom
+                    {t("custom")}
                   </button>
                 </motion.div>
               ) : (
@@ -123,7 +126,7 @@ export default function DateFilter({
                       onClick={() => setShowCustomDate(!showCustomDate)}
                       className={`flex items-center gap-2 uppercase cursor-pointer px-2 ${showCustomDate ? "text-(--accent-cyan)" : "hover:text-(--accent-cyan)"} transition-all duration-300`}
                     >
-                      custom
+                      {t("custom")}
                     </motion.button>
                     {showCustomDate && (
                       <motion.div

@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { clients, projects } from "@/db/schema";
-import { and, ilike, eq, sql } from "drizzle-orm";
+import { and, ilike, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       id: projects.id,
       userId: projects.userId,
       clientId: projects.clientId,
-      clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+      clientName: clients.clientName,
       name: projects.name,
       description: projects.description,
       totalRevenue: projects.totalRevenue,

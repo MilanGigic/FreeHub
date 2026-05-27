@@ -38,7 +38,7 @@ export default function SearchFilter() {
   const tCommon = useTranslations("common");
   const t = useTranslations("transactions");
 
-  const debouncedSearch = useDebounce(search, 300);
+  const debouncedSearch = useDebounce(search, 150);
 
   useEffect(() => {
     setFilters({ search: debouncedSearch });
