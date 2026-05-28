@@ -78,6 +78,7 @@ export interface Transaction {
   id: string;
   userId: string;
   projectId: string | null;
+  title: string;
   type: "income" | "expense";
   amount: string;
   deductible: boolean;

@@ -124,18 +124,21 @@ export default function AddTransactionModal({
 
   return (
     <motion.div
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: -100, opacity: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ type: "spring", stiffness: 90, damping: 15 }}
-      className="absolute top-full right-0 w-full max-w-2xl background-elevated border background-border rounded-lg p-4 flex items-center justify-center flex-col z-50"
+      className="lg:fixed lg:inset-0 absolute top-full bg-black/50 flex items-center justify-center z-50"
     >
-      <button onClick={onClose} className="absolute top-4 right-4 p-1">
-        <X className="w-8 h-8 text-primary transition-all border background-border rounded-full hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red) duration-300" />
+      <button
+        onClick={onClose}
+        className="absolute top-0 right-0 lg:top-16 lg:right-16 p-1"
+      >
+        <X className="w-8 h-8 lg:w-12 lg:h-12 lg:p-2 text-primary transition-all border background-border rounded-full hover:cursor-pointer hover:text-(--accent-red) hover:border-(--accent-red) duration-300" />
       </button>
 
       <form
-        className="flex flex-col gap-2 md:gap-4 border-b-2 background-border pb-4"
+        className="flex flex-col gap-2 md:gap-4 border-b-2 background-border background-elevated p-4 rounded-2xl"
         onSubmit={(e) => handleSubmit(e)}
       >
         <div>

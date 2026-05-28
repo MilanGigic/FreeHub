@@ -5,6 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 @custom-variant hover (&:hover);
 
+body {
+  background-color: var(--bg-main); /* or your background variable */
+  min-height: 100%;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

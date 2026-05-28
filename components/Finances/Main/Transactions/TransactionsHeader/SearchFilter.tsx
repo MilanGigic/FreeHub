@@ -59,8 +59,8 @@ export default function SearchFilter() {
         }
         className="text-primary border background-border rounded-2xl text-center disabled:border-(--accent-amber) disabled:bg-(--accent-red)/35 transition-all duration-300"
       />
-      <div className="flex items-center justify-start gap-4">
-        <h1 className="text-primary w-[200px] uppercase tracking-wider text-center">
+      <div className="lg:flex lg:flex-row flex flex-col items-center justify-start gap-4">
+        <h1 className="text-primary lg:w-[200px] uppercase tracking-wider text-center">
           Search in:
         </h1>
         <Select

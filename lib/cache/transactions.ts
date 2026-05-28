@@ -8,6 +8,7 @@ import { unstable_cache } from "next/cache";
 export const getCachedTransactions = async (userId: string) =>
   unstable_cache(
     async () => {
+      console.log("CACHE MISS — fetching from DB", userId);
       return db
         .select({
           id: transactions.id,

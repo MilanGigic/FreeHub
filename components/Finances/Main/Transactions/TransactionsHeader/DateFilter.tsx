@@ -105,7 +105,7 @@ export default function DateFilter({
               ) : (
                 <motion.div
                   key="custom-picker"
-                  className="w-[400px]"
+                  className="w-[300px] lg:w-[400px]"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -139,7 +139,7 @@ export default function DateFilter({
                           damping: 15,
                           mass: 1,
                         }}
-                        className="w-[400px]"
+                        className="w-[300px] lg:w-[400px]"
                       >
                         <Field className="mx-auto w-full">
                           <Popover>
@@ -164,10 +164,7 @@ export default function DateFilter({
                                 )}
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent
-                              className="w-full p-0"
-                              align="center"
-                            >
+                            <PopoverContent className="w-full p-1" align="end">
                               <Calendar
                                 mode="range"
                                 defaultMonth={customDate?.from}
@@ -181,6 +178,7 @@ export default function DateFilter({
                                   });
                                 }}
                                 numberOfMonths={2}
+                                className="background-elevated"
                               />
                             </PopoverContent>
                           </Popover>
