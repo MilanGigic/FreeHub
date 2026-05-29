@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
@@ -23,11 +23,10 @@ export default function DashboardHydrator({
 }: {
   payload: DashboardHydrationPayload;
 }) {
-  const didHydrate = useRef(false);
+  const initialized = useRef(false);
 
-  useEffect(() => {
-    if (didHydrate.current) return;
-    didHydrate.current = true;
+  if (!initialized.current) {
+    initialized.current = true;
 
     useClientStore.getState().setClients(payload.clients);
     useDataStore.getState().setProjects(payload.projects);
@@ -48,7 +47,6 @@ export default function DashboardHydrator({
       0,
     );
     useDataStore.getState().setBalance(totalProfit.toFixed(2));
-  }, [payload]);
-
+  }
   return null;
 }

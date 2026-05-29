@@ -4,6 +4,11 @@ export type SimulationInput = {
   isRecurring: boolean;
   note: string;
   deductible: boolean;
+  merchant: string | null;
+  title: string | null;
+  projectId: string | null;
+  clientId: string | null;
+  transactionDate: string | null;
 };
 
 export type SimulationResult = {

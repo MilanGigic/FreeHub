@@ -23,8 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { transactionCategories } from "@/config/constants";
-import useFetchAllProjects from "./hooks/useFetchAllProjects";
-import useFetchAllClients from "../Clients/hooks/(clients)/useFetchAllClients";
 import { useClientStore } from "@/lib/store/useClientStore";
 
 export default function AddTransactionModal({
@@ -118,9 +116,6 @@ export default function AddTransactionModal({
       setIsLoading(false);
     }
   };
-
-  useFetchAllProjects();
-  useFetchAllClients();
 
   return (
     <motion.div

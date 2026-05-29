@@ -9,6 +9,7 @@ import VatStatusCard from "./VatStatusCard";
 import NetProfitCard from "./NetProfitCard";
 import ConfidenceLevelCard from "./ConfidenceLevelCard";
 import WarningsCard from "./WarningsCard";
+import { useTranslations } from "next-intl";
 
 type TaxesTabProps = {
   isComputable: boolean;
@@ -19,6 +20,7 @@ export default function TaxesTab({
   isComputable,
   pausalSource,
 }: TaxesTabProps) {
+  const t = useTranslations("taxes");
   const { taxResult } = useTaxProfileStore();
 
   return (
@@ -34,19 +36,19 @@ export default function TaxesTab({
       {!isComputable && (
         <div className="p-6 rounded-xl border background-elevated flex flex-col gap-4 items-center">
           <h2 className="text-lg font-semibold text-primary">
-            Ne možemo izračunati porez
+            {t("cantCalculateTaxes")}
           </h2>
 
           <p className="text-sm primary-slate">
-            Nedostaju podaci o opštini ili šifri delatnosti.
+            {t("missingMunicipalityOrActivity")}
           </p>
 
           <div className="flex gap-3">
             <button className="px-4 py-2 rounded-lg bg-(--accent-amber)/20 border border-(--accent-amber) text-primary hover:bg-(--accent-amber)/40 cursor-pointer transition-all duration-300">
-              Dopuni profil
+              {t("setupProfile")}
             </button>
             <button className="px-4 py-2 rounded-lg border background-elevated text-primary border-(--accent-purple) bg-(--accent-purple)/20 hover:bg-(--accent-purple)/40 cursor-pointer transition-all duration-300">
-              Unesi ručno
+              {t("manualInput")}
             </button>
           </div>
         </div>

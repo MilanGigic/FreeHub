@@ -3,6 +3,7 @@
 import { TaxResult } from "@/lib/store/useTaxProfileStore";
 import { useEffect, useState } from "react";
 import { getObservationsCount } from "./helpers/getObservationsCount";
+import { useTranslations } from "next-intl";
 
 type ConfidenceLevelCardProps = {
   taxResult: TaxResult;
@@ -11,6 +12,8 @@ type ConfidenceLevelCardProps = {
 export default function ConfidenceLevelCard({
   taxResult,
 }: ConfidenceLevelCardProps) {
+  const t = useTranslations("taxes");
+
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -24,38 +27,38 @@ export default function ConfidenceLevelCard({
   const status = count
     ? count >= 12
       ? {
-          label: "Visoka",
-          description: "Pouzdanost računice visoke vrednosti",
+          label: "highConfidence",
+          description: "highConfidenceDesc",
           color: "primary-green",
           border: "border-(--accent-green)/30",
           bg: "bg-(--accent-green)/10",
         }
       : count >= 6
         ? {
-            label: "Srednja",
-            description: `Pouzdanost računice srednje vrednosti`,
+            label: "midConfidence",
+            description: `midConfidenceDesc`,
             color: "primary-cyan",
             border: "border-(--accent-cyan)/30",
             bg: "bg-(--accent-cyan)/10",
           }
         : count >= 3
           ? {
-              label: "Prihvatljiva",
-              description: "Pouzdanost računice prihvatljive vrednosti",
+              label: "acceptableConfidence",
+              description: "acceptableConfidenceDesc",
               color: "primary-amber",
               border: "border-(--accent-amber)/30",
               bg: "bg-(--accent-amber)/10",
             }
           : {
-              label: "Niska",
-              description: "Pouzdanost računice niske vrednosti",
+              label: "lowConfidence",
+              description: "lowConfidenceDesc",
               color: "primary-red",
               border: "border-(--accent-red)/30",
               bg: "bg-(--accent-red)/10",
             }
     : {
-        label: "Veoma Niska",
-        description: "Pouzdanost računice veoma niske vrednosti",
+        label: "veryLowConfidence",
+        description: "veryLowConfidenceDesc",
         color: "primary-red",
         border: "border-(--accent-red)/80",
         bg: "bg-(--accent-red)/60",
@@ -68,23 +71,24 @@ export default function ConfidenceLevelCard({
       <div className="flex items-start justify-between">
         <div>
           <span className="text-sm uppercase tracking-wide primary-slate">
-            Pouzdanost
+            {t("confidence")}
           </span>
           <h1 className="text-xl font-bold uppercase text-primary">
-            {status.description}
+            {t(`${status.description}`)}
           </h1>
         </div>
 
         <div
           className={`px-3 py-1 flex items-center justify-center rounded-full text-sm border ${status.border} ${status.bg} ${status.color}`}
         >
-          {status.label}
+          {t(`${status.label}`)}
         </div>
       </div>
 
       <div className="w-full border-b border-(--accent-slate) pb-2">
         <h1 className="primary-slate">
-          Bazirano na {count} verifikovanih prijava
+          {" "}
+          {t("confidenceDescription1")} {count} {t("confidenceDescription2")}
         </h1>
       </div>
     </div>

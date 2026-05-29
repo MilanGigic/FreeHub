@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 type TaxRunwayCardProps = {
   currentBalance: number;
   monthlyTaxReserve: number;
@@ -9,6 +11,9 @@ export default function TaxRunwayCard({
   currentBalance,
   monthlyTaxReserve,
 }: TaxRunwayCardProps) {
+  const t = useTranslations("taxes");
+  const c = useTranslations("common");
+
   // ─── Core calculation ─────────────────────────────────────────────
   // How many months of taxes can user survive if income stops today
 
@@ -20,27 +25,27 @@ export default function TaxRunwayCard({
   const status =
     runwayMonths >= 12
       ? {
-          label: "Odlična sigurnost",
+          label: "excellentSafety",
           color: "primary-green",
           border: "border-(--accent-green)/60",
           bg: "bg-(--accent-green)/10",
         }
       : runwayMonths >= 6
         ? {
-            label: "Stabilna rezerva",
+            label: "stableSafety",
             color: "primary-cyan",
             border: "border-(--accent-cyan)/60",
             bg: "bg-(--accent-cyan)/10",
           }
         : runwayMonths >= 3
           ? {
-              label: "Srednji rizik",
+              label: "midSafety",
               color: "primary-amber",
               border: "border-(--accent-amber)/60",
               bg: "bg-(--accent-amber)/10",
             }
           : {
-              label: "Niska rezerva",
+              label: "lowSafety",
               color: "primary-red",
               border: "border-(--accent-red)/60",
               bg: "bg-(--accent-red)/10",
@@ -59,12 +64,14 @@ export default function TaxRunwayCard({
       <div className="flex items-start justify-between">
         <div className="flex flex-col">
           <span className="text-sm uppercase tracking-wide primary-slate">
-            Tax Runway
+            {t("taxRunway")}
           </span>
 
           <h2 className="text-3xl font-bold text-primary tabular-nums">
             {runwayMonths.toFixed(1)}{" "}
-            <span className="text-xl font-medium primary-slate">meseci</span>
+            <span className="text-xl font-medium primary-slate">
+              {c("months")}
+            </span>
           </h2>
         </div>
 
@@ -94,16 +101,15 @@ export default function TaxRunwayCard({
       {/* Explanation */}
       <div className="flex flex-col gap-1">
         <p className="text-sm text-primary">
-          Ako prihod stane danas, trenutni balans pokriva približno{" "}
+          {t("taxRunwayDescription1")}{" "}
           <span className={`font-semibold ${status.color}`}>
-            {runwayMonths.toFixed(1)} meseci
+            {runwayMonths.toFixed(1)} {c("months")}
           </span>{" "}
-          poreskih obaveza.
+          {t("taxRunwayDescription2")}.
         </p>
 
         <p className="text-xs primary-slate">
-          Bazirano na mesečnoj rezervi od {monthlyTaxReserve.toLocaleString()}{" "}
-          RSD.
+          {t("taxRunwayDescription3")} {monthlyTaxReserve.toLocaleString()} RSD.
         </p>
       </div>
     </div>

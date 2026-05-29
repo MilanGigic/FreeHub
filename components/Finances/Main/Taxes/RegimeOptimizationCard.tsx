@@ -1,6 +1,7 @@
 "use client";
 
 import { TaxResult } from "@/lib/store/useTaxProfileStore";
+import { useTranslations } from "next-intl";
 
 type RegimeOptimizationCardProps = {
   taxResult: TaxResult;
@@ -9,13 +10,15 @@ type RegimeOptimizationCardProps = {
 export default function RegimeOptimizationCard({
   taxResult,
 }: RegimeOptimizationCardProps) {
+  const t = useTranslations("taxes");
+
   const PAUSAL_TO_KNJIGAS_LIMIT = 6000000;
 
   return (
     <div className="flex flex-col gap-4 border border-white/5 hover:border-(--accent-cyan)/30 background-elevated rounded-2xl p-4  transition-all duration-300">
       <div className="flex flex-col">
         <span className="text-sm uppercase tracking-wide primary-slate">
-          Optimalnost režima
+          {t("regimeEfficiency")}
         </span>
         <h1 className="text-2xl font-bold uppercase text-primary">
           {taxResult.netProfit >
@@ -55,10 +58,10 @@ export default function RegimeOptimizationCard({
 
           <div className="flex items-center gap-2">
             <h1 className="text-primary">
-              Optimalna tranzicija ~5,900,000 RSD
+              {t("optimalTransition")} ~5,900,000 RSD
             </h1>
             <span className="primary-slate uppercase text-sm">
-              - Trenutni prihod:
+              - {t("currentIncome")}:
             </span>
             <h1 className="text-primary">
               {taxResult.netProfit.toLocaleString()} RSD

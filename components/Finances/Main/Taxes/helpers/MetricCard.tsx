@@ -1,4 +1,5 @@
 import { Percent, Receipt } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function MetricCard({
   label,
@@ -7,7 +8,8 @@ export default function MetricCard({
   label: string;
   value: string;
 }) {
-  const metricIcon = label === "Efektivna stopa" ? <Percent /> : <Receipt />;
+  const t = useTranslations("taxes");
+  const metricIcon = label === "effectiveRate" ? <Percent /> : <Receipt />;
 
   return (
     <div className="background-elevated border background-border rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-zinc-600 transition-colors duration-200 w-full">
@@ -25,7 +27,7 @@ export default function MetricCard({
         {metricIcon}
         {value}
       </p>
-      <h1 className="text-xl text-primary">{label}</h1>
+      <h1 className="text-xl text-primary">{t(`${label}`)}</h1>
     </div>
   );
 }

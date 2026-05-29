@@ -12,9 +12,16 @@ export default function ProjectProfitability() {
   const { projects } = useDataStore();
 
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null,
+  );
 
-  const tableLists = [t("clientColumn"), t("revenueColumn"), t("expensesColumn"), t("profitColumn")];
+  const tableLists = [
+    t("clientColumn"),
+    t("revenueColumn"),
+    t("expensesColumn"),
+    t("profitColumn"),
+  ];
 
   const filteredProjects = useMemo(() => {
     if (!selectedProjectId) return projects;
@@ -22,7 +29,8 @@ export default function ProjectProfitability() {
   }, [projects, selectedProjectId]);
 
   const dropdownLabel = selectedProjectId
-    ? projects.find((p) => p.id === selectedProjectId)?.name ?? t("allProjects")
+    ? (projects.find((p) => p.id === selectedProjectId)?.name ??
+      t("allProjects"))
     : t("allProjects");
 
   function renderSelectedClient(clientId: string) {
@@ -30,7 +38,7 @@ export default function ProjectProfitability() {
     if (!client) return null;
     return (
       <h1 className="text-sm text-primary text-center w-full">
-        {client.firstName} {client.lastName}
+        {client.clientName}
       </h1>
     );
   }
@@ -91,7 +99,9 @@ export default function ProjectProfitability() {
         </div>
         <div>
           {filteredProjects.length === 0 && (
-            <p className="text-sm primary-slate text-center py-4">{t("noProjectsFound")}</p>
+            <p className="text-sm primary-slate text-center py-4">
+              {t("noProjectsFound")}
+            </p>
           )}
           {filteredProjects.map((project) => (
             <div key={project.id}>
@@ -109,14 +119,18 @@ export default function ProjectProfitability() {
                 <h1 className="text-sm primary-slate text-center w-full">
                   $
                   <span className="primary-red ml-0.5">
-                    {Number(project.totalExpenses || 0).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {Number(project.totalExpenses || 0).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      },
+                    )}
                   </span>
                 </h1>
                 <h1 className="text-sm primary-cyan text-center w-full font-semibold">
-                  ${Number(project.totalProfit || 0).toLocaleString("en-US", {
+                  $
+                  {Number(project.totalProfit || 0).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}

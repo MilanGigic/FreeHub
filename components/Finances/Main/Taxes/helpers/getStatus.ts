@@ -6,8 +6,8 @@ export function getStatus(
 ) {
   if (!isComputable) {
     return {
-      label: "Nedostaju podaci",
-      description: "Ne možemo izračunati porez bez dodatnih informacija",
+      label: "missingData",
+      description: "missingDataDescription",
       container: "border-red-500/30 bg-red-500/10",
       text: "text-red-400",
       cta: "Dopuni profil",
@@ -16,8 +16,8 @@ export function getStatus(
 
   if (source === "verified") {
     return {
-      label: "Verifikovan obračun",
-      description: "Bazirano na zvaničnim podacima",
+      label: "verifiedCalculation",
+      description: "verifiedCalculationDescription",
       container: "border-green-500/30 bg-green-500/10",
       text: "text-green-400",
       cta: null,
@@ -26,8 +26,8 @@ export function getStatus(
 
   if (source === "user") {
     return {
-      label: "Korišćen ručni unos",
-      description: "Rezultat može odstupati od stvarnog poreza",
+      label: "manualAmountUsed",
+      description: "manualAmountUsedDescription",
       container: "border-yellow-500/30 bg-yellow-500/10",
       text: "text-yellow-400",
       cta: "Poboljšaj tačnost",
@@ -35,8 +35,8 @@ export function getStatus(
   }
 
   return {
-    label: "Nepoznat status",
-    description: "",
+    label: "unknownStatus",
+    description: "unknownStatusDescription",
     container: "border-neutral-500/30 bg-neutral-500/10",
     text: "text-neutral-400",
     cta: null,

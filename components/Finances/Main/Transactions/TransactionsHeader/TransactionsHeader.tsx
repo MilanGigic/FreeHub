@@ -34,23 +34,10 @@ export default function TransactionsHeader() {
       {/* HEADER CONTROLS */}
       <motion.div
         layout
-        className="
-          flex flex-col xl:flex-row
-          xl:items-center
-          justify-between
-          gap-4
-          w-full
-        "
+        className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 w-full"
       >
         {/* FILTERS */}
-        <div
-          className="
-            flex flex-wrap
-            items-center
-            gap-2 md:gap-4
-            w-full xl:w-auto text-primary
-          "
-        >
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full xl:w-auto text-primary">
           <TypeFilter
             openFilters={openFilters}
             setOpenFilters={setOpenFilters}
@@ -68,14 +55,7 @@ export default function TransactionsHeader() {
         </div>
 
         {/* ACTIONS */}
-        <div
-          className="
-            flex flex-col sm:flex-row
-            items-stretch sm:items-center
-            gap-3
-            w-full xl:w-auto text-primary
-          "
-        >
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto text-primary">
           {/* ADD TRANSACTION */}
           <motion.div
             layout="position"
@@ -90,21 +70,11 @@ export default function TransactionsHeader() {
           >
             <button
               onClick={() => setOpenTransactionModal(true)}
-              className={`
-                w-full sm:w-auto
-                text-primary uppercase tracking-wide font-bold
-                px-4 py-3
-                border rounded-2xl
-                whitespace-nowrap
-
-                ${
-                  openTransactionModal
-                    ? "bg-(--accent-green)/40"
-                    : "bg-(--accent-green)/20 border-(--accent-green) hover:bg-(--accent-green)/40"
-                }
-
-                transition-all duration-300
-              `}
+              className={`w-full sm:w-auto text-primary uppercase tracking-wide font-bold px-4 py-3 border rounded-2xl whitespace-nowrap ${
+                openTransactionModal
+                  ? "bg-(--accent-green)/40"
+                  : "bg-(--accent-green)/20 border-(--accent-green) hover:bg-(--accent-green)/40"
+              } transition-all duration-300`}
             >
               {t("addTransactionButton")}
             </button>
@@ -131,19 +101,7 @@ export default function TransactionsHeader() {
           {/* MORE FILTERS */}
           <div className="relative w-full sm:w-auto">
             <button
-              className="
-                w-full sm:w-auto
-                h-12
-                px-4
-                flex items-center justify-center gap-2
-                text-base md:text-lg
-                border rounded-2xl
-                background-elevated
-                border-white/10 text-primary
-                hover:border-(--accent-cyan)
-                hover:bg-(--accent-cyan)/10
-                transition-all duration-300
-              "
+              className="w-full sm:w-auto h-12 px-4 flex items-center justify-center gap-2 text-base md:text-lg border rounded-2xl background-elevated border-white/10 text-primary hover:border-(--accent-cyan) hover:bg-(--accent-cyan)/10 transition-all duration-300"
               onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               {t("moreFilters")}
