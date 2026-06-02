@@ -11,7 +11,7 @@ export default function FinancesHero() {
   const stats = [
     {
       label: t("taxReserved"),
-      value: `$${Number(taxResult.monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `${Number(taxResult.monthlyTaxReserve).toLocaleString("en-US", { minimumFractionDigits: 0 })} RSD`,
       icon: Shield,
       color: "text-(--accent-amber)",
       bg: "bg-(--accent-amber)/10",
@@ -19,7 +19,7 @@ export default function FinancesHero() {
     },
     {
       label: t("safetyBuffer"),
-      value: `$${Number(safeToSpend.safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `${Number(safeToSpend.safetyBuffer).toLocaleString("en-US", { minimumFractionDigits: 0 })} RSD`,
       icon: Wallet,
       color: "text-(--accent-purple)",
       bg: "bg-(--accent-purple)/10",
@@ -57,10 +57,10 @@ export default function FinancesHero() {
           </p>
           <div>
             <p className="text-5xl font-bold text-(--accent-cyan) leading-none tabular-nums">
-              $
               {safeToSpend.amount.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
-              })}
+              })}{" "}
+              RSD
             </p>
             <p className="text-xs text-primary mt-2">
               {t("afterTaxesAndExpenses")}

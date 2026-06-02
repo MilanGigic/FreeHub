@@ -30,7 +30,6 @@ export default async function DashboardPage() {
       </div>
     );
   }
-
   const res = await fetchDashboardData(user.id);
   const payload = res.success && res.data ? res.data : null;
 

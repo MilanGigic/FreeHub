@@ -5,6 +5,7 @@ import { revalidateTag } from "next/cache";
 import { recalculateProjectTotals } from "@/utils/recalculateProjectTotals";
 import { TransactionCategory } from "@/config/constants";
 import { eq } from "drizzle-orm";
+import { Currency } from "@/types/types";
 
 type CommitTransactionProps = {
   type: "income" | "expense";
@@ -17,6 +18,8 @@ type CommitTransactionProps = {
   deductible: boolean;
   projectId: string | null;
   clientId: string | null;
+  currency: Currency;
+  isRecurring: boolean;
 };
 
 export async function commitTransaction(
@@ -38,6 +41,8 @@ export async function commitTransaction(
         merchantName: data.merchant,
         transactionDate: new Date(data.transactionDate),
         note: data.note,
+        currency: data.currency,
+        isRecurring: data.isRecurring,
       })
       .returning({
         id: transactions.id,
@@ -62,6 +67,7 @@ export async function commitTransaction(
         projectName: projects.name,
         clientName: clients.clientName,
         clientId: clients.id,
+        currency: transactions.currency,
       })
       .from(transactions)
       .leftJoin(projects, eq(transactions.projectId, projects.id))

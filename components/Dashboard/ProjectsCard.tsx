@@ -82,9 +82,11 @@ export default function ProjectsCard() {
                       {project.name}
                     </td>
                     <td className="primary-slate">{project.description}</td>
-                    <td className="primary-green">${project.totalRevenue}</td>
-                    <td className="primary-red">${project.totalExpenses}</td>
-                    <td className="primary-green">${project.totalProfit}</td>
+                    <td className="primary-green">
+                      {project.totalRevenue} RSD
+                    </td>
+                    <td className="primary-red">{project.totalExpenses} RSD</td>
+                    <td className="primary-green">{project.totalProfit} RSD</td>
                     <td className="primary-purple">
                       {project.totalHoursWorked}
                     </td>

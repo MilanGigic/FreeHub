@@ -8,7 +8,7 @@ type VatStatusCardProps = {
 const VAT_LIMIT = 8000000;
 
 export default function VatStatusCard({ taxResult }: VatStatusCardProps) {
-  const vatStatus = (taxResult.netProfit / VAT_LIMIT) * 100;
+  const vatStatus = (Number(taxResult.annualRevenue) / VAT_LIMIT) * 100;
   return (
     <div className="border background-border rounded-2xl p-6 background-elevated flex flex-col gap-4">
       <p className="text-lg font-semibold tracking-widest text-primary uppercase">
@@ -37,7 +37,7 @@ export default function VatStatusCard({ taxResult }: VatStatusCardProps) {
                       `}
           />
           <h1 className="absolute text-primary top-1/2 left-4 -translate-y-1/2 font-bold text-2xl flex items-center gap-1">
-            {taxResult.netProfit.toLocaleString()}{" "}
+            {taxResult.annualRevenue.toLocaleString()}{" "}
             <span className="text-lg text-primary font-semibold">RSD</span>
           </h1>
           <p className="absolute text-primary top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 font-semibold text-3xl">

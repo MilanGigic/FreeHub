@@ -64,6 +64,9 @@ export default function TaxRunwayCard({
       <div className="flex items-start justify-between">
         <div className="flex flex-col">
           <span className="text-sm uppercase tracking-wide primary-slate">
+            {currentBalance === 0 && (
+              <p className="text-xs primary-slate">{t("noBalanceData")}</p>
+            )}
             {t("taxRunway")}
           </span>
 

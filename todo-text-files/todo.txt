@@ -53,5 +53,7 @@ TODO: Work on Finances page. Refactor it so it has different tabs with more in d
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-TODO: Add caching all across Transactions page
-TODO: Make Transactions page mobile-ui friendly
+TODO: Add currency convertor
+TODO: Replace all hardcoded currencies with correct ones
+TODO: In taxes tab work on visibility and readability, right now it doesn't really make any sense ---
+---> Add balance, add tax liability card, remove ConfidenceLevelCard

@@ -17,7 +17,7 @@ export default function NetProfitCard({ taxResult }: NetProfitCardProps) {
         <div className="absolute -top-8 -right-8 w-32 h-32 bg-green-500/10 rounded-full blur-2xl pointer-events-none" />
 
         <p className="text-lg font-semibold tracking-widest text-primary uppercase">
-          {f("netProfitDelta")}
+          {f("netProfit")}
         </p>
         <div>
           <p className="text-5xl font-bold text-(--accent-green) leading-none tabular-nums flex items-center gap-1">

@@ -10,6 +10,9 @@ import NetProfitCard from "./NetProfitCard";
 import ConfidenceLevelCard from "./ConfidenceLevelCard";
 import WarningsCard from "./WarningsCard";
 import { useTranslations } from "next-intl";
+import { useDataStore } from "@/lib/store/useDataStore";
+import ProfitAfterTaxCard from "./ProfitAfterTaxCard";
+import TaxBreakdownCard from "./TaxBreakdownCard";
 
 type TaxesTabProps = {
   isComputable: boolean;
@@ -22,6 +25,7 @@ export default function TaxesTab({
 }: TaxesTabProps) {
   const t = useTranslations("taxes");
   const { taxResult } = useTaxProfileStore();
+  const { balance } = useDataStore();
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,16 +73,19 @@ export default function TaxesTab({
 
           <div className="xl:grid xl:grid-cols-12 flex flex-col w-full h-full gap-4">
             <div className="xl:col-span-4 w-full h-full">
-              <TaxRunwayCard
-                currentBalance={taxResult.netProfit}
+              {/* <TaxRunwayCard
+                currentBalance={Number(balance) ?? 0}
                 monthlyTaxReserve={taxResult.monthlyTaxReserve}
-              />
+              /> */}
+              <TaxBreakdownCard />
             </div>
             <div className="xl:col-span-4 w-full h-full">
               <RegimeOptimizationCard taxResult={taxResult} />
             </div>
             <div className="xl:col-span-4 w-full h-full">
-              <ConfidenceLevelCard taxResult={taxResult} />
+              {/* <ConfidenceLevelCard taxResult={taxResult} /> */}
+              <ProfitAfterTaxCard />
+              {/* REPLACE THIS CARD WITH TAX LIABILITY CARD */}
             </div>
           </div>
 

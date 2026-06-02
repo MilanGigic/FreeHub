@@ -36,7 +36,7 @@ export default function ClientsCard() {
           <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
             {t("outstandingInvoices")}{" "}
             <span className="font-bold primary-amber flex items-center gap-2">
-              ${allOutstandingInvoices.data} -{" "}
+              {allOutstandingInvoices.data} RSD -{" "}
               <span className="text-sm primary-slate">
                 {allOutstandingInvoices.count} {t("invoices")}
               </span>
@@ -45,7 +45,7 @@ export default function ClientsCard() {
           <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
             {t("overdueInvoices")}{" "}
             <span className="font-bold primary-red flex items-center gap-2">
-              ${allOverdueInvoices.data} -{" "}
+              {allOverdueInvoices.data} RSD -{" "}
               <span className="text-sm primary-slate">
                 {allOverdueInvoices.count} {t("invoices")}
               </span>

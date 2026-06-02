@@ -1,3 +1,5 @@
+import { Currency } from "@/types/types";
+
 export type SimulationInput = {
   type: "income" | "expense";
   amount: number;
@@ -9,6 +11,7 @@ export type SimulationInput = {
   projectId: string | null;
   clientId: string | null;
   transactionDate: string | null;
+  currency: Currency | null;
 };
 
 export type SimulationResult = {

@@ -18,6 +18,7 @@ export type TaxWarnings = {
 
 export type TaxResult = {
   netProfit: number;
+  annualRevenue: number;
 
   // US-specific
   seTax: number;
@@ -128,6 +129,7 @@ const initialProfile: CountryTaxProfile = null;
 
 const initialTaxResult: TaxResult = {
   netProfit: 0,
+  annualRevenue: 0,
   seTax: 0,
   federalTax: 0,
   qbiDeduction: 0,

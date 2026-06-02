@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "currency" "currency" DEFAULT 'USD' NOT NULL;

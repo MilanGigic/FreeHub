@@ -3,7 +3,7 @@
 import { commitTransaction } from "@/actions/finances/commitTransaction";
 import { fetchProjectById } from "@/actions/projects/fetchProjectById";
 import { useAuth } from "@/lib/useAuth";
-import { Project } from "@/types/types";
+import { Currency, Project } from "@/types/types";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { transactionCategories } from "@/config/constants";
 import { useClientStore } from "@/lib/store/useClientStore";
+import { Checkbox } from "../ui/checkbox";
 
 export default function AddTransactionModal({
   onClose,
@@ -53,6 +54,8 @@ export default function AddTransactionModal({
     note: string;
     transactionDate: string;
     deductible: boolean;
+    currency: Currency;
+    isRecurring: boolean;
   }>({
     type: "income" as "income" | "expense",
     amount: "0",
@@ -63,6 +66,8 @@ export default function AddTransactionModal({
     note: "",
     transactionDate: "",
     deductible: false,
+    currency: "USD",
+    isRecurring: false,
   });
 
   const [selectedCategory, setSelectedCategory] =
@@ -82,12 +87,14 @@ export default function AddTransactionModal({
       amount: Number(form.amount),
       title: form.title,
       merchant: form.merchant,
+      currency: form.currency,
       category: selectedCategory,
       note: form.note || "",
       transactionDate: form.transactionDate,
       deductible: form.deductible,
       projectId: form.projectId ? form.projectId : null,
       clientId: form.clientId ? form.clientId : null,
+      isRecurring: form.isRecurring,
     };
     console.log("Submitting transaction with data:", transactionData);
 
@@ -169,6 +176,29 @@ export default function AddTransactionModal({
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
           />
+        </div>
+        <div>
+          <label
+            htmlFor="currency"
+            className="text-lg font-semibold uppercase primary-slate"
+          >
+            {t("currencyLabel")}
+          </label>
+          <select
+            id="currency"
+            className="w-full p-2 border background-border rounded-lg outline-none focus:border-(--accent-cyan)/60 transition-all duration-300 text-primary background-elevated"
+            value={form.currency}
+            onChange={(e) =>
+              setForm({ ...form, currency: e.target.value as Currency })
+            }
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="RSD">RSD</option>
+            <option value="CAD">CAD</option>
+          </select>
         </div>
         <div>
           <label
@@ -349,20 +379,31 @@ export default function AddTransactionModal({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label
-            htmlFor="deductible"
-            className="text-lg font-semibold uppercase primary-slate"
-          >
-            {t("deductible")}
-          </label>
-          <input
-            type="checkbox"
-            id="deductible"
-            className="p-2 "
-            checked={form.deductible}
-            onChange={(e) => setForm({ ...form, deductible: e.target.checked })}
-          />
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold uppercase primary-slate">
+              {t("deductible")}
+            </h1>
+            <Checkbox
+              className="p-2"
+              checked={form.deductible}
+              onCheckedChange={(checked) =>
+                setForm({ ...form, deductible: checked.valueOf() as boolean })
+              }
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold uppercase primary-slate">
+              {t("isRecurring")}
+            </h1>
+            <Checkbox
+              className="p-2"
+              checked={form.isRecurring}
+              onCheckedChange={(checked) =>
+                setForm({ ...form, isRecurring: checked.valueOf() as boolean })
+              }
+            />
+          </div>
         </div>
         <button
           type="submit"

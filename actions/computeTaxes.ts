@@ -176,6 +176,7 @@ function calculateTaxes(
         health: 0,
         expensesDeducted: homeOfficeDeduction,
       },
+      annualRevenue: Number(input.annualGross),
     };
   }
 
@@ -205,6 +206,7 @@ function calculateTaxes(
       health: result.itemized.health,
       expensesDeducted: result.itemized.expensesDeducted,
     },
+    annualRevenue: Number(input.annualGross),
   };
 }
 
@@ -242,6 +244,7 @@ export async function computeTaxesAction(
         effectiveTaxRate: 0,
         warnings: [],
         itemized: { incomeTax: 0, pension: 0, health: 0, expensesDeducted: 0 },
+        annualRevenue: 0,
       },
       meta: {
         isComputable: false,

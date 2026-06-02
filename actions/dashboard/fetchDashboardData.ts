@@ -5,6 +5,7 @@ import { clients, invoices, projects } from "@/db/schema";
 import { and, eq, or, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getTaxProfile } from "../taxProfile";
+import { getAnnualRevenue } from "../finances/getAnnualRevenue";
 
 const DASHBOARD_TAG = "dashboard-data";
 
@@ -21,6 +22,7 @@ const fetchDashboardDataCached = unstable_cache(
         activeProjectsList,
         outstandingAgg,
         taxProfile,
+        annualRevenue,
       ] = await Promise.all([
         db.select().from(clients).where(eq(clients.userId, userId)),
         db
@@ -80,6 +82,7 @@ const fetchDashboardDataCached = unstable_cache(
           ),
 
         getTaxProfile(userId),
+        getAnnualRevenue(userId),
       ]);
 
       const agg = outstandingAgg[0];
@@ -99,6 +102,7 @@ const fetchDashboardDataCached = unstable_cache(
             count: Number(agg?.overdueCount ?? 0),
           },
           taxProfile: taxProfile,
+          annualRevenue: annualRevenue,
         },
       };
     } catch (error) {

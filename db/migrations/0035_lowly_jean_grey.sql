@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ALTER COLUMN "is_recurring" SET NOT NULL;

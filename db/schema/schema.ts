@@ -204,12 +204,17 @@ export const transactions = pgTable("transactions", {
   clientId: uuid("client_id").references(() => clients.id, {
     onDelete: "set null",
   }),
+  currency: currencyEnum("currency").notNull().default("USD"),
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  exchangeRate: decimal("exchange_rate", { precision: 12, scale: 2 }).default(
+    "0",
+  ),
+  amountInRsd: decimal("amount_in_rsd", { precision: 12, scale: 2 }).notNull(),
   deductible: boolean("deductible").notNull().default(false),
   category: transactionCategoryEnum("category").notNull().default("other"),
   title: text("title").notNull(),
-  isRecurring: boolean("is_recurring").default(false),
+  isRecurring: boolean("is_recurring").notNull().default(false),
   merchantName: text("merchant_name"),
   note: text("note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -382,6 +382,8 @@
     "30d": "30d",
     "month": "Mesec",
     "year": "Godina",
+    "currencyLabel": "Valuta",
+    "isRecurring": "Ponavljajuće",
     "categories": {
       "salary": "Plata",
       "freelance_income": "Frilens prihod",
@@ -459,7 +461,8 @@
     "veryLowConfidenceDesc": "Pouzdanost računice veoma niske vrednosti",
     "confidence": "Pouzdanost",
     "confidenceDescription1": "Bazirano na",
-    "confidenceDescription2": "verifikovanih prijava"
+    "confidenceDescription2": "verifikovanih prijava",
+    "noBalanceData": "Nemamo podataka o stanju"
   },
   "invoices": {
     "invoiceNumber": "Faktura #",
@@ -572,7 +575,7 @@
     "taxDeductible": "Porezno odbitno",
     "simulateImpact": "Simuliraj uticaj",
     "safeToSpendResult": "Bezbedno za potrošnju",
-    "netProfitDelta": "Neto dobit",
+    "netProfit": "Neto dobit",
     "bufferDays": "Dani bafera",
     "monthlyImpact": "Mesečni uticaj:",
     "annualImpact": "Godišnji uticaj:",

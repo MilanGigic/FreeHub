@@ -260,7 +260,7 @@ export default function GoalsCardClient() {
 
                   <div className="flex justify-between text-xs text-gray-400">
                     <span className="primary-cyan font-medium">
-                      ${saved.toLocaleString()}
+                      {saved.toLocaleString()} RSD
                     </span>
                     <span>
                       {tCommon("of")} ${target.toLocaleString()} (
@@ -272,7 +272,7 @@ export default function GoalsCardClient() {
                     <p className="text-xs primary-slate">
                       {t("savePerWeek")}{" "}
                       <span className="primary-amber">
-                        ${weekly.toFixed(0)}
+                        {weekly.toFixed(0)} RSD
                         {t("perWeek")}
                       </span>{" "}
                       {t("toHitDeadline")}

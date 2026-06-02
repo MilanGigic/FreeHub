@@ -239,6 +239,27 @@
       "when": 1779490866549,
       "tag": "0033_mute_diamondback",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1780297845376,
+      "tag": "0034_chemical_jack_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1780299910722,
+      "tag": "0035_lowly_jean_grey",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1780386793278,
+      "tag": "0036_polite_random",
+      "breakpoints": true
     }
   ]
 }

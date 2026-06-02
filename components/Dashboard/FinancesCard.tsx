@@ -63,19 +63,19 @@ export default function FinancesCard() {
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("ytdIncome")}{" "}
               <span className="font-bold primary-green">
-                ${numericTotalIncome.toLocaleString()}
+                {numericTotalIncome.toLocaleString()} RSD
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("expenses")}{" "}
               <span className="font-bold primary-red">
-                ${numericTotalExpenses.toLocaleString()}
+                {numericTotalExpenses.toLocaleString()} RSD
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("netProfit")}{" "}
               <span className="font-bold primary-green">
-                ${Number(taxResult.netProfit).toLocaleString()}
+                {Number(taxResult.netProfit).toLocaleString()} RSD
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
@@ -85,13 +85,13 @@ export default function FinancesCard() {
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("taxReserved")}{" "}
               <span className="font-bold primary-amber">
-                ${Number(taxResult.monthlyTaxReserve).toLocaleString()}
+                {Number(taxResult.monthlyTaxReserve).toLocaleString()} RSD
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("safeToSpend")}{" "}
               <span className="font-bold primary-cyan">
-                ${Number(safeToSpend.amount).toLocaleString()}
+                {Number(safeToSpend.amount).toLocaleString()} RSD
               </span>
             </p>
           </main>

@@ -70,6 +70,7 @@ export interface SRBTaxOutputs {
     expensesDeducted: number;
   };
   warnings: string[];
+  annualRevenue: number;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -237,6 +238,7 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
           effectiveTaxRate: 0,
           itemized: { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 },
           warnings,
+          annualRevenue: 0,
         };
       }
 
@@ -270,5 +272,6 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
     effectiveTaxRate: annualGross > 0 ? totalAnnualTax / annualGross : 0,
     itemized,
     warnings,
+    annualRevenue: annualGross,
   };
 }

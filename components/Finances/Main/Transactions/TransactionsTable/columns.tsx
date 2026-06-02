@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Transaction } from "@/types/types";
 import { useTranslations } from "next-intl";
+import { getCurrencySymbol } from "@/lib/getCurrencySymbol";
 
 export const getColumns = (
   tCategories: ReturnType<typeof useTranslations>,
@@ -39,7 +40,10 @@ export const getColumns = (
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => (
-      <span>{Number(row.original.amount).toLocaleString()} RSD</span>
+      <span>
+        {Number(row.original.amount).toLocaleString()}{" "}
+        {getCurrencySymbol(row.original.currency)}
+      </span>
     ),
     enableSorting: true,
   },

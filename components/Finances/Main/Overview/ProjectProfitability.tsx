@@ -108,16 +108,15 @@ export default function ProjectProfitability() {
               <div className="flex items-center gap-2 w-full justify-between border-b background-border py-2">
                 {renderSelectedClient(project.clientId)}
                 <h1 className="text-sm primary-slate text-center w-full">
-                  $
                   <span className="primary-green ml-0.5">
                     {Number(project.totalRevenue || 0).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    })}
+                    })}{" "}
+                    RSD
                   </span>
                 </h1>
                 <h1 className="text-sm primary-slate text-center w-full">
-                  $
                   <span className="primary-red ml-0.5">
                     {Number(project.totalExpenses || 0).toLocaleString(
                       "en-US",
@@ -125,15 +124,16 @@ export default function ProjectProfitability() {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       },
-                    )}
+                    )}{" "}
+                    RSD
                   </span>
                 </h1>
                 <h1 className="text-sm primary-cyan text-center w-full font-semibold">
-                  $
                   {Number(project.totalProfit || 0).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })}
+                  })}{" "}
+                  RSD
                 </h1>
               </div>
             </div>

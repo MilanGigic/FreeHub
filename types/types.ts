@@ -1,3 +1,5 @@
+export type Currency = "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD";
+
 export type Tab =
   | "Dashboard"
   | "Finances"
@@ -83,7 +85,8 @@ export interface Transaction {
   amount: string;
   deductible: boolean;
   category: string;
-  isRecurring: boolean | null;
+  currency: Currency;
+  isRecurring: boolean;
   merchantName: string | null;
   note: string | null;
   createdAt: Date;

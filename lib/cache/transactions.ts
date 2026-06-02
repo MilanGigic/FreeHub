@@ -26,6 +26,7 @@ export const getCachedTransactions = async (userId: string) =>
           updatedAt: transactions.updatedAt,
           transactionDate: transactions.transactionDate,
           projectName: projects.name,
+          currency: transactions.currency,
         })
         .from(transactions)
         .leftJoin(projects, eq(transactions.projectId, projects.id))
