@@ -17,6 +17,7 @@ export type TaxWarnings = {
 // ────────────────────────────────────────────────────────────────────────────────
 
 export type TaxResult = {
+  model?: SRBModel;
   netProfit: number;
   annualRevenue: number;
 
@@ -39,6 +40,12 @@ export type TaxResult = {
     pension: number;
     health: number;
     expensesDeducted: number;
+  };
+
+  /** MODEL_1 vs MODEL_2 break-even hint (Serbia frilenser only) */
+  modelRecommendation?: {
+    recommended: "MODEL_1" | "MODEL_2";
+    reason: string;
   };
 };
 
@@ -128,6 +135,7 @@ const FALLBACK_SAFETY_BUFFER = 1000;
 const initialProfile: CountryTaxProfile = null;
 
 const initialTaxResult: TaxResult = {
+  model: undefined,
   netProfit: 0,
   annualRevenue: 0,
   seTax: 0,

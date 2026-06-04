@@ -1,7 +1,10 @@
 "use server";
 
 import { calculateUSTaxes } from "@/utils/taxCalculatorUS";
-import { calculateSRBTaxes } from "@/utils/taxCalculatorSRB";
+import {
+  calculateSRBTaxes,
+  type SRBTaxInputs,
+} from "@/utils/taxCalculatorSRB";
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
 import { PausalResolutionSource, resolvePausalTax } from "@/lib/pausalResolver";
@@ -23,9 +26,10 @@ type SRBTaxInput = {
   isUnder40: boolean;
   // PAUSAL
   pausalMonthlyBill?: number;
+  rollingAnnualGross?: number; // for VAT 8M rolling window check
   // KNJIGAS
-  monthlyExpenses?: number; // actual business costs
-  monthlySalary?: number; // owner salary (personalSalaryAmount)
+  monthlyExpenses?: number;
+  monthlySalary?: number;
 };
 
 type ComputedTaxes = {
@@ -58,7 +62,7 @@ export type MapProfileResult = {
   warnings: string[];
   meta: {
     isComputable: boolean;
-    pausalSource?: PausalResolutionSource; // only present for PAUSAL regime
+    pausalSource?: PausalResolutionSource;
   };
 };
 
@@ -126,7 +130,6 @@ export async function mapProfileToInput(
     },
     warnings,
     meta: {
-      // Unknown source means calcPausal will return null — result will be zeroed
       isComputable: pausalSource !== "unknown",
       pausalSource,
     },
@@ -134,6 +137,35 @@ export async function mapProfileToInput(
 }
 
 // ─── Calculator ───────────────────────────────────────────────────────────────
+
+function toSrbTaxInputs(input: SRBTaxInput & { annualGross: string }): SRBTaxInputs {
+  const shared = {
+    annualGross: Number(input.annualGross),
+    isAlreadyEmployed: input.isAlreadyEmployed,
+    isUnder40: input.isUnder40,
+  };
+
+  switch (input.model) {
+    case "MODEL_1":
+      return { ...shared, model: "MODEL_1" };
+    case "MODEL_2":
+      return { ...shared, model: "MODEL_2" };
+    case "PAUSAL":
+      return {
+        ...shared,
+        model: "PAUSAL",
+        pausalMonthlyBill: input.pausalMonthlyBill,
+        rollingAnnualGross: input.rollingAnnualGross,
+      };
+    case "KNJIGAS":
+      return {
+        ...shared,
+        model: "KNJIGAS",
+        monthlyExpenses: input.monthlyExpenses ?? 0,
+        monthlySalary: input.monthlySalary,
+      };
+  }
+}
 
 function calculateTaxes(
   input: TaxComputationInput,
@@ -180,18 +212,15 @@ function calculateTaxes(
     };
   }
 
-  // SRB
-  const result = calculateSRBTaxes({
-    annualGross: Number(input.annualGross),
-    model: input.model,
-    isAlreadyEmployed: input.isAlreadyEmployed,
-    isUnder40: input.isUnder40,
-    pausalMonthlyBill: input.pausalMonthlyBill ?? 35000,
-    monthlyExpenses: input.monthlyExpenses ?? 0,
-    monthlySalary: input.monthlySalary,
-  });
+  // ─── Serbia ──────────────────────────────────────────────────────────────────
+  // Guard: if meta flagged isComputable: false (pausal with unknown source),
+  // pausalMonthlyBill will be undefined here. Do NOT fall back to a hardcoded
+  // value — the caller is responsible for not reaching this branch in that case
+  // (computeTaxesAction checks meta.isComputable before calling calculateTaxes).
+  const result = calculateSRBTaxes(toSrbTaxInputs(input));
 
   return {
+    model: result.model,
     seTax: 0,
     federalTax: 0,
     qbiDeduction: 0,
@@ -206,6 +235,7 @@ function calculateTaxes(
       health: result.itemized.health,
       expensesDeducted: result.itemized.expensesDeducted,
     },
+    modelRecommendation: result.modelRecommendation,
     annualRevenue: Number(input.annualGross),
   };
 }
@@ -217,12 +247,11 @@ function formatTaxResult(
   annualGross: string,
   warnings: string[],
 ): TaxResult {
-  const formatted = {
+  return {
     ...computed,
     netProfit: Number(annualGross),
     warnings,
   };
-  return formatted;
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
@@ -255,12 +284,39 @@ export async function computeTaxesAction(
 
   const { input, warnings, meta } = await mapProfileToInput(profile);
 
-  const computed = calculateTaxes(input);
+  // Short-circuit: if the profile is not computable (e.g. pausal with unknown
+  // source), return a zeroed result immediately — do not call calculateTaxes.
+  if (!meta.isComputable) {
+    return {
+      result: formatTaxResult(
+        {
+          model:
+            input.country === "SRB" ? (input as SRBTaxInput).model : undefined,
+          seTax: 0,
+          federalTax: 0,
+          qbiDeduction: 0,
+          totalAnnualTax: 0,
+          monthlyTaxReserve: 0,
+          profitAfterTaxes: 0,
+          quarterlyEstimate: 0,
+          effectiveTaxRate: 0,
+          itemized: {
+            incomeTax: 0,
+            pension: 0,
+            health: 0,
+            expensesDeducted: 0,
+          },
+          annualRevenue: 0,
+        },
+        input.annualGross,
+        warnings,
+      ),
+      meta,
+    };
+  }
 
+  const computed = calculateTaxes(input);
   const result = formatTaxResult(computed, input.annualGross, warnings);
 
-  return {
-    result,
-    meta,
-  };
+  return { result, meta };
 }

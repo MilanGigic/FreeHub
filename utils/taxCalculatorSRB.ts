@@ -18,14 +18,23 @@ const M2_MIN_HEALTH_Q = 4800;
 // PAUSAL
 const PAUSAL_ANNUAL_CAP = 6_000_000;
 const PAUSAL_ANNUAL_FLOOR = 1_000_000;
+const PAUSAL_VAT_ROLLING_CAP = 8_000_000;
 
 // KNJIGAS
 const KNJIGAS_MIN_MONTHLY_SALARY = 52000;
-const KNJIGAS_MIN_SALARY_TAX = 18000; // Estimated — recalculate if salary changes
+const KNJIGAS_SALARY_PIO_RATE = 0.24;
+const KNJIGAS_SALARY_HEALTH_RATE = 0.103;
+const KNJIGAS_SALARY_INCOME_TAX_RATE = 0.1;
 const KNJIGAS_PROFIT_TAX_RATE = 0.1;
+
+// M1/M2 break-even (quarterly) — above this Model 2 is cheaper
+const M1_M2_BREAKEVEN_Q = 133_000;
 
 // SHARED
 const UNDER_40_RELIEF = 0.5; // 50% income tax relief
+
+// ECO tax
+const ECO_TAX_ANNUAL = 5_000;
 
 // ─── Input types (discriminated union per model) ───────────────────────────────
 
@@ -41,7 +50,8 @@ type Model2Inputs = SharedInputs & { model: "MODEL_2" };
 
 type PausalInputs = SharedInputs & {
   model: "PAUSAL";
-  pausalMonthlyBill: number; // Fixed bill from tax office
+  pausalMonthlyBill?: number; // Fixed bill from tax office; omitted → zeroed result + warning
+  rollingAnnualGross?: number; // 12-month rolling window for VAT check (optional)
 };
 
 type KnjigasInputs = SharedInputs & {
@@ -59,16 +69,36 @@ export type SRBTaxInputs =
 // ─── Output type ──────────────────────────────────────────────────────────────
 
 export interface SRBTaxOutputs {
+  model: SRBTaxInputs["model"];
+
   totalAnnualTax: number;
   quarterlyEstimate: number;
   monthlyReserve: number;
   effectiveTaxRate: number;
+
   itemized: {
     incomeTax: number;
     pio: number;
     health: number;
     expensesDeducted: number;
   };
+
+  regimeData?: {
+    monthlyPausalBill?: number;
+
+    taxableIncome?: number;
+    normiraniTroskovi?: number;
+
+    businessExpenses?: number;
+    salaryExpense?: number;
+  };
+
+  // Recommendation for frilenser users — which model is cheaper
+  modelRecommendation?: {
+    recommended: "MODEL_1" | "MODEL_2";
+    reason: string;
+  };
+
   warnings: string[];
   annualRevenue: number;
 }
@@ -93,14 +123,42 @@ function scaleToAnnual(quarterly: {
   };
 }
 
+/**
+ * Computes the M1/M2 recommendation based on quarterly gross.
+ * Break-even is ~133,000 RSD/quarter.
+ */
+function computeModelRecommendation(
+  quarterlyGross: number,
+): SRBTaxOutputs["modelRecommendation"] {
+  if (quarterlyGross < M1_M2_BREAKEVEN_Q) {
+    return {
+      recommended: "MODEL_1",
+      reason: `Sa prihodom ispod ${M1_M2_BREAKEVEN_Q.toLocaleString("sr-RS")} RSD kvartalno, Model 1 je povoljniji — viši neoporezivi iznos pokriva veći deo prihoda.`,
+    };
+  }
+  return {
+    recommended: "MODEL_2",
+    reason: `Sa prihodom iznad ${M1_M2_BREAKEVEN_Q.toLocaleString("sr-RS")} RSD kvartalno, Model 2 je povoljniji — odbitak normiranih troškova od 34% štedi više od višeg neoporezivog iznosa u Modelu 1.`,
+  };
+}
+
 // ─── Model calculators (pure, quarterly in → quarterly out) ───────────────────
 
 function calcModel1(
   quarterlyGross: number,
   isAlreadyEmployed: boolean,
   isUnder40: boolean,
+  warnings: string[],
 ) {
   const base = Math.max(0, quarterlyGross - M1_THRESHOLD_Q);
+
+  // Warn about hidden minimum health obligation for unemployed with zero income
+  if (quarterlyGross === 0 && !isAlreadyEmployed) {
+    warnings.push(
+      "Čak i bez prihoda, ako niste zaposleni drugde, dugujete minimum zdravstvenog osiguranja (~4.800 RSD kvartalno) da biste zadržali zdravstvenu knjižicu.",
+    );
+  }
+
   return {
     incomeTax: under40Relief(base * M1_INCOME_TAX_RATE, isUnder40),
     pio: base * M1_PIO_RATE,
@@ -115,11 +173,23 @@ function calcModel2(
   quarterlyGross: number,
   isAlreadyEmployed: boolean,
   isUnder40: boolean,
+  warnings: string[],
 ) {
   const expensesDeducted = quarterlyGross * M2_EXPENSE_RATE;
   const base = Math.max(0, quarterlyGross - expensesDeducted - M2_THRESHOLD_Q);
+
+  // Warn about hidden minimum health obligation for unemployed with zero income
+  if (quarterlyGross === 0 && !isAlreadyEmployed) {
+    warnings.push(
+      "Čak i bez prihoda, ako niste zaposleni drugde, dugujete minimum zdravstvenog osiguranja (~4.800 RSD kvartalno) da biste zadržali zdravstvenu knjižicu.",
+    );
+  }
+
   return {
     incomeTax: under40Relief(base * M2_INCOME_TAX_RATE, isUnder40),
+    // When already employed, do NOT apply the PIO minimum floor —
+    // the floor exists to ensure minimum pension contributions for
+    // those whose freelance work is their only covered income.
     pio: isAlreadyEmployed
       ? base * M2_PIO_RATE
       : Math.max(base * M2_PIO_RATE, M2_MIN_PIO_Q),
@@ -130,13 +200,11 @@ function calcModel2(
   };
 }
 
-// IN ORDER FOR DATA TO RETURN CORRECT VALUES - WE NEED TO MAKE SURE ALL THE PARAMETERS ARE EXISTING. MEANING, FIRST CHECK WHETHER THERE IS MUNICIPALITY AND ACTIVITY CODES IN DB, IF NOT, ASK USER TO UPDATE THEM ON SPOT. IF THEY CLICK CANCEL --------
-// --------> RETURN A FALLBACK - "We can't provide you with data that will likely be incorrect - Please finish setting up your profile"
-
 function calcPausal(
   annualGross: number,
   pausalMonthlyBill: number | undefined,
   warnings: string[],
+  rollingAnnualGross?: number,
 ): {
   monthlyTotal: number;
   quarterlyTotal: number;
@@ -155,7 +223,7 @@ function calcPausal(
     return null;
   }
 
-  // Step 2 — Business rule checks (regulatory constraints, not math)
+  // Step 2 — Regulatory cap checks
   if (annualGross > PAUSAL_ANNUAL_CAP) {
     warnings.push(
       `Godišnji prihod ${annualGross.toLocaleString("sr-RS")} RSD prelazi limit od 6.000.000 RSD za paušalce. Potrebno je preći na knjigaša.`,
@@ -168,10 +236,21 @@ function calcPausal(
     );
   }
 
-  // Step 3 — Compute totals (the only thing we know for certain)
-  // Paušal is a fixed obligation — independent of income.
-  // The internal split (PIO / health / tax) varies per municipality
-  // and activity code, so we deliberately do not model it here.
+  // Step 3 — VAT (PDV) rolling 12-month window check
+  // Use rollingAnnualGross if provided, otherwise fall back to annualGross
+  const revenueForVatCheck = rollingAnnualGross ?? annualGross;
+  if (revenueForVatCheck > PAUSAL_VAT_ROLLING_CAP) {
+    warnings.push(
+      `Prihod u poslednjih 12 meseci (${revenueForVatCheck.toLocaleString("sr-RS")} RSD) prelazi 8.000.000 RSD. Obavezna je registracija u sistem PDV-a.`,
+    );
+  }
+
+  // Step 4 — ECO tax reminder
+  warnings.push(
+    `Ne zaboravite: kao preduzetnik paušalac, obavezni ste da podnesete prijavu ekološke takse (~${ECO_TAX_ANNUAL.toLocaleString("sr-RS")} RSD/god) do 30. aprila. Kazne za nepodnošenje su značajne.`,
+  );
+
+  // Step 5 — Compute totals (fixed obligation, independent of income)
   return {
     monthlyTotal: pausalMonthlyBill,
     quarterlyTotal: pausalMonthlyBill * 3,
@@ -183,21 +262,46 @@ function calcKnjigas(
   annualGross: number,
   monthlyExpenses: number,
   monthlySalary: number,
+  isUnder40: boolean,
+  warnings: string[],
 ) {
   const monthlyGross = annualGross / 12;
+
+  // ── Salary-related taxes (on the lična zarada) ───────────────────────────
+  // PIO (pension): employee share (14%) + employer share (10%) = 24% of salary
+  const monthlyPio = monthlySalary * KNJIGAS_SALARY_PIO_RATE;
+  // Health: employee share (5.15%) + employer share (5.15%) = 10.3% of salary
+  const monthlyHealth = monthlySalary * KNJIGAS_SALARY_HEALTH_RATE;
+  // Income tax on salary at 10%, with 50% relief for under-40
+  const monthlyIncomeTaxOnSalary = under40Relief(
+    monthlySalary * KNJIGAS_SALARY_INCOME_TAX_RATE,
+    isUnder40,
+  );
+
+  // ── Profit tax ────────────────────────────────────────────────────────────
   const monthlyProfit = Math.max(
     0,
     monthlyGross - monthlyExpenses - monthlySalary,
   );
-  const monthlyTax =
-    KNJIGAS_MIN_SALARY_TAX + monthlyProfit * KNJIGAS_PROFIT_TAX_RATE;
+  const monthlyProfitTax = monthlyProfit * KNJIGAS_PROFIT_TAX_RATE;
 
-  // PIO and health are folded into salary tax for now
-  // TODO: split these out when exact rates are confirmed
+  const monthlyTotalTax =
+    monthlyPio + monthlyHealth + monthlyIncomeTaxOnSalary + monthlyProfitTax;
+
+  // ECO tax reminder
+  warnings.push(
+    `Kao preduzetnik knjigaš, obavezni ste da podnesete prijavu ekološke takse (~${ECO_TAX_ANNUAL.toLocaleString("sr-RS")} RSD/god) do 30. aprila.`,
+  );
+
+  // Independence test reminder
+  warnings.push(
+    "Proverite test samostalnosti: ako imate samo jednog klijenta i radite puno radno vreme, poreska uprava može vas preklasifikovati kao zaposlenog.",
+  );
+
   return {
-    incomeTax: monthlyTax * 12,
-    pio: 0,
-    health: 0,
+    incomeTax: (monthlyIncomeTaxOnSalary + monthlyProfitTax) * 12,
+    pio: monthlyPio * 12,
+    health: monthlyHealth * 12,
     expensesDeducted: (monthlyExpenses + monthlySalary) * 12,
   };
 }
@@ -210,28 +314,50 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
 
   let itemized: SRBTaxOutputs["itemized"];
   let totalAnnualTax: number;
+  let modelRecommendation: SRBTaxOutputs["modelRecommendation"] | undefined;
 
   switch (inputs.model) {
     case "MODEL_1": {
-      const q = calcModel1(annualGross / 4, isAlreadyEmployed, isUnder40);
+      const quarterlyGross = annualGross / 4;
+      const q = calcModel1(
+        quarterlyGross,
+        isAlreadyEmployed,
+        isUnder40,
+        warnings,
+      );
+
       itemized = scaleToAnnual(q);
       totalAnnualTax = (q.incomeTax + q.pio + q.health) * 4;
+      modelRecommendation = computeModelRecommendation(quarterlyGross);
       break;
     }
 
     case "MODEL_2": {
-      const q = calcModel2(annualGross / 4, isAlreadyEmployed, isUnder40);
+      const quarterlyGross = annualGross / 4;
+      const q = calcModel2(
+        quarterlyGross,
+        isAlreadyEmployed,
+        isUnder40,
+        warnings,
+      );
+
       itemized = scaleToAnnual(q);
       totalAnnualTax = (q.incomeTax + q.pio + q.health) * 4;
+      modelRecommendation = computeModelRecommendation(quarterlyGross);
       break;
     }
 
     case "PAUSAL": {
-      const p = calcPausal(annualGross, inputs.pausalMonthlyBill, warnings);
+      const p = calcPausal(
+        annualGross,
+        inputs.pausalMonthlyBill,
+        warnings,
+        inputs.rollingAnnualGross,
+      );
 
-      // Step 2 — Handle null (invalid bill): return safe zeroed fallback
       if (p === null) {
         return {
+          model: "PAUSAL",
           totalAnnualTax: 0,
           quarterlyEstimate: 0,
           monthlyReserve: 0,
@@ -242,14 +368,8 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
         };
       }
 
-      // Step 3 — annualTotal is already correct — don't recompute
       totalAnnualTax = p.annualTotal;
-
-      // Step 4 — Itemized is intentionally zeroed
-      // The internal split (PIO / health / tax) varies per municipality
-      // and activity code — we don't model what we don't know.
       itemized = { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 };
-
       break;
     }
 
@@ -258,19 +378,23 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
         annualGross,
         inputs.monthlyExpenses,
         inputs.monthlySalary ?? KNJIGAS_MIN_MONTHLY_SALARY,
+        isUnder40,
+        warnings,
       );
-      itemized = k; // Already annual
-      totalAnnualTax = k.incomeTax;
+      itemized = k;
+      totalAnnualTax = k.incomeTax + k.pio + k.health;
       break;
     }
   }
 
   return {
+    model: inputs.model,
     totalAnnualTax,
     quarterlyEstimate: Math.round(totalAnnualTax / 4),
     monthlyReserve: Math.round(totalAnnualTax / 12),
     effectiveTaxRate: annualGross > 0 ? totalAnnualTax / annualGross : 0,
     itemized,
+    modelRecommendation,
     warnings,
     annualRevenue: annualGross,
   };
