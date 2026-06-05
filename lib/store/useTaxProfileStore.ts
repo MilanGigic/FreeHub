@@ -39,6 +39,7 @@ export type TaxResult = {
     incomeTax: number;
     pension: number;
     health: number;
+    nezaposlenost: number;
     expensesDeducted: number;
   };
 
@@ -150,6 +151,7 @@ const initialTaxResult: TaxResult = {
   itemized: {
     incomeTax: 0,
     pension: 0,
+    nezaposlenost: 0,
     health: 0,
     expensesDeducted: 0,
   },

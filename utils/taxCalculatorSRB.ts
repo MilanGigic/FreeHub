@@ -20,11 +20,31 @@ const PAUSAL_ANNUAL_CAP = 6_000_000;
 const PAUSAL_ANNUAL_FLOOR = 1_000_000;
 const PAUSAL_VAT_ROLLING_CAP = 8_000_000;
 
-// KNJIGAS
-const KNJIGAS_MIN_MONTHLY_SALARY = 52000;
-const KNJIGAS_SALARY_PIO_RATE = 0.24;
-const KNJIGAS_SALARY_HEALTH_RATE = 0.103;
+// KNJIGAS — verified against 2026 Poreska uprava / ZDOSO rules
+// Sources: ndsmallbusinesscenter.rs, taxinternational.biz, levka.eu (2026)
+//
+// Lična zarada contribution structure (preduzetnik pays both sides):
+//   PIO:          14% (zaposleni) + 10% (poslodavac) = 24%
+//   Zdravstveno:  5.15% + 5.15%                       = 10.3%
+//   Nezaposlenost: 0.75% (zaposleni only)              = 0.75%
+//   ─────────────────────────────────────────────────────────
+//   Total contributions (not already employed):        35.05%
+//
+// If isAlreadyEmployed: only PIO applies (24%). Health + nezaposlenost = 0.
+//
+// Income tax on lična zarada: 10% on (bruto - neoporezivi)
+//   Neoporezivi iznos 2026: 34,221 RSD/month
+//
+// Minimum contribution base 2026: 51,297 RSD/month
+//   Contributions are always calculated on max(actualSalary, 51,297)
+//   regardless of what the preduzetnik actually draws.
+const KNJIGAS_MIN_MONTHLY_SALARY = 52_000; // practical minimum (above base)
+const KNJIGAS_MIN_CONTRIBUTION_BASE = 51_297; // 2026 najniža mesečna osnovica
+const KNJIGAS_SALARY_PIO_RATE = 0.24; // 14% + 10% combined
+const KNJIGAS_SALARY_HEALTH_RATE = 0.103; // 5.15% + 5.15% combined
+const KNJIGAS_SALARY_NEZAPOSLENOST_RATE = 0.0075; // employee side only
 const KNJIGAS_SALARY_INCOME_TAX_RATE = 0.1;
+const KNJIGAS_SALARY_NEOPOREZIVI = 34_221; // 2026 monthly tax-free threshold
 const KNJIGAS_PROFIT_TAX_RATE = 0.1;
 
 // M1/M2 break-even (quarterly) — above this Model 2 is cheaper
@@ -50,7 +70,7 @@ type Model2Inputs = SharedInputs & { model: "MODEL_2" };
 
 type PausalInputs = SharedInputs & {
   model: "PAUSAL";
-  pausalMonthlyBill?: number; // Fixed bill from tax office; omitted → zeroed result + warning
+  pausalMonthlyBill?: number; // Fixed bill from tax office
   rollingAnnualGross?: number; // 12-month rolling window for VAT check (optional)
 };
 
@@ -76,10 +96,24 @@ export interface SRBTaxOutputs {
   monthlyReserve: number;
   effectiveTaxRate: number;
 
+  /**
+   * Annual revenue minus taxes only. Used by frilenser and paušal where
+   * "expenses" are either a standard deduction or irrelevant.
+   */
+  profitAfterTaxes: number;
+
+  /**
+   * Annual revenue minus actual business expenses, salary, and taxes.
+   * Only meaningful for KNJIGAS. Equals profitAfterTaxes for other models.
+   * This is the "money you actually keep" figure.
+   */
+  netAfterExpensesAndTax: number;
+
   itemized: {
     incomeTax: number;
     pio: number;
     health: number;
+    nezaposlenost: number;
     expensesDeducted: number;
   };
 
@@ -119,6 +153,7 @@ function scaleToAnnual(quarterly: {
     incomeTax: quarterly.incomeTax * 4,
     pio: quarterly.pio * 4,
     health: quarterly.health * 4,
+    nezaposlenost: 0, // frilenser models don't have a separate nezaposlenost line
     expensesDeducted: quarterly.expensesDeducted * 4,
   };
 }
@@ -262,47 +297,99 @@ function calcKnjigas(
   annualGross: number,
   monthlyExpenses: number,
   monthlySalary: number,
+  isAlreadyEmployed: boolean,
   isUnder40: boolean,
   warnings: string[],
 ) {
   const monthlyGross = annualGross / 12;
 
-  // ── Salary-related taxes (on the lična zarada) ───────────────────────────
-  // PIO (pension): employee share (14%) + employer share (10%) = 24% of salary
-  const monthlyPio = monthlySalary * KNJIGAS_SALARY_PIO_RATE;
-  // Health: employee share (5.15%) + employer share (5.15%) = 10.3% of salary
-  const monthlyHealth = monthlySalary * KNJIGAS_SALARY_HEALTH_RATE;
-  // Income tax on salary at 10%, with 50% relief for under-40
+  /**
+   * VERIFIED:
+   * - contribution base floor
+   * - PIO
+   * - health
+   * - unemployment
+   * - non-taxable salary threshold
+   *
+   * TODO:
+   * Confirm profit tax base calculation
+   * with Serbian accountant before production.
+   */
+
+  // ── Minimum contribution base enforcement ─────────────────────────────────
+  // Contributions are always calculated on at least the legal minimum base
+  // (51,297 RSD in 2026), even if the declared salary is lower.
+  const contributionBase = Math.max(
+    monthlySalary,
+    KNJIGAS_MIN_CONTRIBUTION_BASE,
+  );
+
+  // ── PIO ───────────────────────────────────────────────────────────────────
+  // Always applies (24% combined employee + employer), regardless of
+  // employment status. The only difference is that if already employed
+  // elsewhere, no health or nezaposlenost is owed on freelance income.
+  const monthlyPio = contributionBase * KNJIGAS_SALARY_PIO_RATE;
+
+  // ── Health & nezaposlenost ────────────────────────────────────────────────
+  // Waived if already insured/employed elsewhere (same rule as frilenser).
+  const monthlyHealth = isAlreadyEmployed
+    ? 0
+    : contributionBase * KNJIGAS_SALARY_HEALTH_RATE;
+  const monthlyNezaposlenost = isAlreadyEmployed
+    ? 0
+    : contributionBase * KNJIGAS_SALARY_NEZAPOSLENOST_RATE;
+
+  // ── Income tax on lična zarada ────────────────────────────────────────────
+  // 10% on (bruto salary - monthly neoporezivi threshold of 34,221 RSD).
+  // Under-40 relief (50%) applies to this income tax component.
+  const taxableSalaryBase = Math.max(
+    0,
+    monthlySalary - KNJIGAS_SALARY_NEOPOREZIVI,
+  );
   const monthlyIncomeTaxOnSalary = under40Relief(
-    monthlySalary * KNJIGAS_SALARY_INCOME_TAX_RATE,
+    taxableSalaryBase * KNJIGAS_SALARY_INCOME_TAX_RATE,
     isUnder40,
   );
 
   // ── Profit tax ────────────────────────────────────────────────────────────
+  // Flat 10% on net profit (revenue - actual expenses - salary).
+  // Salary is already a recognised business expense so not double-counted.
   const monthlyProfit = Math.max(
     0,
     monthlyGross - monthlyExpenses - monthlySalary,
   );
   const monthlyProfitTax = monthlyProfit * KNJIGAS_PROFIT_TAX_RATE;
 
-  const monthlyTotalTax =
-    monthlyPio + monthlyHealth + monthlyIncomeTaxOnSalary + monthlyProfitTax;
-
-  // ECO tax reminder
+  // ── Warnings ─────────────────────────────────────────────────────────────
   warnings.push(
     `Kao preduzetnik knjigaš, obavezni ste da podnesete prijavu ekološke takse (~${ECO_TAX_ANNUAL.toLocaleString("sr-RS")} RSD/god) do 30. aprila.`,
   );
-
-  // Independence test reminder
   warnings.push(
     "Proverite test samostalnosti: ako imate samo jednog klijenta i radite puno radno vreme, poreska uprava može vas preklasifikovati kao zaposlenog.",
   );
 
+  // ── Annual totals ─────────────────────────────────────────────────────────
+  const annualPio = monthlyPio * 12;
+  const annualHealth = monthlyHealth * 12;
+  const annualNezaposlenost = monthlyNezaposlenost * 12;
+  const annualIncomeTax = (monthlyIncomeTaxOnSalary + monthlyProfitTax) * 12;
+  const annualExpensesDeducted = (monthlyExpenses + monthlySalary) * 12;
+  const annualTotalTax =
+    annualIncomeTax + annualPio + annualHealth + annualNezaposlenost;
+
   return {
-    incomeTax: (monthlyIncomeTaxOnSalary + monthlyProfitTax) * 12,
-    pio: monthlyPio * 12,
-    health: monthlyHealth * 12,
-    expensesDeducted: (monthlyExpenses + monthlySalary) * 12,
+    incomeTax: annualIncomeTax,
+    pio: annualPio,
+    health: annualHealth,
+    nezaposlenost: annualNezaposlenost,
+    expensesDeducted: annualExpensesDeducted,
+    // Pre-computed so the switch can use it directly
+    totalAnnualTax: annualTotalTax,
+    // "Money you actually keep" = revenue - real expenses - salary - taxes
+    netAfterExpensesAndTax: Math.max(
+      0,
+      annualGross - annualExpensesDeducted - annualTotalTax,
+    ),
   };
 }
 
@@ -315,6 +402,7 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
   let itemized: SRBTaxOutputs["itemized"];
   let totalAnnualTax: number;
   let modelRecommendation: SRBTaxOutputs["modelRecommendation"] | undefined;
+  let knjigasNet: number | undefined; // only set for KNJIGAS
 
   switch (inputs.model) {
     case "MODEL_1": {
@@ -362,14 +450,28 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
           quarterlyEstimate: 0,
           monthlyReserve: 0,
           effectiveTaxRate: 0,
-          itemized: { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 },
+          profitAfterTaxes: 0,
+          netAfterExpensesAndTax: 0,
+          itemized: {
+            incomeTax: 0,
+            pio: 0,
+            health: 0,
+            nezaposlenost: 0,
+            expensesDeducted: 0,
+          },
           warnings,
           annualRevenue: 0,
         };
       }
 
       totalAnnualTax = p.annualTotal;
-      itemized = { incomeTax: 0, pio: 0, health: 0, expensesDeducted: 0 };
+      itemized = {
+        incomeTax: 0,
+        pio: 0,
+        health: 0,
+        nezaposlenost: 0,
+        expensesDeducted: 0,
+      };
       break;
     }
 
@@ -378,11 +480,19 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
         annualGross,
         inputs.monthlyExpenses,
         inputs.monthlySalary ?? KNJIGAS_MIN_MONTHLY_SALARY,
+        isAlreadyEmployed,
         isUnder40,
         warnings,
       );
-      itemized = k;
-      totalAnnualTax = k.incomeTax + k.pio + k.health;
+      itemized = {
+        incomeTax: k.incomeTax,
+        pio: k.pio,
+        health: k.health,
+        nezaposlenost: k.nezaposlenost,
+        expensesDeducted: k.expensesDeducted,
+      };
+      totalAnnualTax = k.totalAnnualTax;
+      knjigasNet = k.netAfterExpensesAndTax;
       break;
     }
   }
@@ -393,6 +503,11 @@ export function calculateSRBTaxes(inputs: SRBTaxInputs): SRBTaxOutputs {
     quarterlyEstimate: Math.round(totalAnnualTax / 4),
     monthlyReserve: Math.round(totalAnnualTax / 12),
     effectiveTaxRate: annualGross > 0 ? totalAnnualTax / annualGross : 0,
+    // For frilenser/paušal, "profit" is simply revenue minus taxes.
+    // For knjigaš, we expose both: revenue-minus-taxes AND revenue-minus-everything.
+    profitAfterTaxes: Math.max(0, annualGross - totalAnnualTax),
+    netAfterExpensesAndTax:
+      knjigasNet ?? Math.max(0, annualGross - totalAnnualTax),
     itemized,
     modelRecommendation,
     warnings,

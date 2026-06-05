@@ -1,10 +1,7 @@
 "use server";
 
 import { calculateUSTaxes } from "@/utils/taxCalculatorUS";
-import {
-  calculateSRBTaxes,
-  type SRBTaxInputs,
-} from "@/utils/taxCalculatorSRB";
+import { calculateSRBTaxes, type SRBTaxInputs } from "@/utils/taxCalculatorSRB";
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
 import { PausalResolutionSource, resolvePausalTax } from "@/lib/pausalResolver";
@@ -138,7 +135,9 @@ export async function mapProfileToInput(
 
 // ─── Calculator ───────────────────────────────────────────────────────────────
 
-function toSrbTaxInputs(input: SRBTaxInput & { annualGross: string }): SRBTaxInputs {
+function toSrbTaxInputs(
+  input: SRBTaxInput & { annualGross: string },
+): SRBTaxInputs {
   const shared = {
     annualGross: Number(input.annualGross),
     isAlreadyEmployed: input.isAlreadyEmployed,
@@ -206,6 +205,7 @@ function calculateTaxes(
         incomeTax: federalTax,
         pension: seTax,
         health: 0,
+        nezaposlenost: 0,
         expensesDeducted: homeOfficeDeduction,
       },
       annualRevenue: Number(input.annualGross),
@@ -226,13 +226,17 @@ function calculateTaxes(
     qbiDeduction: 0,
     totalAnnualTax: result.totalAnnualTax,
     monthlyTaxReserve: result.monthlyReserve,
-    profitAfterTaxes: Number(input.annualGross) - result.totalAnnualTax,
+    // For knjigaš: use netAfterExpensesAndTax (revenue - expenses - salary - taxes)
+    // because business owners expect "what I actually keep", not "revenue - taxes".
+    // For all other models: the two values are equal.
+    profitAfterTaxes: result.netAfterExpensesAndTax,
     quarterlyEstimate: result.quarterlyEstimate,
     effectiveTaxRate: result.effectiveTaxRate,
     itemized: {
       incomeTax: result.itemized.incomeTax,
       pension: result.itemized.pio,
       health: result.itemized.health,
+      nezaposlenost: result.itemized.nezaposlenost,
       expensesDeducted: result.itemized.expensesDeducted,
     },
     modelRecommendation: result.modelRecommendation,
@@ -272,7 +276,13 @@ export async function computeTaxesAction(
         quarterlyEstimate: 0,
         effectiveTaxRate: 0,
         warnings: [],
-        itemized: { incomeTax: 0, pension: 0, health: 0, expensesDeducted: 0 },
+        itemized: {
+          incomeTax: 0,
+          pension: 0,
+          health: 0,
+          expensesDeducted: 0,
+          nezaposlenost: 0,
+        },
         annualRevenue: 0,
       },
       meta: {
@@ -304,6 +314,7 @@ export async function computeTaxesAction(
             incomeTax: 0,
             pension: 0,
             health: 0,
+            nezaposlenost: 0,
             expensesDeducted: 0,
           },
           annualRevenue: 0,
