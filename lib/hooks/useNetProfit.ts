@@ -10,11 +10,7 @@ export function useNetProfit(year = 2026) {
   useEffect(() => {
     const fetchNetProfit = async () => {
       try {
-        const res = await fetch(`/api/net-profit?year=${year}`);
-        if (!res.ok) throw new Error(`Fetch failed: ${res.statusText}`);
-        const { netProfit } = await res.json();
-
-        const result = await computeTaxesAction(profile, netProfit);
+        const result = await computeTaxesAction(profile);
         setTaxResult(result.result);
       } catch (error) {
         console.error("Error fetching net profit:", error);

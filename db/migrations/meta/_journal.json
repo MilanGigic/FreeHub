@@ -260,6 +260,41 @@
       "when": 1780386793278,
       "tag": "0036_polite_random",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1785757191879,
+      "tag": "0037_little_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1785758476191,
+      "tag": "0038_bizarre_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1785760493674,
+      "tag": "0039_clumsy_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1785760840738,
+      "tag": "0040_skinny_junta",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1785761157825,
+      "tag": "0041_familiar_hardball",
+      "breakpoints": true
     }
   ]
 }

@@ -116,6 +116,8 @@ export default function InvoicesTable() {
     }
   };
 
+  if (!selectedClient) return null;
+
   return (
     <div className="w-full h-full flex flex-col gap-4 relative">
       {/* Filters */}
@@ -127,19 +129,24 @@ export default function InvoicesTable() {
           value={show}
           onChange={(e) => setShow(e.target.value as StatusFilter)}
         >
-          <option value="all">{t("all")} ({invoices.length})</option>
+          <option value="all">
+            {t("all")} ({invoices.length})
+          </option>
           <option value="paid">
-            {t("paid")} ({invoices.filter((inv) => inv.status === "paid").length})
+            {t("paid")} (
+            {invoices.filter((inv) => inv.status === "paid").length})
           </option>
           <option value="sent">
-            {t("sent")} ({invoices.filter((inv) => inv.status === "sent").length})
+            {t("sent")} (
+            {invoices.filter((inv) => inv.status === "sent").length})
           </option>
           <option value="overdue">
-            {t("overdue")} ({invoices.filter((inv) => inv.status === "overdue").length}
-            )
+            {t("overdue")} (
+            {invoices.filter((inv) => inv.status === "overdue").length})
           </option>
           <option value="draft">
-            {t("draft")} ({invoices.filter((inv) => inv.status === "draft").length})
+            {t("draft")} (
+            {invoices.filter((inv) => inv.status === "draft").length})
           </option>
         </select>
         <div className="items-center gap-2 hidden md:flex">
@@ -153,26 +160,29 @@ export default function InvoicesTable() {
             className={`${show === "paid" ? "bg-(--accent-green)/20 primary-green" : "primary-green"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-green)/20 hover:primary-green`}
             onClick={() => setShow("paid")}
           >
-            {t("paid")} ({invoices.filter((inv) => inv.status === "paid").length})
+            {t("paid")} (
+            {invoices.filter((inv) => inv.status === "paid").length})
           </button>
           <button
             className={`${show === "sent" ? "bg-(--accent-amber)/20 primary-amber" : "primary-amber"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-amber)/20 hover:primary-amber`}
             onClick={() => setShow("sent")}
           >
-            {t("sent")} ({invoices.filter((inv) => inv.status === "sent").length})
+            {t("sent")} (
+            {invoices.filter((inv) => inv.status === "sent").length})
           </button>
           <button
             className={`${show === "overdue" ? "bg-(--accent-red)/20 primary-red" : "primary-red"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-red)/20 hover:primary-red`}
             onClick={() => setShow("overdue")}
           >
-            {t("overdue")} ({invoices.filter((inv) => inv.status === "overdue").length}
-            )
+            {t("overdue")} (
+            {invoices.filter((inv) => inv.status === "overdue").length})
           </button>
           <button
             className={`${show === "draft" ? "bg-(--accent-slate)/20 primary-slate" : "primary-slate"} text-lg font-semibold uppercase tracking-wider border background-border rounded-lg px-4 py-2 cursor-pointer hover:bg-(--accent-slate)/20 hover:primary-slate`}
             onClick={() => setShow("draft")}
           >
-            {t("draft")} ({invoices.filter((inv) => inv.status === "draft").length})
+            {t("draft")} (
+            {invoices.filter((inv) => inv.status === "draft").length})
           </button>
         </div>
         <div>
@@ -227,15 +237,19 @@ export default function InvoicesTable() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-tertiary uppercase">{t("client")}</span>
+                <span className="text-xs text-tertiary uppercase">
+                  {t("client")}
+                </span>
                 <span className="text-sm text-primary">
-                  {selectedClient?.firstName} {selectedClient?.lastName}
+                  {selectedClient.clientName}
                 </span>
               </div>
 
               {invoice.note && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs text-tertiary uppercase">{t("note")}</span>
+                  <span className="text-xs text-tertiary uppercase">
+                    {t("note")}
+                  </span>
                   <span className="text-xs text-primary wrap-break-word">
                     {invoice.note}
                   </span>
@@ -252,7 +266,9 @@ export default function InvoicesTable() {
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs text-tertiary uppercase">{t("due")}</span>
+                  <span className="text-xs text-tertiary uppercase">
+                    {t("due")}
+                  </span>
                   <span className="text-xs text-primary">
                     {invoice.dueDate.toLocaleDateString()}
                   </span>
@@ -335,7 +351,7 @@ export default function InvoicesTable() {
               >
                 <td className="text-sm text-primary py-2">{invoice.id}</td>
                 <td className="text-sm text-primary py-2">
-                  {selectedClient?.firstName} {selectedClient?.lastName}
+                  {selectedClient.clientName}
                 </td>
                 <td className="text-sm text-primary py-2">{invoice.note}</td>
                 <td className="text-sm text-primary py-2">

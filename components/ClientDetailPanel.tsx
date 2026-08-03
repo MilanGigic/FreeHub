@@ -26,7 +26,7 @@ export function ClientDetailPanel({
     >
       <div className="px-4 py-3 border-b background-border">
         <h3 className="text-base font-bold text-primary">
-          {client.firstName} {client.lastName}
+          {client.clientName}
         </h3>
         <div className="flex items-center gap-1.5 mt-1">
           <Mail size={11} className="primary-slate" />
@@ -100,9 +100,13 @@ export function ClientDetailPanel({
         )}
 
         <div className="flex justify-between text-[10px] primary-slate pt-1 border-t background-border">
-          <span>{t("start")} {new Date(client.startDate).toLocaleDateString()}</span>
+          <span>
+            {t("start")} {new Date(client.startDate).toLocaleDateString()}
+          </span>
           {client.endDate && (
-            <span>{t("end")} {new Date(client.endDate).toLocaleDateString()}</span>
+            <span>
+              {t("end")} {new Date(client.endDate).toLocaleDateString()}
+            </span>
           )}
         </div>
       </div>

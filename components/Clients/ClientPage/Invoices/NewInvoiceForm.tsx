@@ -2,12 +2,22 @@
 
 import { addInvoice, addToDrafts } from "@/actions/invoices/addInvoice";
 import { fetchAllClientProjects } from "@/actions/projects/fetchAllClientProjects";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { transactionCategories, TransactionCategory } from "@/config/constants";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useAuth } from "@/lib/useAuth";
-import { Project } from "@/types/types";
+import { Currency, Project } from "@/types/types";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
@@ -15,6 +25,10 @@ import { toast } from "react-toastify";
 
 export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
   const t = useTranslations("invoices");
+  const tTransactions = useTranslations("transactions");
+  const tCommon = useTranslations("common");
+  const p = useTranslations("projects");
+  const tCategories = useTranslations("transactions.categories");
   const { user } = useAuth();
   const { selectedClient } = useClientStore();
   const { projects, setProjects } = useDataStore();
@@ -30,12 +44,20 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
     setDueDate,
     note,
     setNote,
+    merchantName,
+    title,
+    setTitle,
+    setMerchantName,
     setOutstandingInvoices,
     setOverdueInvoices,
     setPaidInvoices,
+    currency,
+    setCurrency,
   } = useInvoiceStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] =
+    useState<TransactionCategory | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -77,6 +99,10 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
         projectId: selectedProject.id,
       });
       const res = await addInvoice(
+        title!,
+        currency as Currency,
+        merchantName!,
+        selectedCategory!,
         amount,
         issueDate,
         dueDate,
@@ -135,6 +161,10 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
 
     try {
       const res = await addToDrafts(
+        title!,
+        currency as Currency,
+        merchantName!,
+        selectedCategory!,
         amount,
         issueDate,
         dueDate,
@@ -189,6 +219,66 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
       </div>
       {/*  */}
 
+      {/* TITLE */}
+      <div>
+        <label
+          htmlFor="title"
+          className="text-lg font-semibold uppercase primary-slate"
+        >
+          {tCommon("name")}
+        </label>
+        <input
+          type="text"
+          id="title"
+          className="w-full p-2 border background-border rounded-lg outline-none focus:border-(--accent-cyan)/60 transition-all duration-300 text-primary"
+          value={title || ""}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+      {/*  */}
+
+      {/* CURRENCY SELECTION */}
+      <div>
+        <label
+          htmlFor="currency"
+          className="text-lg font-semibold uppercase primary-slate"
+        >
+          {tTransactions("currencyLabel")}
+        </label>
+        <select
+          id="currency"
+          className="w-full p-2 border background-border rounded-lg outline-none focus:border-(--accent-cyan)/60 transition-all duration-300 text-primary background-elevated"
+          value={currency ?? ""}
+          onChange={(e) => setCurrency(e.target.value as Currency)}
+        >
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="JPY">JPY</option>
+          <option value="RSD">RSD</option>
+          <option value="CAD">CAD</option>
+        </select>
+      </div>
+      {/*  */}
+
+      {/* MERCHANT NAME */}
+      <div>
+        <label
+          htmlFor="merchant"
+          className="text-lg font-semibold uppercase primary-slate"
+        >
+          {tCommon("merchant")} / {tCommon("vendor")} / {p("client")}
+        </label>
+        <input
+          type="text"
+          id="merchant"
+          className="w-full p-2 border background-border rounded-lg outline-none focus:border-(--accent-cyan)/60 transition-all duration-300 text-primary"
+          value={merchantName || ""}
+          onChange={(e) => setMerchantName(e.target.value)}
+        />
+      </div>
+      {/*  */}
+
       {/* PROJECT SELECTION */}
       <div>
         <label
@@ -221,6 +311,44 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
         </select>
       </div>
 
+      {/*  */}
+
+      {/* CATEGORY SELECTION */}
+      <div className="flex flex-col gap-4">
+        <h1 className="text-lg font-semibold uppercase primary-slate">
+          {selectedCategory ? tCategories(selectedCategory) : "Kategorije"}
+        </h1>
+        <Select
+          value={selectedCategory ?? ""}
+          onValueChange={(value) =>
+            setSelectedCategory(value as TransactionCategory)
+          }
+        >
+          <SelectTrigger
+            className="w-full text-primary h-full border-b-2 pb-2"
+            type="button"
+          >
+            <SelectValue
+              className="text-primary"
+              placeholder={tCommon("selectCategory")}
+            />
+          </SelectTrigger>
+          <SelectContent className="text-primary background-elevated">
+            <SelectGroup className="max-h-[300px] overflow-y-scroll p-2 border background-border background-elevated">
+              <SelectLabel>{tCommon("categories")}</SelectLabel>
+              {transactionCategories.map((category, index) => (
+                <SelectItem
+                  key={index}
+                  value={category}
+                  className="p-2 cursor-pointer hover:bg-white/15 transition-all duration-300"
+                >
+                  {tCategories(category)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       {/*  */}
 
       {/* DATE INPUTS */}

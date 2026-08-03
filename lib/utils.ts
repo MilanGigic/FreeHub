@@ -12,7 +12,7 @@ export const DEFAULT_TAX_COMPUTATION_RESULT: {
 } = {
   input: {
     country: "SRB",
-    annualGross: 0,
+    annualGross: "0",
     model: "PAUSAL",
     isAlreadyEmployed: false,
     isUnder40: false,

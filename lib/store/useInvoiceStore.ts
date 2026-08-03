@@ -35,6 +35,12 @@ type InvoiceStore = {
   }) => void;
   selectedProjectId: string | null;
   setSelectedProjectId: (projectId: string | null) => void;
+  currency: string | null;
+  setCurrency: (currency: string | null) => void;
+  merchantName: string | null;
+  setMerchantName: (merchantName: string | null) => void;
+  title: string | null;
+  setTitle: (title: string | null) => void;
 };
 
 export const useInvoiceStore = create<InvoiceStore>((set) => ({
@@ -72,4 +78,11 @@ export const useInvoiceStore = create<InvoiceStore>((set) => ({
   selectedProjectId: null,
   setSelectedProjectId: (projectId: string | null) =>
     set({ selectedProjectId: projectId }),
+  currency: null,
+  setCurrency: (currency: string | null) => set({ currency: currency }),
+  merchantName: null,
+  setMerchantName: (merchantName: string | null) =>
+    set({ merchantName: merchantName }),
+  title: null,
+  setTitle: (title: string | null) => set({ title: title }),
 }));

@@ -71,7 +71,7 @@ export default function ClientLayout({
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full">
       <h1 className="text-3xl md:text-2xl font-bold text-primary uppercase text-center">
-        {selectedClient.firstName} {selectedClient.lastName}
+        {selectedClient.clientName}
       </h1>
       <header>
         <ClientPageHeader clientId={selectedClient.id} />

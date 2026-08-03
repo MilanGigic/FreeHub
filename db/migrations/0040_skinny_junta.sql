@@ -1,0 +1,1 @@
+ALTER TABLE "invoices" ADD COLUMN "category" "transaction_category" DEFAULT 'other' NOT NULL;

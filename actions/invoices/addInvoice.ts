@@ -7,8 +7,14 @@ import { calculateOutstandingInvoices } from "./calculateOutstandingInvoices";
 import { calculateOverdueInvoices } from "./calculateOverdueInvoice";
 import { calculatePaidInvoices } from "./calculatePaidInvoices";
 import { revalidateTag } from "next/cache";
+import { Currency } from "@/types/types";
+import { TransactionCategory } from "@/config/constants";
 
 export async function addInvoice(
+  title: string,
+  currency: Currency,
+  merchantName: string,
+  category: TransactionCategory,
   amount: string,
   issueDate: Date,
   dueDate: Date | null,
@@ -75,6 +81,10 @@ export async function addInvoice(
       .values({
         userId,
         clientId,
+        currency,
+        merchantName,
+        title,
+        category,
         totalAmount: amount,
         issueDate: normalizedIssueDate,
         dueDate: normalizedDueDate,
@@ -165,6 +175,10 @@ export async function addInvoice(
 }
 
 export async function addToDrafts(
+  title: string,
+  currency: Currency,
+  merchantName: string,
+  category: TransactionCategory,
   amount: string,
   issueDate: Date,
   dueDate: Date | null,
@@ -189,6 +203,10 @@ export async function addToDrafts(
       .values({
         userId,
         clientId,
+        currency,
+        merchantName,
+        category,
+        title,
         totalAmount: amount,
         issueDate: new Date(issueDate),
         dueDate: new Date(dueDate),

@@ -4,14 +4,14 @@ import { useTranslations } from "next-intl";
 
 export default function TaxReservedFromThisClient() {
   const { clientProjects } = useClientStore();
-  const { effectiveTaxRate } = useTaxProfileStore();
+  const { taxResult } = useTaxProfileStore();
   const t = useTranslations("clients");
 
   const clientRevenue = clientProjects.reduce(
     (acc, p) => acc + Number(p.totalRevenue || 0),
     0,
   );
-  const taxReserved = clientRevenue * effectiveTaxRate;
+  const taxReserved = clientRevenue * taxResult.effectiveTaxRate;
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
@@ -24,9 +24,7 @@ export default function TaxReservedFromThisClient() {
           maximumFractionDigits: 0,
         })}
       </p>
-      <p className="text-sm primary-slate">
-        {t("taxReservedDescription")}
-      </p>
+      <p className="text-sm primary-slate">{t("taxReservedDescription")}</p>
     </div>
   );
 }

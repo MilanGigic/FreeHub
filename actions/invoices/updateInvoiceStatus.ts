@@ -38,11 +38,18 @@ export async function updateInvoiceStatus(
         .insert(transactions)
         .values({
           userId,
-          amount: updatedInvoice.totalAmount,
           projectId,
+          clientId,
+          currency: updatedInvoice.currency,
           type: "income",
-          note: updatedInvoice.note || "Invoice paid",
+          amount: updatedInvoice.totalAmount,
           deductible: false,
+          category: updatedInvoice.category,
+          title: updatedInvoice.title,
+          isRecurring: false,
+          merchantName: updatedInvoice.merchantName,
+          note: updatedInvoice.note,
+          transactionDate: updatedInvoice.paymentDate ?? new Date(),
         })
         .returning();
 

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 export default function NetTakeHomeFromThisClient() {
   const { clientProjects } = useClientStore();
-  const { effectiveTaxRate } = useTaxProfileStore();
+  const { taxResult } = useTaxProfileStore();
   const t = useTranslations("clients");
 
   const clientRevenue = clientProjects.reduce(
@@ -16,7 +16,7 @@ export default function NetTakeHomeFromThisClient() {
     0,
   );
   const clientProfit = clientRevenue - clientExpenses;
-  const clientTax = clientRevenue * effectiveTaxRate;
+  const clientTax = clientRevenue * taxResult.effectiveTaxRate;
   const netTakeHome = clientProfit - clientTax;
 
   return (
@@ -28,9 +28,7 @@ export default function NetTakeHomeFromThisClient() {
         <p className="text-2xl font-bold primary-cyan">
           ${netTakeHome.toLocaleString("en-US", { maximumFractionDigits: 0 })}
         </p>
-        <p className="text-sm primary-slate">
-          {t("netTakeHomeDescription")}
-        </p>
+        <p className="text-sm primary-slate">{t("netTakeHomeDescription")}</p>
       </div>
     </div>
   );

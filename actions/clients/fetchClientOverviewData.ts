@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { clients, invoices, projects } from "@/db/schema";
-import { and, eq, lt, sql } from "drizzle-orm";
+import { and, eq, lt } from "drizzle-orm";
 
 export async function fetchClientOverviewData(clientId: string) {
   if (!clientId) {

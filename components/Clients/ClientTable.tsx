@@ -95,7 +95,7 @@ export default function ClientTable({
             <div className="background-elevated border background-border rounded-lg p-4 flex flex-col gap-2">
               <div className="flex flex-col gap-1 border-b-2 background-border pb-2">
                 <h1 className="text-lg text-primary uppercase font-bold">
-                  {client.firstName} {client.lastName}
+                  {client.clientName}
                 </h1>
                 <p className="primary-slate font-semibold">{client.email}</p>
               </div>

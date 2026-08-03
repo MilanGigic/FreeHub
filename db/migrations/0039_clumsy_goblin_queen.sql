@@ -1,0 +1,1 @@
+ALTER TABLE "invoices" ADD COLUMN "merchant_name" text NOT NULL;

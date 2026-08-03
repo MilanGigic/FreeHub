@@ -181,6 +181,7 @@ export const invoices = pgTable("invoices", {
   projectId: uuid("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
   issueDate: timestamp("issue_date").notNull().defaultNow(),
   dueDate: timestamp("due_date").notNull(),
   paymentDate: timestamp("payment_date"),
@@ -188,6 +189,9 @@ export const invoices = pgTable("invoices", {
   status: invoiceStatusEnum("status").notNull().default("draft"),
   totalAmount: decimal("total_amount", { precision: 12, scale: 2 }).notNull(),
   paidAmount: decimal("paid_amount", { precision: 12, scale: 2 }),
+  currency: currencyEnum("currency").notNull(),
+  merchantName: text("merchant_name").notNull(),
+  category: transactionCategoryEnum("category").notNull().default("other"),
   note: text("note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -207,10 +211,6 @@ export const transactions = pgTable("transactions", {
   currency: currencyEnum("currency").notNull().default("USD"),
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
-  exchangeRate: decimal("exchange_rate", { precision: 12, scale: 2 }).default(
-    "0",
-  ),
-  amountInRsd: decimal("amount_in_rsd", { precision: 12, scale: 2 }).notNull(),
   deductible: boolean("deductible").notNull().default(false),
   category: transactionCategoryEnum("category").notNull().default("other"),
   title: text("title").notNull(),
@@ -221,6 +221,12 @@ export const transactions = pgTable("transactions", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   transactionDate: timestamp("transaction_date").notNull(),
 });
+
+// ^^^^^ Add it in future
+// exchangeRate: decimal("exchange_rate", { precision: 12, scale: 2 }).default(
+//   "0",
+// ),
+// amountInRsd: decimal("amount_in_rsd", { precision: 12, scale: 2 }).notNull(),
 
 export const conservativenessEnum = pgEnum("conservativeness", [
   "conservative",

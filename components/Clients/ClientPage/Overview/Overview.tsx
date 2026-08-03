@@ -27,6 +27,8 @@ export default function OverviewClient() {
     router.back();
   };
 
+  if (!selectedClient) return null;
+
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full h-full">
       <div className="flex w-full p-2 background-elevated gap-2">
@@ -46,7 +48,7 @@ export default function OverviewClient() {
         </Link>
         <div className="h-full border background-border" />
         <h1 className="text-primary uppercase font-semibold">
-          {selectedClient?.firstName} {selectedClient?.lastName}
+          {selectedClient.clientName}
         </h1>
       </div>
       <header className="text-sm primary-slate font-semibold text-center">
