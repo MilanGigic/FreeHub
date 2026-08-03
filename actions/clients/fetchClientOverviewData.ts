@@ -37,7 +37,7 @@ export async function fetchClientOverviewData(clientId: string) {
         id: projects.id,
         userId: projects.userId,
         clientId: projects.clientId,
-        clientName: sql<string>`concat(${clients.firstName}, ' ', ${clients.lastName})`,
+        clientName: clients.clientName,
         name: projects.name,
         description: projects.description,
         totalRevenue: projects.totalRevenue,

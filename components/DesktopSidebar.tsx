@@ -198,7 +198,7 @@ export default function DesktopSidebar() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-primary font-semibold truncate group-hover:primary-cyan transition-colors">
-                      {client.firstName} {client.lastName}
+                      {client.clientName}
                     </p>
                     <p className="text-xs primary-slate truncate">
                       {client.email}
