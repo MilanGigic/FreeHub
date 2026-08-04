@@ -99,9 +99,7 @@ export default function SelectedProject() {
           <button
             key={index}
             onClick={() =>
-              router.push(
-                `/projects/${selectedProject.id}?tab=${tab.key}`,
-              )
+              router.push(`/projects/${selectedProject.id}?tab=${tab.key}`)
             }
             className={`text-lg border background-border uppercase font-semibold px-4 py-2 rounded-lg ${activeTab === tab.key ? (tab.key === "calendar" ? "text-primary bg-(--accent-cyan)/20" : "text-primary bg-(--accent-green)/20") : "primary-slate hover:text-primary"} hover:cursor-pointer transition-all duration-300 ease-out`}
           >
@@ -112,7 +110,7 @@ export default function SelectedProject() {
 
       <div className="flex flex-col w-full justify-center items-center gap-2 md:gap-4 h-full">
         {activeTab === "calendar" ? (
-          <div className="grid grid-cols-3 w-full h-full gap-2 md:gap-4">
+          <div className="flex flex-col md:grid md:grid-cols-3 w-full h-full gap-2 md:gap-4">
             <div className="col-span-3">
               <SelectedProjectHeader />
             </div>

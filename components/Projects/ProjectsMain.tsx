@@ -90,7 +90,7 @@ export default function ProjectsMain() {
   );
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 md:gap-4">
+    <div className="w-full h-full max-w-full flex flex-col gap-2 md:gap-4 overflow-x-hidden min-w-0">
       {isLoading && (
         <div className="w-full h-full flex items-center justify-center">
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -101,15 +101,16 @@ export default function ProjectsMain() {
           <p className="primary-red">{error}</p>
         </div>
       )}
-      <div className="w-full flex flex-col gap-2 h-full">
-        <div className="flex w-full border background-border rounded-lg justify-between items-center gap-2 h-full relative">
-          <div className="flex w-full">
+      <div className="w-full min-w-0 flex flex-col gap-2 h-full">
+        <div className="flex flex-col lg:flex-row w-full min-w-0 border background-border rounded-lg gap-2 lg:gap-2 relative p-2 lg:p-0">
+          {/* Status filter pills: horizontally scrollable on phones/tablets, inline row on large screens */}
+          <div className="flex w-full min-w-0 lg:w-auto lg:shrink-0 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:rounded-l-lg">
             {projectStatuses.map((status, index) => (
               <div
                 key={status}
-                className={`flex items-center gap-2 p-2 cursor-pointer
+                className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 cursor-pointer whitespace-nowrap shrink-0
               ${show === status.toLowerCase() ? "bg-(--accent-cyan)/30 border-background-border" : "hover:bg-(--accent-cyan)/30"}
-                ${index === 0 ? "rounded-l-lg" : index === projectStatuses.length - 1 ? "rounded-r-lg" : ""}
+                ${index === 0 ? "lg:rounded-l-lg" : index === projectStatuses.length - 1 ? "lg:rounded-r-lg" : ""}
                 ${
                   index === 1
                     ? "border-x-2 background-border"
@@ -119,42 +120,48 @@ export default function ProjectsMain() {
                 }`}
                 onClick={() => setShow(status as ProjectStatus)}
               >
-                <p className="text-primary">{statusLabels[status]}</p>
+                <p className="text-primary text-xs sm:text-sm md:text-base">
+                  {statusLabels[status]}
+                </p>
               </div>
             ))}
           </div>
-          <div className="flex items-center w-full h-full justify-between gap-4">
-            <div className="w-full flex items-center h-full justify-center">
+
+          {/* Search, view toggle, count, new project */}
+          <div className="flex flex-col md:flex-row md:items-stretch sm:items-center w-full min-w-0 gap-2 sm:gap-3 lg:gap-4 lg:pr-2 lg:py-1">
+            <div className="w-full min-w-0 flex items-center justify-center">
               <input
                 type="text"
                 placeholder={t("searchProjects")}
-                className="p-2 w-full text-center rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out placeholder:text-tertiary"
+                className="p-2 w-full min-w-0 text-center rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out placeholder:text-tertiary"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            {view === "grid" ? (
-              <TableProperties
-                className="w-10 h-10 text-primary cursor-pointer"
-                onClick={() => setView("list")}
-              />
-            ) : (
-              <Grid2x2
-                className="w-10 h-10 text-primary cursor-pointer"
-                onClick={() => setView("grid")}
-              />
-            )}
-            <p className="border background-border text-primary px-2 background-elevated flex items-center gap-0.5 w-40 justify-center">
-              {filteredProjects.length}{" "}
-              {filteredProjects.length === 1 ? t("project") : t("projects")}
-            </p>
-            <button
-              className="primary-cyan text-sm font-semibold uppercase rounded-lg hover:bg-(--accent-cyan)/30 transition-all duration-300 ease-out flex items-center gap-0.5 h-full px-2 cursor-pointer w-xs justify-center py-2"
-              onClick={() => setIsNewProjectModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              {t("newProject")}
-            </button>
+            <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 min-w-0">
+              {view === "grid" ? (
+                <TableProperties
+                  className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-primary cursor-pointer shrink-0"
+                  onClick={() => setView("list")}
+                />
+              ) : (
+                <Grid2x2
+                  className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-primary cursor-pointer shrink-0"
+                  onClick={() => setView("grid")}
+                />
+              )}
+              <p className="border background-border text-primary px-2 py-1.5 background-elevated flex items-center gap-0.5 justify-center whitespace-nowrap text-xs sm:text-sm shrink-0">
+                {filteredProjects.length}{" "}
+                {filteredProjects.length === 1 ? t("project") : t("projects")}
+              </p>
+              <button
+                className="primary-cyan text-xs sm:text-sm font-semibold uppercase rounded-lg hover:bg-(--accent-cyan)/30 transition-all duration-300 ease-out flex items-center gap-1 cursor-pointer justify-center py-2 px-2 sm:px-3 shrink-0 whitespace-nowrap"
+                onClick={() => setIsNewProjectModalOpen(true)}
+              >
+                <Plus className="w-4 h-4 shrink-0" />
+                <span className="hidden sm:inline">{t("newProject")}</span>
+              </button>
+            </div>
           </div>
 
           {isNewProjectModalOpen ? <NewProjectModal /> : null}

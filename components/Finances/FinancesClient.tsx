@@ -33,7 +33,7 @@ export default function FinancesClient({
   const f = useTranslations("finances");
   const router = useRouter();
   return (
-    <div className="w-full min-h-screen background p-6 flex flex-col gap-6">
+    <div className="w-full min-h-screen background p-4 md:p-6 flex flex-col gap-6">
       <TaxStoreHydrator taxResult={initialTaxResult} taxMeta={initialTaxMeta} />
       <div className="w-full p-4 background-elevated border background-border flex items-center justify-center gap-2 lg:gap-4">
         {tabs.map((tab, index) => (

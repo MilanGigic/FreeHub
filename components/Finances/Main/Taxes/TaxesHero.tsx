@@ -47,9 +47,9 @@ export default function TaxesHero({
   return (
     <div className="w-full h-full flex flex-col gap-4">
       <div className="w-full h-full flex flex-col gap-4">
-        <div className="flex gap-4 w-full h-full">
+        <div className="flex flex-col md:flex-row gap-4 w-full h-full">
           <div
-            className={`p-4 rounded-xl border flex w-[80%] items-center justify-center flex-col gap-4 ${status.container}`}
+            className={`p-4 rounded-xl border flex w-full md:w-[80%] items-center justify-center flex-col gap-4 ${status.container}`}
           >
             <div className="flex items-center gap-2">
               <ShieldCheck className="primary-green" size={32} />
@@ -67,7 +67,7 @@ export default function TaxesHero({
             )}
           </div>
 
-          <div className="w-[20%] flex flex-col items-center justify-center p-0.5 bg-linear-to-b from-(--accent-purple)/20 via-(--accent-green)/20 to-(--accent-cyan)/20 rounded-lg">
+          <div className="md:w-[20%] flex flex-col items-center justify-center p-0.5 bg-linear-to-b from-(--accent-purple)/20 via-(--accent-green)/20 to-(--accent-cyan)/20 rounded-lg">
             <div className="text-primary bg-black/40 w-full h-full flex flex-col items-center justify-center rounded-lg">
               <h1 className="text-2xl flex items-center gap-2 font-semibold uppercase primary-cyan">
                 <BadgeCheck />{" "}
@@ -86,7 +86,7 @@ export default function TaxesHero({
         </div>
       </div>
 
-      <div className="flex justify-between w-full gap-4">
+      <div className="flex flex-col md:flex-row justify-between w-full gap-4">
         <MetricCard
           label="effectiveRate"
           value={`${(taxResult.effectiveTaxRate * 100).toFixed(2)}%`}

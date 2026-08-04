@@ -50,7 +50,7 @@ export default function Revenue() {
       <RevenueHeader />
 
       <div className="w-full flex gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 justify-between relative">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-2">
           <button
             onClick={() => setTransactionType("all")}
             className={`primary-slate hover:text-primary px-4 rounded-lg border background-border py-2 hover:bg-(--accent-cyan)/20 cursor-pointer transition-all duration-300 ease-out ${transactionType === "all" ? "border-(--accent-cyan) bg-(--accent-cyan)/10 text-primary" : "background-border primary-slate hover:border-(--accent-cyan)"}`}
@@ -88,7 +88,9 @@ export default function Revenue() {
         <table className="w-full flex flex-col gap-2">
           <thead className="border-b background-border pb-4">
             <tr className="flex w-full justify-between">
-              <th className="text-primary text-center w-full">{t("description")}</th>
+              <th className="text-primary text-center w-full">
+                {t("description")}
+              </th>
               <th className="text-primary text-center w-full">{t("date")}</th>
               <th className="text-primary text-center w-full">{t("type")}</th>
               <th className="text-primary text-center w-full">{t("amount")}</th>
@@ -110,8 +112,14 @@ export default function Revenue() {
                   <td className="text-primary text-center w-full">
                     {transaction.type}
                   </td>
-                  <td className={`text-center w-full font-semibold ${transaction.type === "income" ? "primary-green" : "primary-red"}`}>
-                    ${Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <td
+                    className={`text-center w-full font-semibold ${transaction.type === "income" ? "primary-green" : "primary-red"}`}
+                  >
+                    $
+                    {Number(transaction.amount).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </td>
                 </tr>
               ),
@@ -122,14 +130,17 @@ export default function Revenue() {
       <footer>
         {transactions.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-primary text-center">{t("noTransactionsFound")}</p>
+            <p className="text-primary text-center">
+              {t("noTransactionsFound")}
+            </p>
           </div>
         )}
         {transactions.length > 0 && (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-primary text-center">
               {transactions.length}{" "}
-              {transactions.length === 1 ? t("transaction") : t("transactions")}.
+              {transactions.length === 1 ? t("transaction") : t("transactions")}
+              .
             </p>
           </div>
         )}

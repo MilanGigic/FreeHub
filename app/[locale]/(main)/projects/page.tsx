@@ -52,7 +52,7 @@ export default function ProjectsPage() {
   if (isLoading) return <ProjectsPageSkeleton />;
 
   return (
-    <div className="background min-h-screen p-6 font-sans flex flex-col gap-8">
+    <div className="background min-h-screen p-3 sm:p-4 md:p-6 font-sans flex flex-col gap-4 sm:gap-6 md:gap-8">
       <ProjectsHeader projects={projects} totalRevenue={totalRevenue} />
       {/* <ProjectsSearch /> */}
       <main>

@@ -25,7 +25,7 @@ export default function TypeFilter({
         stiffness: 220,
         damping: 28,
       }}
-      className="flex items-center gap-2"
+      className="flex flex-col md:flex-row items-center gap-2"
     >
       <button
         className={`h-10 px-4 flex items-center gap-2 text-xl border-r-2 transition-colors duration-200 ${
@@ -38,7 +38,7 @@ export default function TypeFilter({
         {t("type")}{" "}
         {filters.type ? (
           <span className="text-cyan-300 bg-cyan-500/15 uppercase">
-            - {filters.type}
+            {filters.type}
           </span>
         ) : null}
       </button>

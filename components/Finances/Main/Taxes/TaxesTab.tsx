@@ -3,14 +3,11 @@
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { PausalResolutionSource } from "@/lib/pausalResolver";
 import TaxesHero from "./TaxesHero";
-import TaxRunwayCard from "./TaxRunwayCard";
 import RegimeOptimizationCard from "./RegimeOptimizationCard";
 import VatStatusCard from "./VatStatusCard";
 import NetProfitCard from "./NetProfitCard";
-import ConfidenceLevelCard from "./ConfidenceLevelCard";
 import WarningsCard from "./WarningsCard";
 import { useTranslations } from "next-intl";
-import { useDataStore } from "@/lib/store/useDataStore";
 import ProfitAfterTaxCard from "./ProfitAfterTaxCard";
 import TaxBreakdownCard from "./TaxBreakdownCard";
 
@@ -25,10 +22,9 @@ export default function TaxesTab({
 }: TaxesTabProps) {
   const t = useTranslations("taxes");
   const { taxResult } = useTaxProfileStore();
-  const { balance } = useDataStore();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* ─── Status Bar ───────────────────────────────────────────── */}
       <TaxesHero
         isComputable={isComputable}
