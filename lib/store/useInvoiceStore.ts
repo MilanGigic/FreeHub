@@ -78,7 +78,7 @@ export const useInvoiceStore = create<InvoiceStore>((set) => ({
   selectedProjectId: null,
   setSelectedProjectId: (projectId: string | null) =>
     set({ selectedProjectId: projectId }),
-  currency: null,
+  currency: "USD",
   setCurrency: (currency: string | null) => set({ currency: currency }),
   merchantName: null,
   setMerchantName: (merchantName: string | null) =>

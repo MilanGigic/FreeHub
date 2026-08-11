@@ -142,6 +142,7 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
     } catch (error) {
       console.error("Error adding invoice:", error);
     } finally {
+      onClose();
       setIsSubmitting(false);
     }
   };
