@@ -25,6 +25,23 @@ export type ProjectStatus =
 
 export type InvoiceStatus = "draft" | "overdue" | "sent" | "paid";
 
+export type TaxParameterValue =
+  | { type: "number"; value: number }
+  | { type: "percentage"; value: number } // store as 0.10 for 10%
+  | { type: "integer"; value: number }
+  | { type: "string"; value: string }
+  | { type: "boolean"; value: boolean }
+  | { type: "object"; value: Record<string, number | string | boolean | null> }
+  | { type: "array"; value: Array<number | string | boolean | null> };
+
+export type Regime =
+  | "freelancer"
+  | "pausal"
+  | "knjigas"
+  | "d.o.o."
+  | "employee"
+  | "hybrid";
+
 export type SerbianMunicipality = {
   code: string; // stable internal key (normalized)
   name: string; // display name

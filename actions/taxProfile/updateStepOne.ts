@@ -1,45 +1,45 @@
 "use server";
 
 import { db } from "@/db";
-import { serbiaTaxProfiles, taxProfiles, usaTaxProfiles } from "@/db/schema";
 import { getCurrentUser } from "../auth/getCurrentUser";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { taxProfile, taxProfileSerbia, taxProfileUsa } from "@/db/schema";
 
-export async function updateStepOne(businessStructure: string) {
+export async function updateStepOne(country: string, taxResident: boolean) {
   const user = await getCurrentUser();
   if (!user) {
     return { success: false as const, error: "Unauthorized" };
   }
 
-  if (!businessStructure) {
+  if (!country && taxResident === null) {
     return { success: false as const, error: "Business structure is required" };
   }
 
   try {
-    const taxProfile = await db.query.taxProfiles.findFirst({
-      where: eq(taxProfiles.userId, user.id),
+    const tax = await db.query.taxProfile.findFirst({
+      where: eq(taxProfile.userId, user.id),
     });
 
-    if (!taxProfile) {
+    if (!tax) {
       return { success: false as const, error: "Tax profile not found" };
     }
 
     // ---------------- USA ----------------
-    if (taxProfile.country === "United States") {
-      await db
-        .insert(usaTaxProfiles)
-        .values({ taxProfileId: taxProfile.id, entityType: businessStructure })
-        .onConflictDoUpdate({
-          target: usaTaxProfiles.taxProfileId,
-          set: { entityType: businessStructure },
-        });
-    }
+    // if (tax.country === "US") {
+    //   await db
+    //     .insert(taxProfileUsa)
+    //     .values({ taxProfileId: taxProfile.id, entityType: businessStructure })
+    //     .onConflictDoUpdate({
+    //       target: usaTaxProfiles.taxProfileId,
+    //       set: { entityType: businessStructure },
+    //     });
+    // }
 
     // ---------------- SERBIA ----------------
-    if (taxProfile.country === "Serbia") {
+    if (tax.country === "RS") {
       await db
-        .insert(serbiaTaxProfiles)
+        .insert(taxProfileSerbia)
         .values({ taxProfileId: taxProfile.id, regime: businessStructure })
         .onConflictDoUpdate({
           target: serbiaTaxProfiles.taxProfileId,

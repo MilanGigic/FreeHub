@@ -26,7 +26,6 @@ export const TAX_CONSTANTS = {
     QUARTER_MONTHS: 3,
   },
 };
-
 // ─── Transaction Categories ───────────────────────────────────────────────────
 
 export const transactionCategories = [
@@ -68,7 +67,22 @@ export const transactionCategories = [
 
 export type TransactionCategory = (typeof transactionCategories)[number];
 
-// db/seed/data/municipalities.ts
+export const pausalCards = [
+  {
+    title: "IT",
+    description: "Razvoj softvera",
+    value: "62.01",
+  },
+  {
+    title: "Marketing",
+    description: "Marketing i dizajn",
+    value: "73.11",
+  },
+  { title: "Konsalting", description: "Biznis konsalting", value: "70.22" },
+  { title: "Trgovina", description: "Online prodaja", value: "47.91" },
+  { title: "Usluge", description: "Frizer, servisi", value: "96.02" },
+  { title: "Ostalo", description: "Ako niste sigurni", value: "74.90" },
+];
 
 export type MunicipalitySeed = {
   code: string;

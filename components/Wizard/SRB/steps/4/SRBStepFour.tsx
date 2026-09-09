@@ -6,6 +6,12 @@ import { CheckCircle2, ShieldCheck, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FrilenserSummary from "./FrilenserSummary";
 import OtherSummary from "./OtherSummary";
+import Freelancer from "./Freelancer";
+import Pausal from "./Pausal";
+import Knjigas from "./Knjigas";
+import Doo from "./Doo";
+import Employee from "./Employee";
+import Hybrid from "./Hybrid";
 
 function IndependencePrompt({
   onYes,
@@ -68,7 +74,7 @@ function FinishButton({ onClick }: { onClick: () => void }) {
 // ─── main component ───────────────────────────────────────────────────────────
 
 export default function SRBStepFour() {
-  const { regime, taxProfile } = useWizardStore();
+  const { regime } = useWizardStore();
   const router = useRouter();
 
   // null = not decided yet, true = yes, false = skipped
@@ -76,11 +82,11 @@ export default function SRBStepFour() {
     null,
   );
 
-  const isFrilenser = regime === "frilenser";
-  const showResults =
-    isFrilenser ||
-    doIndependenceTest === false ||
-    (doIndependenceTest === true && taxProfile?.independenceTestScore !== null);
+  const isFrilenser = regime === "freelancer";
+  // const showResults =
+  //   isFrilenser ||
+  //   doIndependenceTest === false ||
+  //   (doIndependenceTest === true && taxProfile?.independenceTestScore !== null);
 
   // GLOBAL TAX PROFILE - CountryTaxProfile shape, used for tax calculations app-wide
   const finish = async () => {
@@ -90,45 +96,21 @@ export default function SRBStepFour() {
   return (
     <div className="w-full h-full flex flex-col items-center text-primary gap-6 justify-between">
       {/* Header */}
-      <div className="flex flex-col items-center gap-1 w-full">
-        <div className="flex items-center gap-2 mb-1">
-          <CheckCircle2 size={20} className="text-(--accent-cyan)" />
-          <span className="text-xs font-bold uppercase tracking-widest text-(--accent-cyan)">
-            Onboarding završen
-          </span>
-        </div>
-        <h1 className="text-primary text-2xl font-semibold text-center tracking-wide">
-          {isFrilenser ? "Evo vaših rezultata!" : "Pregled vašeg profila"}
-        </h1>
-        <p className="text-primary opacity-40 text-sm text-center max-w-sm">
-          {isFrilenser
-            ? "Na osnovu unetih podataka, ovo je vaš poreski profil."
-            : "Pregledajte vaše podatke i opciono uradite test nezavisnosti."}
-        </p>
+      <div>
+        {regime === "freelancer" ? (
+          <Freelancer />
+        ) : regime === "pausal" ? (
+          <Pausal />
+        ) : regime === "knjigas" ? (
+          <Knjigas />
+        ) : regime === "d.o.o." ? (
+          <Doo />
+        ) : regime === "employee" ? (
+          <Employee />
+        ) : regime === "hybrid" ? (
+          <Hybrid />
+        ) : null}
       </div>
-
-      {/* Content */}
-      <div className="flex flex-col items-center gap-4 w-full flex-1 overflow-auto">
-        {isFrilenser && taxProfile && <FrilenserSummary p={taxProfile} />}
-
-        {!isFrilenser && doIndependenceTest === null && (
-          <IndependencePrompt
-            onYes={() => setDoIndependenceTest(true)}
-            onNo={() => setDoIndependenceTest(false)}
-          />
-        )}
-
-        {!isFrilenser && doIndependenceTest === true && (
-          <IndependenceTest onClose={() => setDoIndependenceTest(null)} />
-        )}
-
-        {!isFrilenser && doIndependenceTest === false && taxProfile && (
-          <OtherSummary p={taxProfile} />
-        )}
-      </div>
-
-      {/* Footer actions */}
-      {showResults && <FinishButton onClick={finish} />}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   unique,
   uniqueIndex,
   uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { users } from "./schema";
 
@@ -26,84 +27,102 @@ export const ConfidenceLevel = pgEnum("confidence_level", [
   "high",
 ]);
 
-export const taxProfiles = pgTable("tax_profiles", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const countryEnum = pgEnum("country_enum", ["RS", "US"]);
+export const taxResidencyEnum = pgEnum("tax_residency_enum", [
+  "resident",
+  "non_resident",
+  "unknown",
+]);
+
+export const regimeEnum = pgEnum("regime_enum", [
+  "frilenser",
+  "pausal",
+  "knjigas",
+  "doo",
+  "employment",
+  "hybrid",
+]);
+export const frilenserModelEnum = pgEnum("frilenser_model", ["A", "B"]);
+
+export const entityTypeEnum = pgEnum("entity_type_enum", [
+  "sole_prop",
+  "llc_single",
+  "llc_multi",
+  "s_corp",
+  "c_corp",
+]);
+export const filingStatusEnum = pgEnum("filing_status_enum", [
+  "single",
+  "mfj",
+  "mfs",
+  "hoh",
+  "qw",
+]);
+
+export const taxProfile = pgTable("tax_profile", {
+  id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
-    .notNull()
+    .unique()
     .references(() => users.id, { onDelete: "cascade" }),
-  country: text("country").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  country: countryEnum("country").notNull(),
+  taxResidency: taxResidencyEnum("tax_residency").notNull(),
+  isUnder40: boolean("is_under_40").notNull(),
+  primaryHealthInsuredElsewhere: boolean(
+    "primary_health_insured_elsewhere",
+  ).notNull(),
+  alreadyEmployed: boolean("already_employed").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
-
-export const usaTaxProfiles = pgTable("usa_tax_profiles", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  taxProfileId: uuid("tax_profile_id")
-    .notNull()
-    .references(() => taxProfiles.id, { onDelete: "cascade" })
-    .unique(),
-
-  entityType: text("entity_type"),
-  filingStatus: text("filing_status"),
-  stateResidence: text("state_residence"),
-  homeOfficeSqft: integer("home_office_sqft"),
-  homeOfficeSimplified: boolean("home_office_simplified"),
-  mileageTracking: boolean("mileage_tracking"),
-  healthInsuranceDeduction: boolean("health_insurance_deduction"),
-  retirementContribution: boolean("retirement_contribution"),
-});
-
-export const serbiaTaxProfiles = pgTable("serbia_tax_profiles", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  taxProfileId: uuid("tax_profile_id")
-    .notNull()
-    .references(() => taxProfiles.id, { onDelete: "cascade" })
-    .unique(),
-
-  // 1. REGIME
-  regime: text("regime").notNull(), // "frilenser" | "pausal" | "knjigas"
-  isUnder40: boolean("is_under_40").default(false),
-
-  // 2. FRILENSER
-  preferredModel: text("preferred_model"), // "modelA" | "modelB"
-  healthInsuredElsewhere: boolean("health_insured_elsewhere").default(false),
-  activeMonths: integer("active_months"), // 1–12, affects annual threshold
-  numberOfClients: integer("number_of_clients"), // raw data behind independence test
-
-  // 3. PAUSAL
-  pausalActivityCode: text("pausal_activity_code"), // e.g. "62.01"
-  pausalMunicipality: text("pausal_municipality"),
-  pausalEmployeeCount: integer("pausal_employee_count").default(0),
-  monthlyPausalTax: numeric("monthly_pausal_tax", { precision: 12, scale: 2 }),
-
-  // 4. KNJIGAS
-  businessModel: text("business_model"), // "services" | "goods" | "mixed"
-  paysPersonalSalary: boolean("pays_personal_salary").default(false),
-  personalSalaryAmount: numeric("personal_salary_amount", {
-    precision: 12,
+export const taxProfileSerbia = pgTable("tax_profile_serbia", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  taxProfileId: uuid("tax_profile_id").references(() => taxProfile.id, {
+    onDelete: "cascade",
+  }),
+  currentRegime: regimeEnum("current_regime").notNull(),
+  preferredFrilenserModel: frilenserModelEnum("preferred_frilenser_model"),
+  activityCode: varchar("activity_code", { length: 256 }),
+  municipalityId: uuid("municipality_id").references(() => municipalities.id, {
+    onDelete: "cascade",
+  }),
+  officialPausalMonthlyAmount: numeric("official_pausal_monthly_amount", {
+    precision: 10,
     scale: 2,
   }),
-  vatThresholdWarning: boolean("vat_threshold_warning").default(false),
-  businessExpenses: numeric("business_expenses", {
-    precision: 12,
+  pausalResenjeDate: timestamp("pausal_resenje_date", { mode: "date" }),
+  pausalResenjeDocumentUrl: text("pausal_resenje_document_url"),
+  personalSalaryElected: boolean("personal_salary_elected"),
+  personalSalaryGrossMonthly: numeric("personal_salary_gross_monthly", {
+    precision: 10,
     scale: 2,
   }),
-
-  // 5. VAT
-  isInVatSystem: boolean("is_in_vat_system").default(false),
-
-  // 6. INDEPENDENCE TEST
-  independenceTestScore: integer("independence_test_score").default(0),
-  independenceTestCalculatedAt: timestamp("independence_test_calculated_at"),
-
-  // 7. SHARED FINANCIALS (amounts in RSD)
+  vatRegistered: boolean("vat_registered").notNull(),
+  vatRegistrationDate: timestamp("vat_registration_date", { mode: "date" }),
   estimatedAnnualGross: numeric("estimated_annual_gross", {
-    precision: 12,
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+  notes: text("notes"),
+});
+
+export const taxProfileUsa = pgTable("tax_profile_usa", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  taxProfileId: uuid("tax_profile_id").references(() => taxProfile.id, {
+    onDelete: "cascade",
+  }),
+  entityType: entityTypeEnum("entity_type").notNull(),
+  filingStatus: filingStatusEnum("filing_status").notNull(),
+  stateOfResidence: varchar("state_of_residence", { length: 256 }).notNull(),
+  homeOfficeSqft: integer("home_office_sqft"),
+  expectsQbi: boolean("expects_qbi").notNull(),
+  retirementContributionAnnual: numeric("retirement_contribution_annual", {
+    precision: 10,
     scale: 2,
   }),
-
-  // 8. META
-  onboardingCompletedAt: timestamp("onboarding_completed_at"),
+  healthInsuranceAnnual: numeric("health_insurance_annual", {
+    precision: 10,
+    scale: 2,
+  }),
 });
 
 // Purpose: Store real-world inputs, not “final truth”
@@ -196,26 +215,15 @@ export const dailyExchangeRates = pgTable(
   "daily_exchange_rates",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-
-    // The official date the rate applies to
     date: date("date").notNull(),
-
-    // "USD", "EUR", "CHF", etc.
     currencyCode: text("currency_code").notNull(),
-
-    // The official NBS middle rate (Srednji kurs)
-    // Most rates have 4-6 decimal places, so scale 6 is safe.
     middleRate: numeric("middle_rate", { precision: 14, scale: 6 }).notNull(),
-
-    // Metadata for debugging or updates
     source: text("source").default("NBS"), // National Bank of Serbia
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => {
     return {
-      // CRITICAL: Prevents duplicate rates for the same day/currency
-      // and makes searching by date+currency extremely fast.
       dateCurrencyIdx: uniqueIndex("date_currency_idx").on(
         table.date,
         table.currencyCode,
@@ -225,8 +233,19 @@ export const dailyExchangeRates = pgTable(
 );
 
 export const municipalities = pgTable("municipalities", {
-  code: text("code").primaryKey(), // e.g. "KRUSEVAC"
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(), // e.g. "KRUSEVAC"
   name: text("name").notNull(), // "Kruševac"
-  city: text("city"), // optional (Beograd, Niš...)
-  taxZone: integer("tax_zone"), // for paušal calculation later
+  pausalCoefficient: numeric("pausal_coefficient", { precision: 10, scale: 2 }),
+});
+
+export const activityCodes = pgTable("activity_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 256 }).unique().notNull(),
+  name: varchar("name", { length: 256 }).notNull(),
+  pausalEligible: boolean("pausal_eligible").notNull(),
+  defaultCoefficient: numeric("default_coefficient", {
+    precision: 10,
+    scale: 2,
+  }),
 });

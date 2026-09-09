@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { municipalities } from "@/db/schema/taxProfileSchema";
-import { MUNICIPALITIES } from "@/config/constants";
+import { municipalitiesSeed } from "@/config/constants";
 
 export async function seedMunicipalities() {
   console.log("Seeding municipalities...");
@@ -8,14 +8,15 @@ export async function seedMunicipalities() {
   await db
     .insert(municipalities)
     .values(
-      MUNICIPALITIES.map((m) => ({
+      municipalitiesSeed.map((m) => ({
         code: m.code,
         name: m.name,
-        city: m.city ?? null,
-        taxZone: null, // fill later when you add tax logic
+        pausalCoefficient: m.pausalCoefficient,
       })),
     )
-    .onConflictDoNothing();
+    .onConflictDoNothing(); // if you have a unique on code
 
   console.log("Municipalities seeded.");
 }
+
+seedMunicipalities();

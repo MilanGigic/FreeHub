@@ -5,6 +5,109 @@
     "landingTitle": "Efficio - Vaš pametni finansijski centar za frilensere",
     "landingDescription": "Znajte koliko možete bezbedno da potrošite — bez razmišljanja kao računovođa."
   },
+  "onboarding": {
+    "common": {
+      "yes": "Da",
+      "no": "Ne",
+      "goNext": "Nastavi",
+      "finish": "Završi",
+      "loading": "učitavanje…",
+      "startTyping": "Počnite da kucate...",
+      "noResults": "Nema rezultata"
+    },
+
+    "stepOne": {
+      "countryTitle": "Država",
+      "serbia": "SRB",
+      "unitedStates": "US",
+      "taxResidentTitle": "Poreski rezident",
+      "taxResidentYes": "Da",
+      "taxResidentNo": "Ne"
+    },
+
+    "stepTwo": {
+      "underFortyTitle": "Da li imate manje od 40 godina?",
+      "healthInsuranceTitle": "Da li imate obavezno zdravstveno osiguranje?",
+      "employedTitle": "Da li ste trenutno zaposleni (primete platu)?"
+    },
+
+    "stepThree": {
+      "title": "Kako trenutno poslujete?",
+      "freelancer": "Neregistrovani frilenser (samo fakturišem klijente, bez registrovane delatnosti)",
+      "pausal": "Registrovani preduzetnik – Paušal (paušalno oporezivanje)",
+      "knjigas": "Registrovani preduzetnik – Knjigaš (stvarni prihod / knjigovodstvo)",
+      "doo": "Imam d.o.o. (društvo sa ograničenom odgovornošću)",
+      "employee": "Samo sam zaposlen",
+      "hybrid": "Hibrid (zaposlen + dodatni frilens)"
+    },
+
+    "stepFive": {
+      "vatTitle": "Da li ste (ili ćete uskoro biti) u sistemu PDV-a?",
+      "vatRegistrationDate": "Unesite datum registracije",
+      "expectedRevenueTitle": "Očekivani godišnji prihod",
+      "expectedRevenueHint": "(pomaže kod upozorenja za pragove 6M/8M)",
+      "expectedRevenuePlaceholder": "Unesite očekivani godišnji prihod..."
+    },
+
+    "stepSix": {
+      "mainClientsTitle": "Glavni klijenti su:",
+      "domestic": "Domaći",
+      "foreign": "Inostrani",
+      "mixed": "Mešoviti",
+      "otherIncomeTitle": "Da li imate neki drugi značajan prihod (zakupnina, kapitalni dobici, dividende itd.)?"
+    },
+
+    "freelancer": {
+      "modelTitle": "Da li preferirate Model A ili Model B?",
+      "modelA": "Model A",
+      "modelB": "Model B",
+      "estimateTitle": "Otprilike koliko očekujete da zaradite ove godine?",
+      "estimateHint": "(opciono, ali korisno za prognozu)",
+      "estimatePlaceholder": "Unesite procenu zarade za ovu godinu"
+    },
+
+    "pausal": {
+      "activityCodeTitle": "Koja je vaša šifra delatnosti?",
+      "municipalityTitle": "U kojoj opštini je registrovana delatnost?",
+      "municipalityError": "Nismo pronašli tu opštinu — pokušajte drugu.",
+      "haveOfficialAmountTitle": "Da li imate zvanični mesečni iznos iz rešenja Poreske uprave?",
+      "resenjeDateTitle": "Kada je rešenje izdato?",
+      "monthlyAmountTitle": "Unesite iznos",
+      "expectedRevenueTitle": "Očekivani prihod u tekućoj godini (za proveru limita 6M / 8M)",
+      "expectedRevenuePlaceholder": "Unesite procenu zarade za ovu godinu"
+    },
+
+    "knjigas": {
+      "personalSalaryTitle": "Da li sebi isplaćujete ličnu zaradu?",
+      "personalSalaryPlaceholder": "Koliki je bruto iznos mesečno...",
+      "trackExpensesTitle": "Da li pratite poslovne troškove?"
+    },
+
+    "hybrid": {
+      "intro": "Imate redovan posao i dodatnu zaradu sa strane. Porez računamo samo na dodatni prihod (deo za koji ste vi odgovorni) i prikazujemo ukupnu sliku zbog godišnjeg poreza.",
+      "monthlySalaryTitle": "Kolika je vaša približna mesečna bruto plata?",
+      "monthlySalaryPlaceholder": "Unesite mesečnu bruto platu",
+      "sideWorkTitle": "Kako obavljate dodatni posao?",
+      "sideFreelancer": "Neregistrovani frilens (samo fakturišem klijente)",
+      "sidePausal": "Registrovan kao preduzetnik – Paušal",
+      "sideKnjigas": "Registrovan kao preduzetnik – Knjigaš",
+      "sideDoo": "Preko sopstvenog d.o.o.",
+      "modelTitle": "Da li preferirate Model A ili Model B?",
+      "activityCodeTitle": "Koja je vaša šifra delatnosti?",
+      "municipalityTitle": "U kojoj opštini je registrovana delatnost?",
+      "haveOfficialAmountTitle": "Da li imate zvanični mesečni iznos iz rešenja Poreske uprave?",
+      "personalSalaryTitle": "Da li sebi isplaćujete ličnu zaradu?",
+      "personalSalaryPlaceholder": "Koliki je bruto iznos mesečno...",
+      "trackExpensesTitle": "Da li pratite poslovne troškove?",
+      "takeSalaryTitle": "Da li uzimate platu iz firme?",
+      "distributeDividendsTitle": "Da li planirate isplatu dividendi?",
+      "expectedTotalIncomeTitle": "Očekivani ukupni godišnji prihod (plata + dodatni rad) – korisno za upozorenje o godišnjem porezu",
+      "expectedTotalIncomePlaceholder": "Unesite očekivani godišnji prihod",
+      "calcSideTaxTitle": "Da li želite da posebno izračunamo porez na dodatnu delatnost i prikažemo ukupnu sliku?",
+      "calcSideTaxYes": "Da",
+      "calcSideTaxNo": "Ne"
+    }
+  },
   "dashboard": {
     "title": "Dobrodošli nazad",
     "subtitle": "Evo Vašeg pregleda",
