@@ -1,10 +1,9 @@
 import { CountryTaxProfile } from "@/actions/taxProfile";
 import { create } from "zustand";
 import { PausalResolution } from "../pausalResolver";
+import { Regime } from "@/types/types";
 
 export type TaxSystem = "US" | "SRB";
-
-export type SRBModel = "MODEL_1" | "MODEL_2" | "PAUSAL" | "KNJIGAS";
 
 export type TaxWarnings = {
   global: string[];
@@ -17,7 +16,7 @@ export type TaxWarnings = {
 // ────────────────────────────────────────────────────────────────────────────────
 
 export type TaxResult = {
-  model?: SRBModel;
+  model?: Regime;
   netProfit: number;
   annualRevenue: number;
 

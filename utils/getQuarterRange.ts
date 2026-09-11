@@ -7,3 +7,13 @@ export function getQuarterRange(year: number, quarter: 1 | 2 | 3 | 4) {
   };
   return ranges[quarter];
 }
+
+/** Which quarter is "now"? */
+export function getCurrentQuarter(date = new Date()): {
+  year: number;
+  quarter: 1 | 2 | 3 | 4;
+} {
+  const month = date.getMonth(); // 0–11
+  const quarter = (Math.floor(month / 3) + 1) as 1 | 2 | 3 | 4;
+  return { year: date.getFullYear(), quarter };
+}

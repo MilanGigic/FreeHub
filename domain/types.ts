@@ -3,7 +3,7 @@ export type Money = number; // always in RSD
 export interface RegimeInput {
   // Common
   grossRevenue: Money; // for the period (quarter or year)
-  periodType: "quarter";
+  periodType: "quarter" | "year";
   isUnder40: boolean;
   primaryHealthInsuredElsewhere: boolean;
   alreadyEmployed: boolean;

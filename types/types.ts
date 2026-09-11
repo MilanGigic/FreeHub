@@ -35,7 +35,7 @@ export type TaxParameterValue =
   | { type: "array"; value: Array<number | string | boolean | null> };
 
 export type Regime =
-  | "freelancer"
+  | "frilenser"
   | "pausal"
   | "knjigas"
   | "d.o.o."
@@ -190,6 +190,10 @@ export interface TaxProfile {
   id?: string;
   userId?: string;
   country?: string | null;
+  taxResidency?: "resident" | "non_resident" | null;
+  primaryHealthInsuredElsewhere?: boolean | null;
+  alreadyEmployed?: boolean | null;
+  isUnder40?: boolean | null;
 
   // --- USA Fields ---
   entityType?: string | null;
@@ -203,21 +207,19 @@ export interface TaxProfile {
 
   // --- Serbia Fields ---
   // 1. REGIME
-  regime?: "frilenser" | "pausal" | "knjigas" | null;
-  isUnder40?: boolean | null;
+  currentRegime?: "frilenser" | "pausal" | "knjigas" | null;
 
   // 2. FRILENSER
   preferredModel?: "modelA" | "modelB" | null;
-  healthInsuredElsewhere?: boolean | null;
-  activeMonths?: number | null;
-  numberOfClients?: number | null;
 
   // 3. PAUSAL
   pausalActivityCode?: string | null;
-  pausalMunicipality?: string | null;
-  pausalTaxCategory?: 1 | 2 | 3 | null;
-  pausalEmployeeCount?: number | null;
-  monthlyPausalTax?: string | null;
+  pausalMunicipalityId?: string | null;
+  officialPausalMonthlyAmount?: string | null;
+  pausalResenjeDate?: Date | null;
+  pausalResenjeDocumentUrl?: string | null;
+  personalSalaryElected?: boolean | null;
+  personalSalaryGrossMonthly?: string | null;
 
   // 4. KNJIGAS
   businessModel?: "services" | "goods" | "mixed" | null;
@@ -226,7 +228,8 @@ export interface TaxProfile {
   vatThresholdWarning?: boolean | null;
 
   // 5. VAT
-  isInVatSystem?: boolean | null;
+  vatRegistered?: boolean | null;
+  vatRegistrationDate?: Date | null;
 
   // 6. INDEPENDENCE TEST
   independenceTestScore?: number | null;
@@ -237,6 +240,7 @@ export interface TaxProfile {
 
   // 8. META
   onboardingCompletedAt?: Date | null;
+  notes?: string | null;
 
   // Common meta
   createdAt?: Date | null;

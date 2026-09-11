@@ -7,6 +7,10 @@ import "@/app/[locale]/globals.css";
 
 const themeScript = `(function(){var s=document.documentElement;var t=localStorage.getItem('theme');var d=!t&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||d)s.classList.add('dark');else if(t==='light')s.classList.remove('dark');})();`;
 
+export function generateStaticParams() {
+  return [{ locale: "sr-Latn" }, { locale: "en" }]; // your actual supported locales
+}
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],

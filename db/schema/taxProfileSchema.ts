@@ -35,11 +35,11 @@ export const taxResidencyEnum = pgEnum("tax_residency_enum", [
 ]);
 
 export const regimeEnum = pgEnum("regime_enum", [
-  "frilenser",
+  "freelancer",
   "pausal",
   "knjigas",
-  "doo",
-  "employment",
+  "d.o.o.",
+  "employee",
   "hybrid",
 ]);
 export const frilenserModelEnum = pgEnum("frilenser_model", ["A", "B"]);
