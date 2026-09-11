@@ -4,7 +4,7 @@ import {
   pausalCards,
 } from "@/config/constants";
 import { useState } from "react";
-import { useOnboardingStore } from "@/lib/store/useOnboardingStore";
+import { useWizardStore } from "@/lib/store/useWizardStore";
 
 export default function Hybrid() {
   const [query, setQuery] = useState("");
@@ -34,7 +34,7 @@ export default function Hybrid() {
     setTakeSalary,
     distributeDividends,
     setDistributeDividends,
-  } = useOnboardingStore();
+  } = useWizardStore();
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">

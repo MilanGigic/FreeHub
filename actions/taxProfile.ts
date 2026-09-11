@@ -1,18 +1,18 @@
 "use server";
 
 import { db } from "@/db";
-import { serbiaTaxProfiles, taxProfiles, usaTaxProfiles } from "@/db/schema";
+import { taxProfile, taxProfileSerbia, taxProfileUsa } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/session";
 
-export type UsaTaxProfile = typeof usaTaxProfiles.$inferSelect & {
+export type UsaTaxProfile = typeof taxProfileUsa.$inferSelect & {
   userId: string;
   country: "United States";
   createdAt: Date;
   updatedAt: Date | null;
 };
 
-export type SerbiaTaxProfile = typeof serbiaTaxProfiles.$inferSelect & {
+export type SerbiaTaxProfile = typeof taxProfileSerbia.$inferSelect & {
   userId: string;
   country: "Serbia";
   createdAt: Date;
@@ -26,16 +26,16 @@ export async function getTaxProfile(
 ): Promise<CountryTaxProfile> {
   if (!userId) throw new Error("User ID is required");
 
-  const base = await db.query.taxProfiles.findFirst({
-    where: eq(taxProfiles.userId, userId),
+  const base = await db.query.taxProfile.findFirst({
+    where: eq(taxProfile.userId, userId),
   });
   if (!base) return null;
 
-  if (base.country === "United States") {
-    const usaProfile = await db.query.usaTaxProfiles.findFirst({
-      where: eq(usaTaxProfiles.taxProfileId, base.id),
+  if (base.country === "US") {
+    const usaProfile = await db.query.taxProfileUsa.findFirst({
+      where: eq(taxProfileUsa.taxProfileId, base.id),
     });
-    if (!usaProfile) return null;
+    if (!usaProfile || base.userId === null) return null;
 
     return {
       ...usaProfile,
@@ -46,11 +46,11 @@ export async function getTaxProfile(
     };
   }
 
-  if (base.country === "Serbia") {
-    const srbProfile = await db.query.serbiaTaxProfiles.findFirst({
-      where: eq(serbiaTaxProfiles.taxProfileId, base.id),
+  if (base.country === "RS") {
+    const srbProfile = await db.query.taxProfileSerbia.findFirst({
+      where: eq(taxProfileSerbia.taxProfileId, base.id),
     });
-    if (!srbProfile) return null;
+    if (!srbProfile || base.userId === null) return null;
 
     return {
       ...srbProfile,
@@ -77,21 +77,21 @@ export async function upsertTaxProfile(data: {
   const session = await getSession();
   if (!session?.userId) throw new Error("Unauthenticated");
 
-  const profile = await db.query.taxProfiles.findFirst({
-    where: eq(taxProfiles.userId, session.userId),
+  const profile = await db.query.taxProfile.findFirst({
+    where: eq(taxProfile.userId, session.userId),
   });
 
   if (!profile) return { success: false, error: "Profile not found" };
 
-  if (profile.country === "United States") {
-    await db
-      .insert(usaTaxProfiles)
-      .values({ taxProfileId: profile.id, ...data })
-      .onConflictDoUpdate({
-        target: usaTaxProfiles.taxProfileId,
-        set: data,
-      });
-  }
+  // if (profile.country === "US") {
+  //   await db
+  //     .insert(taxProfileUsa)
+  //     .values({ taxProfileId: profile.id, ...data })
+  //     .onConflictDoUpdate({
+  //       target: taxProfileUsa.taxProfileId,
+  //       set: data,
+  //     });
+  // }
 
   return { success: true };
 }

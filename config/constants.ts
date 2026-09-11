@@ -26,6 +26,49 @@ export const TAX_CONSTANTS = {
     QUARTER_MONTHS: 3,
   },
 };
+
+export const FREELANCER_QUARTERS = [
+  {
+    id: "Q1",
+    label: "Q1 (Jan–Mar)",
+    startMonth: 0, // January (0-indexed)
+    endMonth: 2, // March
+    startDay: 1,
+    endDay: 31,
+    deadlineMonth: 3, // April
+    deadlineDay: 30,
+  },
+  {
+    id: "Q2",
+    label: "Q2 (Apr–Jun)",
+    startMonth: 3,
+    endMonth: 5,
+    startDay: 1,
+    endDay: 30,
+    deadlineMonth: 6, // July
+    deadlineDay: 30,
+  },
+  {
+    id: "Q3",
+    label: "Q3 (Jul–Sep)",
+    startMonth: 6,
+    endMonth: 8,
+    startDay: 1,
+    endDay: 30,
+    deadlineMonth: 9, // October
+    deadlineDay: 30,
+  },
+  {
+    id: "Q4",
+    label: "Q4 (Oct–Dec)",
+    startMonth: 9,
+    endMonth: 11,
+    startDay: 1,
+    endDay: 31,
+    deadlineMonth: 0, // January next year
+    deadlineDay: 30,
+  },
+] as const;
 // ─── Transaction Categories ───────────────────────────────────────────────────
 
 export const transactionCategories = [

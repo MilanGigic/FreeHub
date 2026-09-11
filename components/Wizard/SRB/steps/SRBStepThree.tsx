@@ -112,7 +112,7 @@ export default function SRBStepThree() {
         {tOnboarding("title")}
       </h1>
       {/* OPTIONS */}
-      <div className="flex flex-col gap-2 w-full max-w-md">
+      <div className="flex flex-col gap-4 w-full max-w-md mx-auto">
         <RadioGroup
           defaultValue={cards[0].regime}
           className="flex flex-col gap-2"

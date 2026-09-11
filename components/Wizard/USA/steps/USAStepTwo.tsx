@@ -15,7 +15,7 @@ import { US_STATES } from "@/lib/usaStates";
 import { MouseEvent, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { toast } from "react-toastify";
-import { updateStepTwo } from "@/actions/taxProfile/updateStepTwo";
+// import { updateStepTwo } from "@/actions/taxProfile/updateStepTwo";
 import { useTranslations } from "next-intl";
 
 const filingStatusKeys = {
@@ -45,13 +45,13 @@ export default function USAStepTwo() {
 
   const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const res = await updateStepTwo({ filingStatus, stateResidence });
-    if (res.success) {
-      toast.success(t("filingStatusUpdated"));
-      router.push("/dashboard?wizard=true&step=3");
-    } else {
-      toast.error(res.error);
-    }
+    // const res = await updateStepTwo({ filingStatus, stateResidence });
+    // if (res.success) {
+    //   toast.success(t("filingStatusUpdated"));
+    //   router.push("/dashboard?wizard=true&step=3");
+    // } else {
+    //   toast.error(res.error);
+    // }
   };
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">

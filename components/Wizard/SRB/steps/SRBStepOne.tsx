@@ -30,29 +30,30 @@ export default function SRBStepOne() {
   // ---------------- UI ----------------
 
   return (
-    <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4 gap-4">
+    <div className="w-full h-full w-full flex flex-col justify-between items-center primary-slate p-4 gap-4">
       <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
         <h1 className="text-2xl font-bold text-primary">{t("welcomeTitle")}</h1>
         <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
 
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="flex flex-col gap-2 w-full">
         <h1 className="text-primary text-2xl font-bold text-center">
           {tOnboarding("countryTitle")}
         </h1>
-        <div className="flex flex-col items-center gap-4 border-b-2 p-2">
-          <h1 className="text-xl font-semibold uppercase">Country</h1>
+        <div className="flex flex-col items-center gap-4 w-full border-b-2 p-2">
+          <h1 className="text-xl font-semibold uppercase">{country}</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCountry("SRB")}
               className={`py-2 px-4 border ${country === "SRB" ? "bg-white/35" : ""}`}
-            >
+              >
               SRB
             </button>
             <button
               onClick={() => setCountry("US")}
               className={`py-2 px-4 border ${country === "US" ? "bg-white/35" : ""}`}
-            >
+              >
               US
             </button>
           </div>
@@ -67,17 +68,18 @@ export default function SRBStepOne() {
           <button
             className={`py-2 px-4 border ${taxResident ? "bg-white/35" : ""}`}
             onClick={() => setTaxResident(true)}
-          >
+            >
             {tOnboarding("taxResidentYes")}
           </button>
           <button
             className={`py-2 px-4 border ${taxResident !== null && !taxResident ? "bg-white/35" : ""}`}
             onClick={() => setTaxResident(false)}
-          >
+            >
             {tOnboarding("taxResidentNo")}
           </button>
         </div>
       </div>
+        </div>
 
       <div className="flex flex-col gap-2 max-w-md w-full mx-auto">
         <button

@@ -1,15 +1,10 @@
 "use client";
 
-import { MouseEvent, useState } from "react";
+import { MouseEvent } from "react";
 import { useWizardStore } from "@/lib/store/useWizardStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { ArrowRightIcon } from "lucide-react";
-
-import { updateStepTwo } from "@/actions/taxProfile/updateStepTwo";
-import { suggestModel } from "@/lib/suggestModel";
-import { useDebounce } from "@/hooks/useDebounce";
 
 // ---------------- CARD DATA ----------------
 
@@ -26,33 +21,8 @@ export default function SRBStepTwo() {
   } = useWizardStore();
   const t = useTranslations("wizard");
   const tOnboarding = useTranslations("onboarding.stepTwo");
+  const tCommon = useTranslations("common");
   const router = useRouter();
-
-  const [grossAnnualIncome, setGrossAnnualIncome] = useState<number>(0);
-  const [isEmployed, setIsEmployed] = useState<boolean>(false);
-  const [displayValue, setDisplayValue] = useState<string>("");
-
-  const formatNumber = (value: string): string => {
-    // Strip everything except digits
-    const digits = value.replace(/\D/g, "");
-    if (!digits) return "";
-
-    // Format using Serbian locale — uses . as thousands separator
-    return Number(digits).toLocaleString("sr-RS");
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatNumber(e.target.value);
-
-    setDisplayValue(formatted);
-
-    const raw = Number(e.target.value.replace(/\D/g, ""));
-    setGrossAnnualIncome(raw);
-  };
-
-  // const debouncedGrossAnnualIncome = useDebounce(grossAnnualIncome, 500);
-
-  // ---------------- ACTION ----------------
 
   const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -60,104 +30,67 @@ export default function SRBStepTwo() {
     if (underForty !== null && healthInsurance !== null && employed !== null) {
       router.push("/sr-Latn/onboarding?step=3");
     }
-
-    // let res;
-
-    // if (regime === "frilenser") {
-    //   setModel(selected.value);
-    //   res = await updateStepTwo({
-    //     model: selected.value,
-    //     healthInsuredElsewhere: false,
-    //   });
-    // } else if (regime === "pausal") {
-    //   res = await updateStepTwo({
-    //     pausalActivityCode: selected.value,
-    //   });
-    // } else if (regime === "knjigas") {
-    //   res = await updateStepTwo({
-    //     businessModel: selected.value,
-    //   });
-    // }
-
-    // if (res?.success) {
-    //   router.push("/sr-Latn/onboarding?step=3");
-    // } else {
-    //   toast.error(res?.error || "Greška");
-    // }
   };
-
-  // ---------------- LABELS ----------------
-
-  // const heading =
-  //   regime === "frilenser"
-  //     ? "Izaberite model oporezivanja"
-  //     : regime === "pausal"
-  //       ? "Čime se bavite?"
-  //       : "Kako poslujete?";
-
-  // const subheading =
-  //   regime === "pausal" ? "Izaberite delatnost" : "Izaberite opciju";
-
-  // ---------------- UI ----------------
-
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4 gap-4">
       {/* HEADER */}
-      <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">
-          {tOnboarding("underFortyTitle")}
-        </h1>
-        <div className="flex items-center gap-2">
-          <button
-            className={`py-2 px-4 border ${underForty ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setUnderForty(true)}
-          >
-            Yes
-          </button>
-          <button
-            className={`py-2 px-4 border ${underForty !== null && !underForty ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setUnderForty(false)}
-          >
-            No
-          </button>
+      <div className="flex flex-col items-center justify-center h-full gap-4">
+        <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
+          <h1 className="text-2xl font-bold text-primary">
+            {tOnboarding("underFortyTitle")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              className={`py-2 px-4 border ${underForty ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setUnderForty(true)}
+            >
+              {tCommon("yes")}
+            </button>
+            <button
+              className={`py-2 px-4 border ${underForty !== null && !underForty ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setUnderForty(false)}
+            >
+              {tCommon("no")}
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">
-          {tOnboarding("healthInsuranceTitle")}
-        </h1>
-        <div className="flex items-center gap-2">
-          <button
-            className={`py-2 px-4 border ${healthInsurance ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setHealthInsurance(true)}
-          >
-            Yes
-          </button>
-          <button
-            className={`py-2 px-4 border ${healthInsurance !== null && !healthInsurance ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setHealthInsurance(false)}
-          >
-            No
-          </button>
+        <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
+          <h1 className="text-2xl font-bold text-primary">
+            {tOnboarding("healthInsuranceTitle")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              className={`py-2 px-4 border ${healthInsurance ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setHealthInsurance(true)}
+            >
+              {tCommon("yes")}
+            </button>
+            <button
+              className={`py-2 px-4 border ${healthInsurance !== null && !healthInsurance ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setHealthInsurance(false)}
+            >
+              {tCommon("no")}
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
-        <h1 className="text-2xl font-bold text-primary">
-          {tOnboarding("employedTitle")}
-        </h1>
-        <div className="flex items-center gap-2">
-          <button
-            className={`py-2 px-4 border ${employed ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setEmployed(true)}
-          >
-            Yes
-          </button>
-          <button
-            className={`py-2 px-4 border ${employed !== null && !employed ? "bg-cyan-200/35" : ""}`}
-            onClick={() => setEmployed(false)}
-          >
-            No
-          </button>
+        <div className="flex flex-col gap-2 items-center text-primary text-lg font-semibold">
+          <h1 className="text-2xl font-bold text-primary">
+            {tOnboarding("employedTitle")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              className={`py-2 px-4 border ${employed ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setEmployed(true)}
+            >
+              {tCommon("yes")}
+            </button>
+            <button
+              className={`py-2 px-4 border ${employed !== null && !employed ? "bg-cyan-200/35" : ""}`}
+              onClick={() => setEmployed(false)}
+            >
+              {tCommon("no")}
+            </button>
+          </div>
         </div>
       </div>
 

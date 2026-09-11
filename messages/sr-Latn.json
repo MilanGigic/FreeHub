@@ -61,6 +61,9 @@
       "modelTitle": "Da li preferirate Model A ili Model B?",
       "modelA": "Model A",
       "modelB": "Model B",
+      "notSure": "Niste sigurni?",
+      "quartalRevenueTitle": "Unesite iznos iz poslednjeg kvartala",
+      "suggest": "Mi preporučujemo",
       "estimateTitle": "Otprilike koliko očekujete da zaradite ove godine?",
       "estimateHint": "(opciono, ali korisno za prognozu)",
       "estimatePlaceholder": "Unesite procenu zarade za ovu godinu"

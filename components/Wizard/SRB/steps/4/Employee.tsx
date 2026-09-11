@@ -1,4 +1,4 @@
-import { useOnboardingStore } from "@/lib/store/useOnboardingStore";
+import { useWizardStore } from "@/lib/store/useWizardStore";
 
 export default function Employee() {
   const {
@@ -9,7 +9,7 @@ export default function Employee() {
     trackNetPay,
     setTrackNetPay,
     setStepFourDone,
-  } = useOnboardingStore();
+  } = useWizardStore();
   return (
     <div
       className={`flex flex-col items-center gap-4 w-full ${onlySalary !== null && monthlyGrossSalary !== null && trackNetPay !== null ? "border-b-2" : ""}`}

@@ -1,4 +1,4 @@
-import { useOnboardingStore } from "@/lib/store/useOnboardingStore";
+import { useWizardStore } from "@/lib/store/useWizardStore";
 
 export default function Doo() {
   const {
@@ -7,7 +7,7 @@ export default function Doo() {
     distributeDividends,
     setDistributeDividends,
     setStepFourDone,
-  } = useOnboardingStore();
+  } = useWizardStore();
   return (
     <div className="flex flex-col items-center w-full text-center gap-4 p-2">
       <div className="flex flex-col items-center w-full text-center gap-4 p-2">

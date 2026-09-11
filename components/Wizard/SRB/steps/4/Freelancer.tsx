@@ -23,40 +23,50 @@ export default function Freelancer() {
   const { model, setModel, estimateEarn, setEstimateEarn, employed } =
     useWizardStore();
   const tOnboarding = useTranslations("onboarding.freelancer");
-  const searchParams = useSearchParams();
-  const currentStep = parseInt(searchParams.get("step") || "1");
-  const router = useRouter();
 
   const [grossAnnualIncome, setGrossAnnualIncome] = useState<number>(0);
   const [displayValue, setDisplayValue] = useState<string>("");
+  const [estimateEarnDisplay, setEstimateEarnDisplay] = useState<string>("");
 
   const formatNumber = (value: string): string => {
-    // Strip everything except digits
+    // 1. Očisti sve što nije cifra
     const digits = value.replace(/\D/g, "");
     if (!digits) return "";
 
-    // Format using Serbian locale — uses . as thousands separator
-    return Number(digits).toLocaleString("sr-RS");
+    // 2. Formatiramo preko Intl.NumberFormat gde eksplicitno definišemo tačku
+    // Ovo garantuje da će i milioni imati tačke (1.200.000) umesto razmaka
+    return new Intl.NumberFormat("de-DE").format(Number(digits));
+    // Napomena: Nemački (de-DE) koristi identičan format kao srpski (tačka za hiljade, zapet zapetu),
+    // ali je konzistentniji na svim pretraživačima za milione.
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatNumber(e.target.value);
+    const inputValue = e.target.value;
+
+    // Čistimo sve što nisu cifre da dobijemo čist broj za stanje
+    const digits = inputValue.replace(/\D/g, "");
+    const raw = digits ? Number(digits) : 0;
+
+    // Formatiramo za prikaz na ekranu
+    const formatted = formatNumber(inputValue);
 
     setDisplayValue(formatted);
-
-    const raw = Number(e.target.value.replace(/\D/g, ""));
     setGrossAnnualIncome(raw);
   };
 
-  const debouncedGrossAnnualIncome = useDebounce(grossAnnualIncome, 500);
+  const handleEstimateEarnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
 
-  const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+    const digits = inputValue.replace(/\D/g, "");
+    const raw = digits ? Number(digits) : 0;
 
-    if (!model || !estimateEarn) return null;
+    const formatted = formatNumber(inputValue);
 
-    router.push("/sr-Latn/onboarding?step=4");
+    setEstimateEarnDisplay(formatted);
+    setEstimateEarn(raw);
   };
+
+  const debouncedGrossAnnualIncome = useDebounce(grossAnnualIncome, 500);
 
   return (
     <div
@@ -64,7 +74,7 @@ export default function Freelancer() {
     >
       <div className="flex flex-col items-center gap-4">
         <h1 className="text-xl font-semibold uppercase">
-          {tOnboarding("modeltitle")}
+          {tOnboarding("modelTitle")}
         </h1>
         <div className="flex items-center gap-4 p-2">
           <button
@@ -81,6 +91,8 @@ export default function Freelancer() {
           </button>
         </div>
       </div>
+
+      <h2 className="text-lg font-semibold">{model}</h2>
       <Accordion
         type="single"
         collapsible
@@ -89,18 +101,19 @@ export default function Freelancer() {
       >
         <AccordionItem value="helpNeeded" className="w-full">
           <AccordionTrigger className="text-primary text-lg font-semibold w-full">
-            Niste Sigurni?
+            {tOnboarding("notSure")}
           </AccordionTrigger>
           <AccordionContent className="animate-fade-down animate-duration-500 animate-ease-in-out w-full">
             <FieldLabel htmlFor="helpNeeded" className="w-full">
               <Field orientation="horizontal">
                 <FieldContent>
                   <FieldLabel className="text-primary text-lg font-semibold">
-                    Unesite iznos iz poslednjeg kvartala
+                    {tOnboarding("quartalRevenueTitle")}
                   </FieldLabel>
 
                   <Input
                     type="string"
+                    inputMode="numeric"
                     placeholder="Iznos"
                     className="w-full text-center text-lg bg-transparent border background-border rounded p-2 text-primary placeholder-gray-600 outline-none focus:border-(--accent-cyan)"
                     onChange={(e) => handleChange(e)}
@@ -111,7 +124,7 @@ export default function Freelancer() {
               <Field orientation="horizontal">
                 <FieldContent className="w-full flex flex-col gap-2 items-center justify-center">
                   <FieldLabel className="primary-slate text-lg font-semibold">
-                    Mi preporučujemo:
+                    {tOnboarding("suggest")}:
                   </FieldLabel>
                   {debouncedGrossAnnualIncome ? (
                     <FieldDescription className="text-primary text-xl font-semibold">
@@ -122,7 +135,7 @@ export default function Freelancer() {
                     </FieldDescription>
                   ) : (
                     <FieldDescription>
-                      Unesite iznos iz poslednjeg kvartala
+                      {tOnboarding("quartalRevenueTitle")}
                     </FieldDescription>
                   )}
                 </FieldContent>
@@ -134,22 +147,17 @@ export default function Freelancer() {
       <div className="flex flex-col items-center w-full text-center gap-4 p-2">
         <h1 className="text-xl font-semibold uppercase">
           {tOnboarding("estimateTitle")} <br />{" "}
-          <span className="text-slate-400">
-            ({tOnboarding("estimateHint")})
-          </span>
+          <span className="text-slate-400">{tOnboarding("estimateHint")}</span>
         </h1>
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
           placeholder={`${tOnboarding("estimatePlaceholder")}`}
           className="border py-2 px-4 w-full text-center"
-          onChange={(e) => setEstimateEarn(Number(e.target.value))}
+          onChange={(e) => handleEstimateEarnChange(e)}
+          value={estimateEarnDisplay}
         />
       </div>
-
-      <WizardNavigationButtons
-        handleProceed={handleProceed}
-        currentStep={currentStep}
-      />
     </div>
   );
 }

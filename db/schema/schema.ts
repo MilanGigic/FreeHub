@@ -90,6 +90,7 @@ export const users = pgTable("users", {
   country: text("country").notNull(),
   passwordHash: text("password_hash").notNull(),
   encryptedDEK: text("encrypted_dek").notNull(), // Data Encryption Key encrypted with password-derived key
+  hasCompletedTaxOnboarding: boolean(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

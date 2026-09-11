@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from "../../../ui/radio-group";
 import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
 import { toast } from "react-toastify";
-import { updateStepFour } from "@/actions/taxProfile/updateStepFour";
+// import { updateStepFour } from "@/actions/taxProfile/updateStepFour";
 import { useTranslations } from "next-intl";
 
 export default function USAStepFour() {
@@ -17,12 +17,12 @@ export default function USAStepFour() {
 
   const handleProceed = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const res = await updateStepFour(retirementContribution);
-    if (res.success) {
-      router.push("/dashboard?wizard=true&step=5");
-    } else {
-      toast.error(res.error);
-    }
+    // const res = await updateStepFour(retirementContribution);
+    // if (res.success) {
+    //   router.push("/dashboard?wizard=true&step=5");
+    // } else {
+    //   toast.error(res.error);
+    // }
   };
   return (
     <div className="w-full h-full flex flex-col justify-between items-center primary-slate p-4">

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { getCurrentUser } from "../auth/getCurrentUser";
-import { serbiaTaxProfiles, taxProfiles, usaTaxProfiles } from "@/db/schema";
+import { taxProfileSerbia, taxProfile, taxProfileUsa } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 
@@ -33,99 +33,66 @@ export async function updateStepThree(input: UpdateStepThreeInput) {
   if (!user) return { success: false, error: "Unauthorized" };
 
   try {
-    const taxProfile = await db.query.taxProfiles.findFirst({
-      where: eq(taxProfiles.userId, user.id),
+    const profile = await db.query.taxProfile.findFirst({
+      where: eq(taxProfile.userId, user.id),
     });
-    if (!taxProfile) return { success: false, error: "Tax profile not found" };
+    if (!profile) return { success: false, error: "Tax profile not found" };
 
     // ---------------- USA ----------------
-    if (taxProfile.country === "United States") {
-      const {
-        homeOfficeSqft,
-        homeOfficeSimplified,
-        mileageTracking,
-        healthInsuranceDeduction,
-      } = input;
+    // if (profile.country === "US") {
+    //   const {
+    //     homeOfficeSqft,
+    //     homeOfficeSimplified,
+    //     mileageTracking,
+    //     healthInsuranceDeduction,
+    //   } = input;
 
-      if (
-        typeof homeOfficeSqft !== "number" ||
-        typeof homeOfficeSimplified !== "boolean" ||
-        typeof mileageTracking !== "boolean" ||
-        typeof healthInsuranceDeduction !== "boolean"
-      ) {
-        return {
-          success: false,
-          error:
-            "homeOfficeSqft, homeOfficeSimplified, mileageTracking, and healthInsuranceDeduction are required",
-        };
-      }
+    //   if (
+    //     typeof homeOfficeSqft !== "number" ||
+    //     typeof homeOfficeSimplified !== "boolean" ||
+    //     typeof mileageTracking !== "boolean" ||
+    //     typeof healthInsuranceDeduction !== "boolean"
+    //   ) {
+    //     return {
+    //       success: false,
+    //       error:
+    //         "homeOfficeSqft, homeOfficeSimplified, mileageTracking, and healthInsuranceDeduction are required",
+    //     };
+    //   }
 
-      const usaTaxProfile = await db.query.usaTaxProfiles.findFirst({
-        where: eq(usaTaxProfiles.taxProfileId, taxProfile.id),
-      });
-      if (!usaTaxProfile)
-        return { success: false, error: "USA tax profile not found" };
+    //   const usaTaxProfile = await db.query.taxProfileUsa.findFirst({
+    //     where: eq(taxProfileUsa.taxProfileId, taxProfile.id),
+    //   });
+    //   if (!usaTaxProfile)
+    //     return { success: false, error: "USA tax profile not found" };
 
-      await db
-        .update(usaTaxProfiles)
-        .set({
-          homeOfficeSqft,
-          homeOfficeSimplified,
-          mileageTracking,
-          healthInsuranceDeduction,
-        })
-        .where(eq(usaTaxProfiles.id, usaTaxProfile.id));
-    }
+    //   await db
+    //     .update(taxProfileUsa)
+    //     .set({
+    //       homeOfficeSqft,
+    //       mileageTracking,
+    //       healthInsuranceDeduction,
+    //     })
+    //     .where(eq(taxProfileUsa.id, usaTaxProfile.id));
+    // }
 
     // ---------------- SERBIA ----------------
-    if (taxProfile.country === "Serbia") {
-      const serbiaTaxProfile = await db.query.serbiaTaxProfiles.findFirst({
-        where: eq(serbiaTaxProfiles.taxProfileId, taxProfile.id),
+    if (profile.country === "RS") {
+      const serbiaTaxProfile = await db.query.taxProfileSerbia.findFirst({
+        where: eq(taxProfileSerbia.taxProfileId, taxProfile.id),
       });
       if (!serbiaTaxProfile)
         return { success: false, error: "Serbia tax profile not found" };
 
-      const updateData: Partial<typeof serbiaTaxProfiles.$inferInsert> = {};
+      const updateData: Partial<typeof taxProfileSerbia.$inferInsert> = {};
 
       // Shared fields for SRB step three (applied regardless of regime if provided)
-      if (typeof input.isUnder40 === "boolean") {
-        updateData.isUnder40 = input.isUnder40;
-      }
-      if (typeof input.activeMonths === "number") {
-        updateData.activeMonths = input.activeMonths;
-      }
-      if (typeof input.numberOfClients === "number") {
-        updateData.numberOfClients = input.numberOfClients;
-      }
-      if (typeof input.estimatedAnnualGross === "number") {
-        updateData.estimatedAnnualGross = String(input.estimatedAnnualGross);
-      }
-
-      // ---------- PAUSAL ----------
-      if (serbiaTaxProfile.regime === "pausal") {
-        if (typeof input.pausalMunicipality === "string") {
-          updateData.pausalMunicipality = input.pausalMunicipality;
-        }
-        if (typeof input.pausalEmployeeCount === "number") {
-          updateData.pausalEmployeeCount = input.pausalEmployeeCount;
-        }
-      }
-
-      // ---------- KNJIGAS ----------
-      if (serbiaTaxProfile.regime === "knjigas") {
-        if (typeof input.paysPersonalSalary === "boolean") {
-          updateData.paysPersonalSalary = input.paysPersonalSalary;
-        }
-        if (typeof input.personalSalaryAmount === "number") {
-          updateData.personalSalaryAmount = String(input.personalSalaryAmount);
-        }
-      }
 
       if (Object.keys(updateData).length > 0) {
         await db
-          .update(serbiaTaxProfiles)
+          .update(taxProfileSerbia)
           .set(updateData)
-          .where(eq(serbiaTaxProfiles.taxProfileId, taxProfile.id));
+          .where(eq(taxProfileSerbia.taxProfileId, taxProfile.id));
       }
     }
 
