@@ -27,7 +27,7 @@ export async function calculateUserTax(
 }
 
 function mapToTaxResult(
-  model: SRBModel,
+  model: Regime,
   regimeResult: RegimeResult,
   revenue: number,
   period: "quarter" | "year",

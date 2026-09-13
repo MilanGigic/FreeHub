@@ -35,7 +35,7 @@ export type TaxParameterValue =
   | { type: "array"; value: Array<number | string | boolean | null> };
 
 export type Regime =
-  | "frilenser"
+  | "freelancer"
   | "pausal"
   | "knjigas"
   | "d.o.o."

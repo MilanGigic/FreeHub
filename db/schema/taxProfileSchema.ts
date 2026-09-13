@@ -102,6 +102,8 @@ export const taxProfileSerbia = pgTable("tax_profile_serbia", {
     precision: 10,
     scale: 2,
   }).notNull(),
+  independenceTestScore: integer("independence_test_score"),
+  independenceTestCalculatedAt: timestamp("independence_test_calculated_at"),
   notes: text("notes"),
 });
 

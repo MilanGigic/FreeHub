@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { getCurrentUser } from "../auth/getCurrentUser";
 import { CountryTaxProfile, getTaxProfile } from "../taxProfile";
 import { and, eq } from "drizzle-orm";
-import { serbiaTaxProfiles } from "@/db/schema";
+import { taxProfileSerbia } from "@/db/schema";
 
 export async function updateIndependenceTest(
   score: number,
@@ -37,18 +37,18 @@ export async function updateIndependenceTest(
     }
 
     if (res.country === "Serbia") {
-      const dbProfile = await db.query.serbiaTaxProfiles.findFirst({
-        where: eq(serbiaTaxProfiles.id, res.id),
+      const dbProfile = await db.query.taxProfileSerbia.findFirst({
+        where: eq(taxProfileSerbia.id, res.id),
       });
 
       if (dbProfile) {
         const [newProfile] = await db
-          .update(serbiaTaxProfiles)
+          .update(taxProfileSerbia)
           .set({
             independenceTestScore: score,
             independenceTestCalculatedAt: calculatedAt,
           })
-          .where(and(eq(serbiaTaxProfiles.id, res.id)))
+          .where(and(eq(taxProfileSerbia.id, res.id)))
           .returning();
 
         return {
