@@ -2,7 +2,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import SerbianTaxWizard from "./SRB/SerbianTaxWizard";
-import USATaxWizard from "./USA/USATaxWizard";
+// import USATaxWizard from "./USA/USATaxWizard";
 
 export default function WizardContainer() {
   const searchParams = useSearchParams();
@@ -13,7 +13,10 @@ export default function WizardContainer() {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
-        {isSerbian ? <SerbianTaxWizard /> : <USATaxWizard />}
+        {isSerbian ? (
+          <SerbianTaxWizard />
+        ) : // <USATaxWizard />
+        null}
       </div>
     </div>
   );

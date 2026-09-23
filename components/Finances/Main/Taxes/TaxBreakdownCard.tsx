@@ -19,7 +19,9 @@ export default function TaxBreakdownCard() {
   // Paušal: we know the total but cannot split it into components because
   // the PIO/health/tax allocation varies per municipality and activity code.
   const isPausal =
-    taxResult.model === "PAUSAL" && total === 0 && taxResult.totalAnnualTax > 0;
+    taxResult.regime === "pausal" &&
+    total === 0 &&
+    taxResult.totalAnnualTax > 0;
 
   const incomePercent = total > 0 ? (incomeTax / total) * 100 : 0;
   const pensionPercent = total > 0 ? (pension / total) * 100 : 0;

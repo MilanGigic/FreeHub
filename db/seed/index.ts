@@ -1,8 +1,8 @@
-import { seedMunicipalities } from "./seedMunicipalities";
+// import { seedMunicipalities } from "./seedMunicipalities";
 
-async function main() {
-  await seedMunicipalities();
-  process.exit(0);
-}
+// async function main() {
+//   await seedMunicipalities();
+//   process.exit(0);
+// }
 
-main();
+// main();
