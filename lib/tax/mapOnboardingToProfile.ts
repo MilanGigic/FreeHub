@@ -51,10 +51,10 @@ export function mapOnboardingToProfile(data: OnboardingData) {
 function mapRegime(regime: Regime | null) {
   if (!regime) return null;
   const map: Record<string, string> = {
-    freelancer: "frilenser",
+    freelancer: "freelancer",
     pausal: "pausal",
     knjigas: "knjigas",
-    "d.o.o.": "doo",
+    "d.o.o.": "d.o.o.",
     employee: "employment",
     hybrid: "hybrid",
   };

@@ -11,17 +11,14 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import WizardNavigationButtons from "@/components/Wizard/WizardNavigationButtons";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useWizardStore } from "@/lib/store/useWizardStore";
 import { suggestModel } from "@/lib/suggestModel";
 import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
 
 export default function Freelancer() {
-  const { model, setModel, estimateEarn, setEstimateEarn, employed } =
-    useWizardStore();
+  const { model, setModel, setEstimateEarn, employed } = useWizardStore();
   const tOnboarding = useTranslations("onboarding.freelancer");
 
   const [grossAnnualIncome, setGrossAnnualIncome] = useState<number>(0);

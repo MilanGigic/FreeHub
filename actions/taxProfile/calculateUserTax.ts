@@ -8,39 +8,68 @@ import { runRegimeCalculator } from "@/domain/runRegimeCalculator";
 
 export async function calculateUserTax(
   userId: string,
-  period: "quarter" | "year" = "quarter",
+  period: "month" | "quarter" | "year" = "month",
 ) {
   const profile = await fetchTaxProfile(userId);
 
-  const revenue = await getRevenueForPeriod(userId, period);
-
+  let revenue = await getRevenueForPeriod(userId, period);
   const expenses = await getDeductibleExpensesForPeriod(userId, period);
+
+  if (revenue <= 0 && profile.estimatedAnnualGross) {
+    const annual = Number(profile.estimatedAnnualGross);
+    revenue =
+      period === "quarter"
+        ? annual / 4
+        : period === "month"
+          ? annual / 12
+          : annual;
+  }
+
+  // runRegimeCalculator expects ANNUAL as 3rd arg today:
+  const annualForCalc =
+    period === "quarter"
+      ? revenue * 4
+      : period === "month"
+        ? revenue * 12
+        : revenue;
 
   const result = runRegimeCalculator[profile.currentRegime](
     profile,
     expenses,
-    revenue,
+    annualForCalc,
   );
 
-  //   // 4. Map to the shape your UI already uses (TaxResult)
-  return mapToTaxResult(profile.currentRegime, result, revenue, period);
+  const realRevenue =
+    revenue === 0 ? Number(profile.estimatedAnnualGross) / 4 : revenue;
+
+  return mapToTaxResult(
+    profile.currentRegime,
+    profile.preferredFrilenserModel,
+    result,
+    realRevenue, // period revenue for net profit
+    period,
+  );
 }
 
 function mapToTaxResult(
-  model: Regime,
+  regime: Regime,
+  model: "A" | "B" | null,
   regimeResult: RegimeResult,
   revenue: number,
-  period: "quarter" | "year",
+  period: "month" | "quarter" | "year",
 ): TaxResult {
   const months = period === "quarter" ? 3 : 12;
 
   return {
-    model,
+    regime,
+    model: model ?? undefined,
     annualRevenue: period === "year" ? revenue : revenue * 4,
     netProfit: revenue - regimeResult.totalTax,
     totalAnnualTax:
       period === "quarter" ? regimeResult.totalTax * 4 : regimeResult.totalTax,
-    monthlyTaxReserve: regimeResult.totalTax / months,
+    monthlyTaxReserve:
+      regimeResult.totalTax /
+      (period === "quarter" ? 3 : period === "month" ? 1 : 12),
     profitAfterTaxes: revenue - regimeResult.totalTax,
     quarterlyEstimate:
       period === "quarter" ? regimeResult.totalTax : regimeResult.totalTax / 4,

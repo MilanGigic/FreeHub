@@ -13,11 +13,11 @@ export const DEFAULT_TAX_COMPUTATION_RESULT: {
   input: {
     country: "SRB",
     annualGross: "0",
-    model: "PAUSAL",
+    regime: "pausal",
+    model: null,
     isAlreadyEmployed: false,
     isUnder40: false,
     pausalMonthlyBill: undefined,
-    monthlyExpenses: undefined,
     monthlySalary: undefined,
   },
   warnings: [],

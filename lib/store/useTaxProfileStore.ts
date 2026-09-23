@@ -16,7 +16,8 @@ export type TaxWarnings = {
 // ────────────────────────────────────────────────────────────────────────────────
 
 export type TaxResult = {
-  model?: Regime;
+  regime?: Regime;
+  model?: "A" | "B";
   netProfit: number;
   annualRevenue: number;
 
@@ -135,6 +136,7 @@ const FALLBACK_SAFETY_BUFFER = 1000;
 const initialProfile: CountryTaxProfile = null;
 
 const initialTaxResult: TaxResult = {
+  regime: undefined,
   model: undefined,
   netProfit: 0,
   annualRevenue: 0,

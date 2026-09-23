@@ -52,14 +52,14 @@ export async function fetchTaxProfile(
 
   if (!userId) throw new Error("UserID required!");
 
-  const profile = await db.query.users.findFirst({
+  const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
 
-  if (!profile) throw new Error("Profile not found!");
+  if (!user) throw new Error("user not found!");
 
   const tax = await db.query.taxProfile.findFirst({
-    where: eq(taxProfile.userId, profile.id),
+    where: eq(taxProfile.userId, user.id),
   });
 
   if (!tax) throw new Error("Tax profile not found!");
@@ -71,13 +71,13 @@ export async function fetchTaxProfile(
   if (!countryTax) throw new Error("Country Tax profile not found!");
 
   return {
-    profileId: profile.id,
-    email: profile.email,
-    userName: profile.userName,
-    country: profile.country,
-    hasCompletedTaxOnboarding: profile.hasCompletedTaxOnboarding,
-    profileCreatedAt: profile.createdAt,
-    profileUpdatedAt: profile.updatedAt,
+    profileId: user.id,
+    email: user.email,
+    userName: user.userName,
+    country: user.country,
+    hasCompletedTaxOnboarding: user.hasCompletedTaxOnboarding,
+    profileCreatedAt: user.createdAt,
+    profileUpdatedAt: user.updatedAt,
     taxProfileId: tax.id,
     taxProfileCountry: tax.country,
     taxProfileCreatedAt: tax.createdAt,

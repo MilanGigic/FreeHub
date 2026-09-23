@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
@@ -25,7 +25,8 @@ export default function DashboardHydrator({
 }) {
   const initialized = useRef(false);
 
-  if (!initialized.current) {
+  useEffect(() => {
+    if (initialized.current) return;
     initialized.current = true;
 
     useClientStore.getState().setClients(payload.clients);
@@ -41,12 +42,15 @@ export default function DashboardHydrator({
 
     useTaxProfileStore.getState().setProfile(payload.taxProfile);
 
-    // Helpful baseline for finance UIs that use the "balance" field.
     const totalProfit = payload.projects.reduce(
       (acc, p) => acc + Number(p.totalProfit || 0),
       0,
     );
     useDataStore.getState().setBalance(totalProfit.toFixed(2));
-  }
+    // payload is only used on first mount by design (ref guard),
+    // so it's intentionally left out of deps to avoid re-hydrating on payload identity changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return null;
 }

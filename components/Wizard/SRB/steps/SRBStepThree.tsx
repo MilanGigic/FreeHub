@@ -4,9 +4,6 @@ import { useWizardStore } from "@/lib/store/useWizardStore";
 import { MouseEvent, useState } from "react";
 import WizardNavigationButtons from "../../WizardNavigationButtons";
 import { useRouter, useSearchParams } from "next/navigation";
-import PausalCard3 from "../PausalCard3";
-import KnjigasCard3 from "../KnjigasCard3";
-import FrilenserCard3 from "../FrilenserCard3";
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 import {
   Field,
@@ -14,52 +11,8 @@ import {
   FieldDescription,
   FieldLabel,
 } from "../../../ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { updateStepThree } from "@/actions/taxProfile/updateStepThree";
 import { useTranslations } from "next-intl";
 import { Regime } from "@/types/types";
-
-// const frilenserCards = [
-//   {
-//     title: "Model A",
-//     description: "Bolji za niže i nestabilne prihode",
-//     value: "modelA",
-//   },
-//   {
-//     title: "Model B",
-//     description: "Bolji za više i stabilne prihode",
-//     value: "modelB",
-//   },
-// ];
-
-// const pausalCards = [
-//   {
-//     title: "IT / Programiranje",
-//     description: "Razvoj softvera",
-//     value: "62.01",
-//   },
-//   {
-//     title: "Marketing / Dizajn",
-//     description: "Marketing i dizajn",
-//     value: "73.11",
-//   },
-//   { title: "Konsalting", description: "Biznis konsalting", value: "70.22" },
-//   { title: "Trgovina", description: "Online prodaja", value: "47.91" },
-//   { title: "Usluge", description: "Frizer, servisi", value: "96.02" },
-//   { title: "Ostalo", description: "Ako niste sigurni", value: "74.90" },
-// ];
-
-// const knjigasCards = [
-//   { title: "Usluge", description: "IT, freelancing", value: "services" },
-//   { title: "Prodaja robe", description: "E-commerce", value: "goods" },
-//   { title: "Mešovito", description: "Kombinovano", value: "mixed" },
-// ];
 
 export default function SRBStepThree() {
   const { setRegime } = useWizardStore();
@@ -144,6 +97,3 @@ export default function SRBStepThree() {
     </div>
   );
 }
-
-// TODO: Refactor this component
-// >>>>> Add updateStepThree.ts action

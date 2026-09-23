@@ -18,16 +18,34 @@ export default function FinancesCard() {
   const t = useTranslations("dashboard");
 
   useEffect(() => {
-    const currentBalance = projects.reduce(
+    const liveBalance = projects.reduce(
       (acc, project) => acc + Number(project.totalProfit || 0),
       0,
     );
 
+    const annual = Number(taxResult.annualRevenue ?? 0);
+    const monthlyRevenue = annual / 12;
+    const monthlyTax = taxResult.monthlyTaxReserve ?? 0;
+
+    const currentBalance =
+      liveBalance > 0 ? liveBalance : Math.max(0, monthlyRevenue - monthlyTax);
+
+    const expenses =
+      Number(avgMonthlyExpenses) > 0
+        ? Number(avgMonthlyExpenses)
+        : monthlyRevenue * 0.15;
+
     computeSafeToSpend({
       currentBalance,
-      avgMonthlyExpenses: Number(avgMonthlyExpenses),
+      avgMonthlyExpenses: expenses,
     });
-  }, [projects, computeSafeToSpend, avgMonthlyExpenses]);
+  }, [
+    projects,
+    avgMonthlyExpenses,
+    taxResult?.annualRevenue,
+    taxResult.monthlyTaxReserve,
+    computeSafeToSpend,
+  ]);
 
   const numericTotalIncome = projects.reduce(
     (acc, p) => acc + Number(p.totalRevenue || 0),
@@ -59,11 +77,24 @@ export default function FinancesCard() {
         </header>
 
         <div className="flex flex-col  gap-4">
+          <h1 className="text-slate-300 font-semibold text-lg uppercase text-center">
+            {numericTotalIncome === 0 &&
+              profitMargin === 0 &&
+              "This data is from your onboarding. Enter real invoices and transactions."}
+          </h1>
           <main className="space-y-1.5 text-sm flex flex-col items-center">
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("ytdIncome")}{" "}
               <span className="font-bold primary-green">
-                {numericTotalIncome.toLocaleString()} RSD
+                {numericTotalIncome === 0
+                  ? taxResult.annualRevenue.toLocaleString()
+                  : numericTotalIncome}{" "}
+                RSD
+                {numericTotalIncome === 0 ? (
+                  <span className="text-slate-400 text-sm lowercase tracking-wide text-center">
+                    (From onboarding)
+                  </span>
+                ) : null}
               </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
@@ -80,7 +111,13 @@ export default function FinancesCard() {
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("profitMargin")}{" "}
-              <span className="font-bold">{profitMargin}%</span>
+              <span className="font-bold">
+                {(taxResult.annualRevenue > 0
+                  ? taxResult.profitAfterTaxes / taxResult.annualRevenue
+                  : 0
+                ).toFixed(2)}
+                %
+              </span>
             </p>
             <p className="text-lg primary-slate font-semibold uppercase">
               {t("taxReserved")}{" "}

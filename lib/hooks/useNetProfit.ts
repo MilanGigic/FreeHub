@@ -13,12 +13,13 @@ export function useNetProfit(year = 2026) {
     const fetchNetProfit = async () => {
       if (!userId) return null;
 
-      let period;
+      let period: "month" | "quarter" | "year" = "month";
+
       if (profile.country === "Serbia") {
         if (profile.currentRegime === "freelancer") {
-          period: "quarter";
+          period = "quarter";
         } else {
-          period: "year";
+          period = "year"; // or "month" for pausal/knjigas
         }
       }
       try {

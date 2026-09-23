@@ -1,11 +1,11 @@
 "use server";
 
 import { calculateUSTaxes } from "@/utils/taxCalculatorUS";
-import { calculateSRBTaxes, type SRBTaxInputs } from "@/utils/taxCalculatorSRB";
-import { CountryTaxProfile } from "@/actions/taxProfile";
-import { SRBModel, TaxResult } from "@/lib/store/useTaxProfileStore";
-import { PausalResolutionSource, resolvePausalTax } from "@/lib/pausalResolver";
-import { DEFAULT_TAX_COMPUTATION_RESULT } from "@/lib/utils";
+import { TaxResult } from "@/lib/store/useTaxProfileStore";
+import { PausalResolutionSource } from "@/lib/pausalResolver";
+import { runRegimeCalculator } from "@/domain/runRegimeCalculator";
+import { RegimeResult } from "@/domain/types";
+import { TaxProfileOutput } from "./taxProfile/fetchTaxProfile";
 
 type USTaxInput = {
   country: "US";
@@ -18,16 +18,17 @@ type USTaxInput = {
 
 type SRBTaxInput = {
   country: "SRB";
-  model: SRBModel;
+  regime: TaxProfileOutput["currentRegime"];
+  model: "A" | "B" | null;
   isAlreadyEmployed: boolean;
   isUnder40: boolean;
-  // PAUSAL
   pausalMonthlyBill?: number;
-  rollingAnnualGross?: number; // for VAT 8M rolling window check
-  // KNJIGAS
-  monthlyExpenses?: number;
   monthlySalary?: number;
 };
+
+export type TaxComputationInput = {
+  annualGross: string;
+} & (USTaxInput | SRBTaxInput);
 
 type ComputedTaxes = {
   result: TaxResult;
@@ -37,24 +38,7 @@ type ComputedTaxes = {
   };
 };
 
-export type TaxComputationInput = {
-  annualGross: string;
-} & (USTaxInput | SRBTaxInput);
-
-function mapSrbRegime(regime: string | null | undefined): SRBModel {
-  switch (regime) {
-    case "frilenser":
-      return "MODEL_1";
-    case "pausal":
-      return "PAUSAL";
-    case "knjigas":
-      return "KNJIGAS";
-    default:
-      return "MODEL_1";
-  }
-}
-
-export type MapProfileResult = {
+type MapProfileResult = {
   input: TaxComputationInput;
   warnings: string[];
   meta: {
@@ -63,111 +47,140 @@ export type MapProfileResult = {
   };
 };
 
+// ─── Profile → input only (no tax math) ───────────────────────────────────────
+
 export async function mapProfileToInput(
-  profile: CountryTaxProfile,
-  annualGross?: string,
+  profile: TaxProfileOutput,
 ): Promise<MapProfileResult> {
-  const warnings: string[] = [];
   if (!profile) throw new Error("Profile is required");
 
-  if (profile.country === "United States") {
-    return {
-      input: {
-        country: "US",
-        annualGross: annualGross ?? "0",
-        filingStatus: profile.filingStatus,
-        homeOfficeSqft: profile.homeOfficeSqft,
-      },
-      warnings,
-      meta: { isComputable: true },
-    };
-  }
+  const warnings: string[] = [];
 
-  // ─── Serbia ───────────────────────────────────────────────────────────────────
-  let pausalMonthlyBill: number | undefined;
-  let pausalSource: PausalResolutionSource | undefined;
-
-  if (profile.regime === "pausal") {
-    if (!profile.pausalActivityCode || !profile.pausalMunicipality) {
+  if (profile.currentRegime === "pausal") {
+    const hasAmount = Number(profile.officialPausalMonthlyAmount) > 0;
+    if (!hasAmount) {
       return {
-        ...DEFAULT_TAX_COMPUTATION_RESULT,
+        input: {
+          country: "SRB",
+          annualGross: profile.estimatedAnnualGross ?? "0",
+          regime: "pausal",
+          model: null,
+          isAlreadyEmployed: profile.alreadyEmployed ?? false,
+          isUnder40: profile.isUnder40 ?? false,
+        },
+        warnings: ["Missing official paušal monthly amount from rešenje"],
         meta: { isComputable: false, pausalSource: "unknown" },
       };
     }
+  }
 
-    const resolution = await resolvePausalTax({
-      activityCode: profile.pausalActivityCode,
-      municipality: profile.pausalMunicipality,
-      monthlyPausalTax: profile.monthlyPausalTax
-        ? Number(profile.monthlyPausalTax)
-        : undefined,
-    });
-
-    if (resolution.warnings.length > 0)
-      resolution.warnings.map((w) => warnings.push(w));
-
-    pausalMonthlyBill = resolution.amount;
-    pausalSource = resolution.source;
+  if (profile.currentRegime === "freelancer") {
+    const model = profile.preferredFrilenserModel;
+    if (model !== "A" && model !== "B") {
+      return {
+        input: {
+          country: "SRB",
+          annualGross: profile.estimatedAnnualGross ?? "0",
+          regime: "freelancer",
+          model: null,
+          isAlreadyEmployed: profile.alreadyEmployed ?? false,
+          isUnder40: profile.isUnder40 ?? false,
+        },
+        warnings: ["Missing preferred Frilenser model (A or B)"],
+        meta: { isComputable: false },
+      };
+    }
   }
 
   return {
     input: {
       country: "SRB",
       annualGross: profile.estimatedAnnualGross ?? "0",
-      model: mapSrbRegime(profile.regime),
-      isAlreadyEmployed: profile.healthInsuredElsewhere ?? false,
+      regime: profile.currentRegime,
+      model: profile.preferredFrilenserModel ?? null,
+      isAlreadyEmployed: profile.alreadyEmployed ?? false,
       isUnder40: profile.isUnder40 ?? false,
-      pausalMonthlyBill,
-      monthlyExpenses: profile.businessExpenses
-        ? Number(profile.businessExpenses)
+      pausalMonthlyBill: profile.officialPausalMonthlyAmount
+        ? Number(profile.officialPausalMonthlyAmount)
         : undefined,
-      monthlySalary: profile.personalSalaryAmount
-        ? Number(profile.personalSalaryAmount)
+      monthlySalary: profile.personalSalaryGrossMonthly
+        ? Number(profile.personalSalaryGrossMonthly)
         : undefined,
     },
     warnings,
     meta: {
-      isComputable: pausalSource !== "unknown",
-      pausalSource,
+      isComputable: true,
+      pausalSource: profile.currentRegime === "pausal" ? "user" : undefined,
     },
+  };
+}
+
+// ─── RegimeResult → TaxResult ─────────────────────────────────────────────────
+
+/**
+ * runRegimeCalculator always works on a QUARTER for frilenser/knjigas/pausal
+ * (see domain/runRegimeCalculator: grossAnnual/4, monthsInPeriod: 3).
+ * So regimeResult.totalTax is a quarterly amount.
+ */
+function mapRegimeResultToTaxResult(opts: {
+  r: RegimeResult;
+  profile: TaxProfileOutput;
+  /** Revenue passed into the calculator (quarterly for current runRegimeCalculator) */
+  periodRevenue: number;
+  /** Expenses passed into the calculator (same period) */
+  periodExpenses: number;
+  annualRevenue: number;
+}): Omit<TaxResult, "netProfit" | "warnings"> {
+  const { r, profile, periodRevenue, periodExpenses, annualRevenue } = opts;
+
+  // Current runRegimeCalculator is quarterly for all three main regimes
+  const monthsInPeriod = 3;
+  const totalAnnualTax = (r.totalTax / monthsInPeriod) * 12;
+  const monthlyTaxReserve = totalAnnualTax / 12;
+  const quarterlyEstimate = r.totalTax; // already one quarter
+
+  const personalSalaryQuarter =
+    profile.personalSalaryGrossMonthly != null
+      ? Number(profile.personalSalaryGrossMonthly) * 3
+      : 0;
+
+  const profitAfterTaxesPeriod =
+    profile.currentRegime === "knjigas"
+      ? periodRevenue - periodExpenses - personalSalaryQuarter - r.totalTax
+      : periodRevenue - r.totalTax;
+
+  return {
+    model: profile.preferredFrilenserModel ?? undefined,
+    // if TaxResult still has regime field, set it; otherwise omit
+    // regime: profile.currentRegime,
+    seTax: 0,
+    federalTax: 0,
+    qbiDeduction: 0,
+    totalAnnualTax,
+    monthlyTaxReserve,
+    quarterlyEstimate,
+    profitAfterTaxes: profitAfterTaxesPeriod,
+    effectiveTaxRate:
+      periodRevenue > 0 ? r.totalTax / periodRevenue : r.effectiveRate,
+    itemized: {
+      incomeTax: r.incomeTax,
+      pension: r.pension,
+      health: r.health,
+      nezaposlenost: r.unemployment,
+      expensesDeducted: r.expensesDeducted,
+    },
+    modelRecommendation: undefined,
+    annualRevenue,
   };
 }
 
 // ─── Calculator ───────────────────────────────────────────────────────────────
 
-function toSrbTaxInputs(
-  input: SRBTaxInput & { annualGross: string },
-): SRBTaxInputs {
-  const shared = {
-    annualGross: Number(input.annualGross),
-    isAlreadyEmployed: input.isAlreadyEmployed,
-    isUnder40: input.isUnder40,
-  };
-
-  switch (input.model) {
-    case "MODEL_1":
-      return { ...shared, model: "MODEL_1" };
-    case "MODEL_2":
-      return { ...shared, model: "MODEL_2" };
-    case "PAUSAL":
-      return {
-        ...shared,
-        model: "PAUSAL",
-        pausalMonthlyBill: input.pausalMonthlyBill,
-        rollingAnnualGross: input.rollingAnnualGross,
-      };
-    case "KNJIGAS":
-      return {
-        ...shared,
-        model: "KNJIGAS",
-        monthlyExpenses: input.monthlyExpenses ?? 0,
-        monthlySalary: input.monthlySalary,
-      };
-  }
-}
-
 function calculateTaxes(
   input: TaxComputationInput,
+  profile: TaxProfileOutput,
+  expenses: number,
+  revenue: number,
 ): Omit<TaxResult, "netProfit" | "warnings"> {
   if (input.country === "US") {
     const homeOfficeDeduction = input.homeOfficeSqft
@@ -212,56 +225,42 @@ function calculateTaxes(
     };
   }
 
-  // ─── Serbia ──────────────────────────────────────────────────────────────────
-  // Guard: if meta flagged isComputable: false (pausal with unknown source),
-  // pausalMonthlyBill will be undefined here. Do NOT fall back to a hardcoded
-  // value — the caller is responsible for not reaching this branch in that case
-  // (computeTaxesAction checks meta.isComputable before calling calculateTaxes).
-  const result = calculateSRBTaxes(toSrbTaxInputs(input));
+  // Serbia — revenue should be ANNUAL here; runRegimeCalculator divides by 4
+  const annualRevenue = revenue > 0 ? revenue : Number(input.annualGross) || 0;
 
-  return {
-    model: result.model,
-    seTax: 0,
-    federalTax: 0,
-    qbiDeduction: 0,
-    totalAnnualTax: result.totalAnnualTax,
-    monthlyTaxReserve: result.monthlyReserve,
-    // For knjigaš: use netAfterExpensesAndTax (revenue - expenses - salary - taxes)
-    // because business owners expect "what I actually keep", not "revenue - taxes".
-    // For all other models: the two values are equal.
-    profitAfterTaxes: result.netAfterExpensesAndTax,
-    quarterlyEstimate: result.quarterlyEstimate,
-    effectiveTaxRate: result.effectiveTaxRate,
-    itemized: {
-      incomeTax: result.itemized.incomeTax,
-      pension: result.itemized.pio,
-      health: result.itemized.health,
-      nezaposlenost: result.itemized.nezaposlenost,
-      expensesDeducted: result.itemized.expensesDeducted,
-    },
-    modelRecommendation: result.modelRecommendation,
-    annualRevenue: Number(input.annualGross),
-  };
+  const regimeResult = runRegimeCalculator[profile.currentRegime](
+    profile,
+    expenses,
+    annualRevenue,
+  );
+
+  return mapRegimeResultToTaxResult({
+    r: regimeResult,
+    profile,
+    periodRevenue: annualRevenue / 4, // matches freelancer/knjigas/pausal in runRegimeCalculator
+    periodExpenses: expenses,
+    annualRevenue,
+  });
 }
-
-// ─── Format ───────────────────────────────────────────────────────────────────
 
 function formatTaxResult(
   computed: Omit<TaxResult, "netProfit" | "warnings">,
-  annualGross: string,
   warnings: string[],
+  regimeWarnings: string[] = [],
 ): TaxResult {
   return {
     ...computed,
-    netProfit: Number(annualGross),
-    warnings,
+    netProfit: computed.profitAfterTaxes,
+    warnings: [...warnings, ...regimeWarnings],
   };
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 export async function computeTaxesAction(
-  profile: CountryTaxProfile,
+  profile: TaxProfileOutput,
+  revenue: number,
+  expenses: number,
 ): Promise<ComputedTaxes> {
   if (!profile) {
     return {
@@ -285,23 +284,16 @@ export async function computeTaxesAction(
         },
         annualRevenue: 0,
       },
-      meta: {
-        isComputable: false,
-        pausalSource: "unknown",
-      },
+      meta: { isComputable: false, pausalSource: "unknown" },
     };
   }
 
   const { input, warnings, meta } = await mapProfileToInput(profile);
 
-  // Short-circuit: if the profile is not computable (e.g. pausal with unknown
-  // source), return a zeroed result immediately — do not call calculateTaxes.
   if (!meta.isComputable) {
     return {
       result: formatTaxResult(
         {
-          model:
-            input.country === "SRB" ? (input as SRBTaxInput).model : undefined,
           seTax: 0,
           federalTax: 0,
           qbiDeduction: 0,
@@ -319,15 +311,23 @@ export async function computeTaxesAction(
           },
           annualRevenue: 0,
         },
-        input.annualGross,
         warnings,
       ),
       meta,
     };
   }
 
-  const computed = calculateTaxes(input);
-  const result = formatTaxResult(computed, input.annualGross, warnings);
+  const computed = calculateTaxes(input, profile, expenses, revenue);
+
+  // Optional: pull warnings from a second call is wasteful;
+  // better if runRegimeCalculator returns them (already on RegimeResult).
+  const regimeResult = runRegimeCalculator[profile.currentRegime](
+    profile,
+    expenses,
+    revenue > 0 ? revenue : Number(input.annualGross) || 0,
+  );
+
+  const result = formatTaxResult(computed, warnings, regimeResult.warnings);
 
   return { result, meta };
 }

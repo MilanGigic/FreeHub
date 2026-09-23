@@ -60,11 +60,11 @@ export async function completeOnboardingAction(onboardingData: OnboardingData) {
     await db.insert(taxProfileSerbia).values({
       taxProfileId: profile.id,
       currentRegime: mapped.serbia.currentRegime as
-        | "frilenser"
+        | "freelancer"
         | "pausal"
         | "knjigas"
-        | "doo"
-        | "employment"
+        | "d.o.o."
+        | "employee"
         | "hybrid",
       preferredFrilenserModel: mapped.serbia.preferredFrilenserModel as
         | "A"

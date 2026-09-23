@@ -7,7 +7,7 @@ import { and, eq, gte, lte, sql } from "drizzle-orm";
 
 export async function getDeductibleExpensesForPeriod(
   userId: string,
-  period: "quarter" | "year",
+  period: "month" | "quarter" | "year",
   options?: { year?: number; quarter?: 1 | 2 | 3 | 4 },
 ) {
   if (!userId)
