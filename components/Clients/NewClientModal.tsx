@@ -49,6 +49,7 @@ export default function NewClientModal({ onClose }: { onClose: () => void }) {
           startDate: "",
           endDate: null,
         });
+        onClose();
       }
       if (!res.success) {
         toast.error(res.error);

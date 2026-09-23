@@ -15,7 +15,7 @@ export default function DashboardClient() {
   const testAlert =
     !!profile &&
     profile.country === "Serbia" &&
-    profile.regime !== "frilenser" &&
+    profile.currentRegime !== "freelancer" &&
     !profile.independenceTestCalculatedAt;
 
   return (
@@ -24,7 +24,7 @@ export default function DashboardClient() {
         {testAlert &&
           profile &&
           profile.country === "Serbia" &&
-          profile.regime !== "frilenser" &&
+          profile.currentRegime !== "freelancer" &&
           showFlag && (
             <div className="bg-(--bg-elevated) border border-(--accent-amber) p-4 rounded-2xl absolute bottom-16">
               {!profile.independenceTestCalculatedAt && (

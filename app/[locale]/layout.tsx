@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "@/app/[locale]/globals.css";
+import { Suspense } from "react";
 
 const themeScript = `(function(){var s=document.documentElement;var t=localStorage.getItem('theme');var d=!t&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||d)s.classList.add('dark');else if(t==='light')s.classList.remove('dark');})();`;
 
@@ -28,13 +29,20 @@ export const metadata: Metadata = {
     icon: "/freehub-symbol.png",
   },
 };
+async function Intl({ children }: { children: React.ReactNode }) {
+  const messages = await getMessages();
+  return (
+    <NextIntlClientProvider messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
+}
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const messages = await getMessages();
   return (
     <html lang="en" className="min-h-screen" suppressHydrationWarning>
       <body
@@ -46,9 +54,9 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <Suspense fallback={null}>
+          <Intl>{children}</Intl>
+        </Suspense>
       </body>
     </html>
   );
