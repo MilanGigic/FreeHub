@@ -144,8 +144,6 @@ export interface Project {
   updatedAt: Date;
 }
 
-// FIX THE ISSUES WITH NEWLY ADDED CLIENTNAME INSTEAD OF FIRSTNAME AND LASTNAME
-
 export interface ProjectCalendar {
   id: string;
   userId: string;
@@ -181,6 +179,7 @@ export interface Invoice {
   totalAmount: string;
   paidAmount: string | null;
   note: string | null;
+  currency: string;
   createdAt: Date;
   updatedAt: Date;
 }

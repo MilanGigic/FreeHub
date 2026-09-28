@@ -58,6 +58,7 @@ export async function updateInvoiceStatus(
         projectId,
         type: "income",
         amount: updatedInvoice.totalAmount,
+        currency: updatedInvoice.currency,
         note: updatedInvoice.note || "Invoice paid",
       });
 

@@ -1,9 +1,24 @@
 import { Invoice, Project, ProjectRevenue } from "@/types/types";
 import { create } from "zustand";
 
+export type ProjectFinance = {
+  id: string;
+  userId: string;
+  projectId: string;
+  type: "income" | "expense";
+  amount: string;
+  currency: "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD";
+  note: string;
+  hourlyRate: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 type ProjectStore = {
   selectedProject: Project | null;
   setSelectedProject: (project: Project | null) => void;
+  projectFinances: ProjectFinance[] | null;
+  setProjectFinances: (projectFinances: ProjectFinance[] | null) => void;
   selectedDate: Date | null;
   setSelectedDate: (date: Date | null) => void;
   note: string;
@@ -26,6 +41,9 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   selectedProject: null,
   setSelectedProject: (project: Project | null) =>
     set({ selectedProject: project }),
+  projectFinances: null,
+  setProjectFinances: (projectFinances: ProjectFinance[] | null) =>
+    set({ projectFinances }),
   selectedDate: null,
   setSelectedDate: (date: Date | null) => set({ selectedDate: date }),
   note: "",

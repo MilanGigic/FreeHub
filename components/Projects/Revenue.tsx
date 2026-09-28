@@ -19,7 +19,11 @@ const filteredTransactions = (
   return transactions.filter((transaction) => transaction.type === type);
 };
 
-export default function Revenue() {
+export default function Revenue({
+  displayCurrency,
+}: {
+  displayCurrency: string;
+}) {
   const t = useTranslations("transactions");
   const { selectedProject } = useProjectStore();
 
@@ -47,7 +51,7 @@ export default function Revenue() {
 
   return (
     <div className="w-full flex flex-col gap-2 md:gap-4 h-full justify-between background-elevated border background-border rounded-lg p-4">
-      <RevenueHeader />
+      <RevenueHeader displayCurrency={displayCurrency} />
 
       <div className="w-full flex gap-2 md:gap-4 background-elevated border background-border rounded-lg p-4 justify-between relative">
         <div className="flex flex-col md:flex-row items-center gap-2">

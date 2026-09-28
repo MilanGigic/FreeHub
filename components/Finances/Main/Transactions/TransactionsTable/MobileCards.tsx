@@ -23,7 +23,8 @@ export default function MobileCards({ table }: { table: Table<Transaction> }) {
                   tx.type === "income" ? "text-green-400" : "text-red-400"
                 }
               >
-                {tx.amount} RSD
+                {tx.currency}
+                {tx.amount}
               </span>
             </div>
 

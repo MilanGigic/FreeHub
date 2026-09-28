@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { getCurrentQuarter, getQuarterRange } from "@/utils/getQuarterRange";
 import { and, eq, gte, lte, sql } from "drizzle-orm";
+import { getRates } from "../translateCurrency";
+import { convertMinor, toMinor } from "@/lib/currency";
 
 export async function getRevenueForPeriod(
   userId: string,
@@ -30,6 +32,7 @@ export async function getRevenueForPeriod(
 
   const rows = await db
     .select({
+      currency: transactions.currency,
       total: sql<string>`coalesce(sum(${transactions.amount}), 0)`,
     })
     .from(transactions)
@@ -40,7 +43,22 @@ export async function getRevenueForPeriod(
         gte(transactions.transactionDate, start),
         lte(transactions.transactionDate, end),
       ),
-    );
+    )
+    .groupBy(transactions.currency);
 
-  return Number(rows[0]?.total ?? 0);
+  if (rows.length === 0) return 0;
+
+  // The tax engine runs in RSD, so conversion happens once, here, at the
+  // source — every caller downstream (including calculateUserTax) already
+  // gets an RSD figure and never has to think about currency again.
+  const currencies = rows.map((r) => r.currency ?? "RSD");
+  const rates = await getRates([...currencies, "RSD"]);
+
+  const totalMinor = rows.reduce(
+    (acc, r) =>
+      acc + convertMinor(toMinor(r.total), r.currency ?? "RSD", "RSD", rates),
+    0,
+  );
+
+  return totalMinor / 100; // decimal RSD, same return convention as before
 }

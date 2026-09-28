@@ -1,17 +1,15 @@
-import { useClientStore } from "@/lib/store/useClientStore";
-import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
-import { useTranslations } from "next-intl";
+import { formatMinor, toMinor } from "@/lib/currency";
+import { useLocale, useTranslations } from "next-intl";
 
-export default function TaxReservedFromThisClient() {
-  const { clientProjects } = useClientStore();
-  const { taxResult } = useTaxProfileStore();
+export default function TaxReservedFromThisClient({
+  displayCurrency = "RSD",
+  amount,
+}: {
+  displayCurrency?: string;
+  amount: number;
+}) {
   const t = useTranslations("clients");
-
-  const clientRevenue = clientProjects.reduce(
-    (acc, p) => acc + Number(p.totalRevenue || 0),
-    0,
-  );
-  const taxReserved = clientRevenue * taxResult.effectiveTaxRate;
+  const locale = useLocale();
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
@@ -19,10 +17,7 @@ export default function TaxReservedFromThisClient() {
         {t("taxReservedFromClient")}
       </h1>
       <p className="text-2xl font-bold primary-amber">
-        $
-        {taxReserved.toLocaleString("en-US", {
-          maximumFractionDigits: 0,
-        })}
+        {formatMinor(toMinor(amount), displayCurrency, locale)}
       </p>
       <p className="text-sm primary-slate">{t("taxReservedDescription")}</p>
     </div>

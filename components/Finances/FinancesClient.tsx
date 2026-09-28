@@ -12,11 +12,18 @@ import { useTranslations } from "next-intl";
 import TransactionsTab from "./Main/Transactions/TransactionsTab";
 import { PausalResolutionSource } from "@/lib/pausalResolver";
 import { TaxStoreHydrator } from "./TaxStoreHydrator";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/useAuth";
+import { fetchProjectsFinances } from "@/actions/projects/fetchProjectsFinances";
+import { toast } from "react-toastify";
+import { useProjectStore } from "@/lib/store/useProjectStore";
+
 const tabs = [
   { key: "details", label: "Details" },
   { key: "taxes", label: "Taxes" },
   { key: "transactions", label: "Transactions" },
 ];
+
 export type FinancesProps = {
   initialTaxResult: TaxResult;
   initialTaxMeta: {
@@ -24,14 +31,42 @@ export type FinancesProps = {
     pausalSource?: PausalResolutionSource;
   };
 };
+
 export default function FinancesClient({
   initialTaxResult,
   initialTaxMeta,
 }: FinancesProps) {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab");
   const f = useTranslations("finances");
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { setProjectFinances } = useProjectStore();
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+
+      try {
+        const res = await fetchProjectsFinances(user.id);
+
+        if (!res.success) {
+          toast.error(res.message);
+        }
+
+        if (res.data) {
+          if (res.data.length > 0) {
+            setProjectFinances(res.data);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [user, setProjectFinances]);
+
   return (
     <div className="w-full min-h-screen background p-4 md:p-6 flex flex-col gap-6">
       <TaxStoreHydrator taxResult={initialTaxResult} taxMeta={initialTaxMeta} />
@@ -55,7 +90,7 @@ export default function FinancesClient({
               {/* Cash Flow chart — primary visual */}
               <CashFlow />
               {/* Zone 3: Project profitability — detail on demand */}
-              <ProjectProfitability />
+              <ProjectProfitability displayCurrency="RSD" />
             </div>
             {/* Right sidebar */}
             <div className="flex flex-col gap-6">

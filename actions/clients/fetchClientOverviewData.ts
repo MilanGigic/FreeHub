@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { clients, invoices, projects } from "@/db/schema";
-import { and, eq, lt } from "drizzle-orm";
+import { clients, invoices, projectFinance, projects } from "@/db/schema";
+import { and, eq, inArray, lt } from "drizzle-orm";
 
 export async function fetchClientOverviewData(clientId: string) {
   if (!clientId) {
@@ -53,6 +53,27 @@ export async function fetchClientOverviewData(clientId: string) {
       .where(eq(projects.clientId, clientId))
       .innerJoin(clients, eq(projects.clientId, clients.id));
 
+    const projectIds = clientProjects.map((project) => project.id);
+    const projectFinances =
+      projectIds.length === 0
+        ? []
+        : await db
+            .select({
+              id: projectFinance.id,
+              userId: projectFinance.userId,
+              projectId: projectFinance.projectId,
+              type: projectFinance.type,
+              amount: projectFinance.amount,
+              currency: projectFinance.currency,
+              note: projectFinance.note,
+              hourlyRate: projectFinance.hourlyRate,
+              createdAt: projectFinance.createdAt,
+              updatedAt: projectFinance.updatedAt,
+            })
+            .from(projectFinance)
+            .innerJoin(projects, eq(projectFinance.projectId, projects.id))
+            .where(inArray(projectFinance.projectId, projectIds));
+
     // 4) Fetch invoices
     const clientInvoices = await db
       .select()
@@ -90,6 +111,7 @@ export async function fetchClientOverviewData(clientId: string) {
       data: {
         client,
         projects: clientProjects,
+        projectFinances,
         invoices: clientInvoices,
         totals,
       },

@@ -6,24 +6,25 @@ import { getRevenueForPeriod } from "../finances/getRevenueForPeriod";
 import { getDeductibleExpensesForPeriod } from "../finances/getDeductibleExpensesForPeriod";
 import { runRegimeCalculator } from "@/domain/runRegimeCalculator";
 
+const MIN_REVENUE_FRACTION = 0.1;
+
 export async function calculateUserTax(
   userId: string,
   period: "month" | "quarter" | "year" = "month",
 ) {
   const profile = await fetchTaxProfile(userId);
 
-  let revenue = await getRevenueForPeriod(userId, period);
+  const invoiceRevenue = await getRevenueForPeriod(userId, period);
   const expenses = await getDeductibleExpensesForPeriod(userId, period);
 
-  if (revenue <= 0 && profile.estimatedAnnualGross) {
-    const annual = Number(profile.estimatedAnnualGross);
-    revenue =
-      period === "quarter"
-        ? annual / 4
-        : period === "month"
-          ? annual / 12
-          : annual;
-  }
+  const estimatedPeriodRevenue =
+    Number(profile.estimatedAnnualGross || 0) /
+    (period === "quarter" ? 4 : period === "month" ? 12 : 1);
+
+  const revenue =
+    invoiceRevenue >= estimatedPeriodRevenue * MIN_REVENUE_FRACTION
+      ? invoiceRevenue
+      : Math.max(invoiceRevenue, estimatedPeriodRevenue);
 
   // runRegimeCalculator expects ANNUAL as 3rd arg today:
   const annualForCalc =
@@ -39,14 +40,11 @@ export async function calculateUserTax(
     annualForCalc,
   );
 
-  const realRevenue =
-    revenue === 0 ? Number(profile.estimatedAnnualGross) / 4 : revenue;
-
   return mapToTaxResult(
     profile.currentRegime,
     profile.preferredFrilenserModel,
     result,
-    realRevenue, // period revenue for net profit
+    revenue, // period revenue for net profit
     period,
   );
 }
@@ -58,8 +56,14 @@ function mapToTaxResult(
   revenue: number,
   period: "month" | "quarter" | "year",
 ): TaxResult {
-  const months = period === "quarter" ? 3 : 12;
-
+  const rawRate = revenue > 0 ? regimeResult.totalTax / revenue : 0;
+  const effectiveTaxRate = rawRate > 0 && rawRate < 1 ? rawRate : 0;
+  const warnings = [...regimeResult.warnings];
+  if (revenue > 0 && (rawRate <= 0 || rawRate >= 1)) {
+    warnings.push(
+      `Effective tax rate (${(rawRate * 100).toFixed(1)}%) was out of a sane range and was clamped to 0 — revenue base may be too small to be reliable.`,
+    );
+  }
   return {
     regime,
     model: model ?? undefined,
@@ -73,8 +77,8 @@ function mapToTaxResult(
     profitAfterTaxes: revenue - regimeResult.totalTax,
     quarterlyEstimate:
       period === "quarter" ? regimeResult.totalTax : regimeResult.totalTax / 4,
-    effectiveTaxRate: revenue > 0 ? regimeResult.totalTax / revenue : 0,
-    warnings: regimeResult.warnings,
+    effectiveTaxRate,
+    warnings,
     itemized: {
       incomeTax: regimeResult.incomeTax,
       pension: regimeResult.pension,

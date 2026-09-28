@@ -1,12 +1,24 @@
 "use client";
 
 import { useProjectStore } from "@/lib/store/useProjectStore";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { differenceInDays } from "date-fns";
+import { formatMinor } from "@/lib/currency";
 
-export default function SelectedProjectHeader() {
+export default function SelectedProjectHeader({
+  income,
+  profit,
+  expenses,
+  displayCurrency,
+}: {
+  income: number;
+  profit: number;
+  expenses: number;
+  displayCurrency: string;
+}) {
   const t = useTranslations("projects");
   const { selectedProject } = useProjectStore();
+  const locale = useLocale();
 
   if (!selectedProject) return null;
 
@@ -14,6 +26,9 @@ export default function SelectedProjectHeader() {
     new Date(),
     new Date(selectedProject.createdAt),
   );
+
+  const fmt = (minor?: number) =>
+    minor === undefined ? "—" : formatMinor(minor, displayCurrency, locale);
 
   return (
     <header className="w-full text-center flex flex-col md:flex-row gap-2">
@@ -28,32 +43,17 @@ export default function SelectedProjectHeader() {
         <h1 className="primary-slate tracking-widest">{t("activeDays")}</h1>
       </div>
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
-        <p className="text-primary text-4xl font-bold">
-          $
-          {Number(selectedProject.totalRevenue || 0).toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-          })}
-        </p>
+        <p className="text-primary text-4xl font-bold">{fmt(income)}</p>
         <h1 className="primary-slate tracking-widest">
           {t("totalRevenueLabel")}
         </h1>
       </div>
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
-        <p className="text-primary text-4xl font-bold">
-          $
-          {Number(selectedProject.totalExpenses || 0).toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-          })}
-        </p>
+        <p className="text-primary text-4xl font-bold">{fmt(expenses)}</p>
         <h1 className="primary-slate tracking-widest">{t("totalExpenses")}</h1>
       </div>
       <div className="flex flex-col items-center gap-2 background-elevated border background-border rounded-lg p-4 w-full">
-        <p className="text-primary text-4xl font-bold">
-          $
-          {Number(selectedProject.totalProfit || 0).toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-          })}
-        </p>
+        <p className="text-primary text-4xl font-bold">{fmt(profit)}</p>
         <h1 className="primary-slate tracking-widest">{t("totalProfit")}</h1>
       </div>
     </header>

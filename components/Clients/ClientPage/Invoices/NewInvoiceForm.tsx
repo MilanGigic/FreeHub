@@ -32,7 +32,12 @@ export default function NewInvoiceForm({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const { selectedClient } = useClientStore();
   const { projects, setProjects } = useDataStore();
-  const { selectedProject, setSelectedProject } = useProjectStore();
+  const {
+    selectedProject,
+    setSelectedProject,
+    projectFinances,
+    setProjectFinances,
+  } = useProjectStore();
   const {
     invoices,
     setInvoices,

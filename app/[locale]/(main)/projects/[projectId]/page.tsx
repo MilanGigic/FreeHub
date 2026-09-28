@@ -18,7 +18,7 @@ export default function SelectedProjectPage() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <SelectedProject />
+      <SelectedProject displayCurrency="RSD" />
     </div>
   );
 }

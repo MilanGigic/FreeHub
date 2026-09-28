@@ -11,6 +11,8 @@ function daysAgo(n: number) {
   return d;
 }
 
+export type CurrencyAmount = { currency: string; amount: string };
+
 const CLIENTS_PAGE_METRICS_TAG = "clients-page-metrics";
 
 const fetchClientsPageMetricsCached = unstable_cache(
@@ -22,9 +24,10 @@ const fetchClientsPageMetricsCached = unstable_cache(
     try {
       const from = daysAgo(30);
 
-      const [[incomeRow], [expenseRow]] = await Promise.all([
+      const [incomeRows, expenseRows] = await Promise.all([
         db
           .select({
+            currency: transactions.currency,
             total: sql<string>`coalesce(sum(${transactions.amount}::numeric), 0)`,
           })
           .from(transactions)
@@ -34,9 +37,11 @@ const fetchClientsPageMetricsCached = unstable_cache(
               eq(transactions.type, "income"),
               gte(transactions.createdAt, from),
             ),
-          ),
+          )
+          .groupBy(transactions.currency),
         db
           .select({
+            currency: transactions.currency,
             total: sql<string>`coalesce(sum(${transactions.amount}::numeric), 0)`,
           })
           .from(transactions)
@@ -46,11 +51,13 @@ const fetchClientsPageMetricsCached = unstable_cache(
               eq(transactions.type, "expense"),
               gte(transactions.createdAt, from),
             ),
-          ),
+          )
+          .groupBy(transactions.currency),
       ]);
 
-      const outstanding = await db
+      const outstandingRows = await db
         .select({
+          currency: invoices.currency,
           total: sql<string>`coalesce(sum(${invoices.totalAmount}::numeric), 0)`,
           count: sql<number>`count(*)`,
         })
@@ -60,15 +67,32 @@ const fetchClientsPageMetricsCached = unstable_cache(
             eq(invoices.userId, userId),
             or(eq(invoices.status, "sent"), eq(invoices.status, "overdue")),
           ),
-        );
+        )
+        .groupBy(invoices.currency);
+
+      const toList = (
+        rows: {
+          currency: "USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD";
+          total: string;
+        }[],
+      ): CurrencyAmount[] =>
+        rows
+          .filter((r) => Number(r.total) !== 0)
+          .map((r) => ({
+            currency: r.currency ?? "USD",
+            amount: Number(r.total).toFixed(2),
+          }));
 
       return {
         success: true,
         data: {
-          revenueThisMonth: Number(incomeRow?.total ?? 0).toFixed(2),
-          expensesThisMonth: Number(expenseRow?.total ?? 0).toFixed(2),
-          outstandingInvoices: Number(outstanding[0]?.total ?? 0).toFixed(2),
-          outstandingInvoiceCount: Number(outstanding[0]?.count ?? 0),
+          revenue: toList(incomeRows),
+          expenses: toList(expenseRows),
+          outstanding: toList(outstandingRows),
+          outstandingInvoiceCount: outstandingRows.reduce(
+            (acc, r) => acc + Number(r.count ?? 0),
+            0,
+          ),
         },
       };
     } catch (error) {

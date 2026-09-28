@@ -115,7 +115,8 @@ export default function RecentTransactions() {
             <h1
               className={`text-sm font-semibold w-full text-center ${transaction.type === "income" ? "primary-green" : "primary-red"}`}
             >
-              {transaction.amount} RSD
+              {transaction.currency}
+              {transaction.amount}
             </h1>
             <h1 className="text-primary text-sm font-semibold w-full text-center">
               {transaction.createdAt.toLocaleDateString("en-US", {

@@ -163,6 +163,7 @@ export const projectFinance = pgTable("project_finance", {
     .references(() => projects.id, { onDelete: "cascade" }),
   type: projectFinanceTypeEnum("type").notNull().default("income"),
   amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  currency: currencyEnum("currency").notNull(),
   note: text("note").notNull().default(""),
   hourlyRate: decimal("hourly_rate", { precision: 12, scale: 2 })
     .notNull()

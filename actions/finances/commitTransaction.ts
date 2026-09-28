@@ -80,6 +80,7 @@ export async function commitTransaction(
         projectId: data.projectId,
         type: data.type,
         amount: String(data.amount),
+        currency: data.currency,
         note: data.note || "",
       });
       await recalculateProjectTotals(userId, data.projectId);

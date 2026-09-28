@@ -1,7 +1,7 @@
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useTranslations } from "next-intl";
 
-export default function ProfitMargin() {
+export default function ProfitMargin({ amount }: { amount: number }) {
   const { clientProjects } = useClientStore();
   const t = useTranslations("clients");
 
@@ -15,7 +15,9 @@ export default function ProfitMargin() {
   );
 
   const profitMargin =
-    totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue) * 100 : 0;
+    totalRevenue > 0
+      ? ((totalRevenue - totalExpenses) / totalRevenue) * 100
+      : 0;
 
   return (
     <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-center gap-2 w-full">
@@ -33,9 +35,7 @@ export default function ProfitMargin() {
       >
         {profitMargin.toFixed(2)}%
       </p>
-      <p className="text-sm primary-slate">
-        {t("profitMarginDescription")}
-      </p>
+      <p className="text-sm primary-slate">{t("profitMarginDescription")}</p>
     </div>
   );
 }

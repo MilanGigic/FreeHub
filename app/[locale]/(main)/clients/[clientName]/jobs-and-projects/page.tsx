@@ -18,9 +18,11 @@ export default function JobsAndProjectsPage() {
           className="p-2 w-64 md:w-md text-center rounded-lg border background-border outline-none text-primary focus-border-accent transition-all duration-300 ease-out placeholder:text-tertiary"
         />
       </div>
-      <Projects />
+      <Projects displayCurrency="RSD" />
 
-      {isJobsAndProjectsSlideOverOpen ? <JobsAndProjectsSlideOver /> : null}
+      {isJobsAndProjectsSlideOverOpen ? (
+        <JobsAndProjectsSlideOver displayCurrency="RSD" />
+      ) : null}
     </div>
   );
 }

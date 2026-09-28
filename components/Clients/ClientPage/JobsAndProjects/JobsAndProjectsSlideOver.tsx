@@ -1,41 +1,84 @@
 "use client";
 
+import { useRates } from "@/hooks/useRates";
+import { convertMinor, formatMinor, toMinor } from "@/lib/currency";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useMemo } from "react";
 
-export default function JobsAndProjectsSlideOver() {
+function mostCommon(
+  values: ("USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD")[] | undefined,
+): string | null {
+  if (!values) return null;
+  const counts = new Map<string, number>();
+  for (const v of values) if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
+
+export default function JobsAndProjectsSlideOver({
+  displayCurrency: preferred,
+}: {
+  displayCurrency?: string;
+}) {
   const t = useTranslations("jobsAndProjects");
+  const locale = useLocale();
   const { isJobsAndProjectsSlideOverOpen, jobsAndProjectsSlideOverClose } =
     useUIStore();
 
-  const { selectedProject, setSelectedProject } = useProjectStore();
+  const { selectedProject, setSelectedProject, projectFinances } =
+    useProjectStore();
+
+  const financeCurrencies = projectFinances?.map((proj) => proj.currency);
+  const displayCurrency = preferred ?? mostCommon(financeCurrencies) ?? "USD";
+
+  const rates = useRates([
+    ...(financeCurrencies as (string | null | undefined)[]),
+    displayCurrency,
+  ]);
+
+  const totals = useMemo(() => {
+    if (!rates) return null;
+    let income = 0;
+    let expense = 0;
+    for (const fin of projectFinances!) {
+      const minor = convertMinor(
+        toMinor(fin.amount),
+        fin.currency ?? displayCurrency,
+        displayCurrency,
+        rates,
+      );
+      if (fin.type === "income") income += minor;
+      if (fin.type === "expense") expense += minor;
+    }
+    return { income, expense };
+  }, [projectFinances, rates, displayCurrency]);
 
   const totalProfitPerHour = useMemo(() => {
+    if (!totals) return 0;
     if (!selectedProject) return 0;
-    return selectedProject.totalProfit &&
-      Number(selectedProject.totalProfit) &&
+    return totals.income &&
+      Number(totals.income) &&
       selectedProject.totalHoursWorked &&
       Number(selectedProject.totalHoursWorked)
-      ? Number(selectedProject.totalProfit) /
-          Number(selectedProject.totalHoursWorked)
+      ? Number(totals.income) / Number(selectedProject.totalHoursWorked)
       : 0;
-  }, [selectedProject]);
+  }, [selectedProject, totals]);
 
-  const totalRevenue = selectedProject?.totalRevenue
-    ? Number(selectedProject.totalRevenue)
-    : 0;
+  if (!totals) return 0;
 
   const profit = selectedProject?.totalProfit
-    ? Number(selectedProject.totalProfit)
+    ? Number(totals.income - totals.expense)
     : 0;
 
-  const profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
+  const profitMargin = totals.income > 0 ? (profit / totals.income) * 100 : 0;
 
   if (!selectedProject) return null;
+
+  const fmt = (minor?: number) =>
+    minor === undefined ? "—" : formatMinor(minor, displayCurrency, locale);
 
   return (
     <div
@@ -72,20 +115,16 @@ export default function JobsAndProjectsSlideOver() {
             </h1>
             <p className="primary-slate text-sm uppercase font-semibold">
               {t("revenueLabel")}{" "}
-              <span className="primary-green">
-                ${selectedProject.totalRevenue}
-              </span>
+              <span className="primary-green">{fmt(totals?.income)}</span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
               {t("expensesLabel")}{" "}
-              <span className="primary-red">
-                ${selectedProject.totalExpenses}
-              </span>
+              <span className="primary-red">{fmt(totals?.expense)}</span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
               {t("profitLabel")}{" "}
               <span className="primary-green">
-                ${selectedProject.totalProfit}
+                {fmt(totals.income - totals.expense)}
               </span>
             </p>
             <p className="primary-slate text-sm uppercase font-semibold">
@@ -124,7 +163,8 @@ export default function JobsAndProjectsSlideOver() {
                   {t("clientFeedback")}
                 </h1>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  {t("paidOnTime")} <span className="primary-red">2 days late</span>
+                  {t("paidOnTime")}{" "}
+                  <span className="primary-red">2 days late</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
                   {t("messageFromClient")}{" "}
@@ -140,13 +180,16 @@ export default function JobsAndProjectsSlideOver() {
                   <span className="primary-cyan">1234567890</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  {t("invoiceDate")} <span className="primary-cyan">12/12/2025</span>
+                  {t("invoiceDate")}{" "}
+                  <span className="primary-cyan">12/12/2025</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  {t("invoiceAmount")} <span className="primary-cyan">$1000</span>
+                  {t("invoiceAmount")}{" "}
+                  <span className="primary-cyan">$1000</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
-                  {t("invoiceStatus")} <span className="primary-cyan">Paid</span>
+                  {t("invoiceStatus")}{" "}
+                  <span className="primary-cyan">Paid</span>
                 </p>
                 <p className="primary-slate text-sm uppercase font-semibold">
                   {t("invoiceDueDate")}{" "}

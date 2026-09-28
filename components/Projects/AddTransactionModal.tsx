@@ -40,7 +40,8 @@ export default function AddTransactionModal({
   const { setTransactions, projects } = useDataStore();
   const { clients } = useClientStore();
 
-  const { setSelectedProject } = useProjectStore();
+  const { setSelectedProject, projectFinances, setProjectFinances } =
+    useProjectStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -114,6 +115,7 @@ export default function AddTransactionModal({
 
       if (refreshed.success && refreshed.data) {
         setSelectedProject(refreshed.data as Project);
+
         console.log("Updated selectedProject in store:", refreshed.data);
       }
       setIsLoading(false);

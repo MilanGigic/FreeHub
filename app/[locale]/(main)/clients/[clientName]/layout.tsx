@@ -5,6 +5,7 @@ import ClientPageHeader from "@/components/Clients/ClientPage/ClientPageHeader";
 import ClientPageSkeleton from "@/components/Clients/ClientPage/ClientPageSkeleton";
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -21,6 +22,7 @@ export default function ClientLayout({
     setOverdueInvoices,
     setPaidInvoices,
   } = useInvoiceStore();
+  const { setProjectFinances } = useProjectStore();
   const pathname = usePathname();
 
   const clientSegments = pathname.split("/");
@@ -47,6 +49,7 @@ export default function ClientLayout({
       useClientStore.getState().setClientProjects(res.data.projects);
 
       setInvoices(res.data.invoices);
+      setProjectFinances(res.data.projectFinances);
       setOutstandingInvoices(res.data.totals.outstandingInvoices);
       setOverdueInvoices({
         data: res.data.totals.overdueInvoices,
@@ -62,6 +65,7 @@ export default function ClientLayout({
     setOverdueInvoices,
     setPaidInvoices,
     setInvoices,
+    setProjectFinances,
   ]);
 
   if (!selectedClient) {

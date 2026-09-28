@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 import { fetchClientCardMetrics } from "@/actions/clients/fetchClientCardMetrics";
 import ClientTable from "@/components/Clients/ClientTable";
 import { getTranslations } from "next-intl/server";
+import { fetchAllClientProjectFinances } from "@/actions/clients/fetchAllClientProjectFinances";
 
 export default async function ClientsPage() {
   const user = await getCurrentUser();
@@ -26,6 +27,14 @@ export default async function ClientsPage() {
       </div>
     );
   }
+
+  if (!headerRes.data) {
+    return (
+      <div className="text-center text-primary font-semibold">
+        {tClients("noCardMetrics")}
+      </div>
+    );
+  }
   const mainRes = await fetchClientCardMetrics(user.id);
   if (!mainRes.success) {
     return (
@@ -41,22 +50,30 @@ export default async function ClientsPage() {
       </div>
     );
   }
+
+  const financesRes = await fetchAllClientProjectFinances(user.id);
+  if (!financesRes.success) {
+    return (
+      <div className="text-center text-primary font-semibold">
+        {tClients("errorFetchingCardMetrics")}
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-2 md:gap-4 w-full min-h-screen h-full">
       <header>
         <ClientsHeader
-          clientsPageMetrics={
-            headerRes.data as {
-              revenueThisMonth: string;
-              expensesThisMonth: string;
-              outstandingInvoices: string;
-            }
-          }
+          clientsPageMetrics={headerRes.data}
+          displayCurrency="RSD"
         />
       </header>
       <main className="w-full">
         <div className="w-full h-full flex flex-col gap-2 md:gap-4 p-4">
-          <ClientTable clientMetrics={mainRes.data} />
+          <ClientTable
+            clientMetrics={mainRes.data}
+            displayCurrency="RSD"
+            projectFinances={financesRes.data ?? []}
+          />
         </div>
       </main>
     </div>

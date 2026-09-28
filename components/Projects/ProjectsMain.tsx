@@ -10,6 +10,9 @@ import GridProjects from "./GridProjects";
 import NewProjectModal from "./NewProjectModal";
 import { useUIStore } from "@/lib/store/useUIStore";
 import { useTranslations } from "next-intl";
+import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useRates } from "@/hooks/useRates";
+import { convertMinor, toMinor } from "@/lib/currency";
 
 const projectStatuses = [
   "all",
@@ -21,14 +24,28 @@ const projectStatuses = [
   "not_started",
 ];
 
+function mostCommon(
+  values: ("USD" | "EUR" | "GBP" | "JPY" | "RSD" | "CAD")[] | undefined,
+): string | null {
+  if (!values) return null;
+  const counts = new Map<string, number>();
+  for (const v of values) if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
+
 function filterProjects(projects: Project[], status: ProjectStatus | "all") {
   if (status === "all") return projects;
   return projects.filter((project) => project.status === status);
 }
 
-export default function ProjectsMain() {
+export default function ProjectsMain({
+  displayCurrency: preferred,
+}: {
+  displayCurrency?: string;
+}) {
   const t = useTranslations("projects");
   const { projects, setProjects } = useDataStore();
+  const { projectFinances } = useProjectStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [show, setShow] = useState<ProjectStatus | "all">("all");
@@ -40,6 +57,36 @@ export default function ProjectsMain() {
   const { setIsNewProjectModalOpen, isNewProjectModalOpen } = useUIStore();
 
   const { user } = useAuth();
+
+  const financeCurrencies = projectFinances?.map((proj) => proj.currency);
+  const displayCurrency = preferred ?? mostCommon(financeCurrencies) ?? "USD";
+
+  const rates = useRates([
+    ...(financeCurrencies as (string | null | undefined)[]),
+    displayCurrency,
+  ]);
+
+  const totalsByProject = useMemo(() => {
+    if (!rates) return null;
+
+    const map = new Map<string, { income: number; expense: number }>();
+
+    for (const fin of projectFinances ?? []) {
+      const minor = convertMinor(
+        toMinor(fin.amount),
+        fin.currency ?? displayCurrency,
+        displayCurrency,
+        rates,
+      );
+
+      const entry = map.get(fin.projectId) ?? { income: 0, expense: 0 };
+      if (fin.type === "income") entry.income += minor;
+      if (fin.type === "expense") entry.expense += minor;
+      map.set(fin.projectId, entry);
+    }
+
+    return map;
+  }, [projectFinances, rates, displayCurrency]);
 
   const statusLabels: Record<string, string> = {
     all: t("statusAll"),
@@ -89,6 +136,7 @@ export default function ProjectsMain() {
     [projects, show],
   );
 
+  if (!totalsByProject) return null;
   return (
     <div className="w-full h-full max-w-full flex flex-col gap-2 md:gap-4 overflow-x-hidden min-w-0">
       {isLoading && (
@@ -167,9 +215,17 @@ export default function ProjectsMain() {
           {isNewProjectModalOpen ? <NewProjectModal /> : null}
         </div>
         {query.length > 2 && results.length > 0 ? (
-          <GridProjects projects={results} />
+          <GridProjects
+            projects={results}
+            totals={totalsByProject}
+            displayCurrency="RSD"
+          />
         ) : filteredProjects.length > 0 ? (
-          <GridProjects projects={filteredProjects} />
+          <GridProjects
+            projects={filteredProjects}
+            totals={totalsByProject}
+            displayCurrency="RSD"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <p className="text-primary">{t("noProjectsFound")}</p>
