@@ -69,10 +69,6 @@ export default function TaxesTab({
 
           <div className="xl:grid xl:grid-cols-12 flex flex-col w-full h-full gap-4">
             <div className="xl:col-span-4 w-full h-full">
-              {/* <TaxRunwayCard
-                currentBalance={Number(balance) ?? 0}
-                monthlyTaxReserve={taxResult.monthlyTaxReserve}
-              /> */}
               <TaxBreakdownCard />
             </div>
             <div className="xl:col-span-4 w-full h-full">

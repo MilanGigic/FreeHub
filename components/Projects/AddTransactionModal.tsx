@@ -132,7 +132,7 @@ export default function AddTransactionModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ type: "spring", stiffness: 90, damping: 15 }}
-      className="lg:fixed lg:inset-0 absolute top-full bg-black/50 flex items-center justify-center z-50"
+      className="lg:fixed lg:inset-0 absolute top-full left-0 bg-black/50 flex items-center justify-center z-50"
     >
       <button
         onClick={onClose}
@@ -142,7 +142,7 @@ export default function AddTransactionModal({
       </button>
 
       <form
-        className="flex flex-col gap-2 md:gap-4 border-b-2 background-border background-elevated p-4 rounded-2xl"
+        className="flex flex-col gap-2 md:gap-4 border-b-2 background-border background-elevated p-0 md:p-4 rounded-2xl"
         onSubmit={(e) => handleSubmit(e)}
       >
         <div>

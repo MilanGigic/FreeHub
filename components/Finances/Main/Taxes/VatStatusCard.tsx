@@ -36,14 +36,14 @@ export default function VatStatusCard({ taxResult }: VatStatusCardProps) {
                       }
                       `}
           />
-          <h1 className="absolute text-primary top-1/2 left-4 -translate-y-1/2 font-bold text-2xl flex items-center gap-1">
+          <h1 className="absolute text-primary top-1/2 left-4 -translate-y-1/2 font-bold text-xl md:text-2xl flex items-center gap-1">
             {taxResult.annualRevenue.toLocaleString()}{" "}
             <span className="text-lg text-primary font-semibold">RSD</span>
           </h1>
-          <p className="absolute text-primary top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 font-semibold text-3xl">
-            {vatStatus} %
+          <p className="absolute text-primary top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 font-semibold text-lg md:text-3xl">
+            {vatStatus.toFixed(2)} %
           </p>
-          <h1 className="absolute text-primary top-1/2 right-4 -translate-y-1/2 font-bold text-2xl flex items-center gap-1">
+          <h1 className="absolute text-primary top-1/2 right-4 -translate-y-1/2 font-bold text-xl md:text-2xl flex items-center gap-1">
             {VAT_LIMIT.toLocaleString()}
             <span className="text-lg text-primary font-semibold">RSD</span>
           </h1>
