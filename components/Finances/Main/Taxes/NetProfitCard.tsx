@@ -21,7 +21,7 @@ export default function NetProfitCard({ taxResult }: NetProfitCardProps) {
         </p>
         <div>
           <p className="text-5xl font-bold text-(--accent-green) leading-none tabular-nums flex items-center gap-1">
-            {taxResult.netProfit.toLocaleString()}{" "}
+            {(taxResult.netProfit * 4).toLocaleString()}{" "}
             <span className="primary-slate text-4xl">RSD</span>
           </p>
         </div>

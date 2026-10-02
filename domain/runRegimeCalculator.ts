@@ -67,7 +67,7 @@ export const runRegimeCalculator: Record<
   knjigas: (profile, businessExpenses, grossAnnual) =>
     calculateKnjigas({
       isUnder40: profile.isUnder40,
-      personalSalaryGross: Number(profile.personalSalaryGrossMonthly),
+      personalSalaryGross: Number(profile.personalSalaryGrossMonthly) * 3,
       primaryHealthInsuredElsewhere: profile.primaryHealthInsuredElsewhere,
       revenue: grossAnnual / 4,
       businessExpenses,

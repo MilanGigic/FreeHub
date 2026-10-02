@@ -42,13 +42,13 @@ export default function RegimeOptimizationCard({
                 className={`h-full rounded-full transition-all duration-700 bg-(--accent-cyan)`}
                 // Add different colors for different numbers
                 style={{
-                  width: `${(taxResult.netProfit / 5900000) * 100}%`,
+                  width: `${(taxResult.annualRevenue / 5900000) * 100}%`,
                 }}
               />
             </div>
             <div className="flex w-full justify-between">
               <span className="primary-slate tracking-wide text-xs">
-                {taxResult.netProfit.toLocaleString()} RSD
+                {taxResult.annualRevenue.toLocaleString()} RSD
               </span>
               <span className="primary-slate tracking-wide text-xs">
                 {PAUSAL_TO_KNJIGAS_LIMIT.toLocaleString()} RSD
@@ -64,7 +64,7 @@ export default function RegimeOptimizationCard({
               - {t("currentIncome")}:
             </span>
             <h1 className="text-primary">
-              {taxResult.netProfit.toLocaleString()} RSD
+              {taxResult.annualRevenue.toLocaleString()} RSD
             </h1>
           </div>
         </div>

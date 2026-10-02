@@ -568,7 +568,10 @@
     "confidence": "Pouzdanost",
     "confidenceDescription1": "Bazirano na",
     "confidenceDescription2": "verifikovanih prijava",
-    "noBalanceData": "Nemamo podataka o stanju"
+    "noBalanceData": "Nemamo podataka o stanju",
+    "nextPayment": "Sledeća uplata",
+    "monthlyObligation": "Mesečna obaveza",
+    "monthlyAdvance": "Mesečni avans"
   },
   "invoices": {
     "invoiceNumber": "Faktura #",

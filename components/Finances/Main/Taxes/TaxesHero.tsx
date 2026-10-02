@@ -14,7 +14,8 @@ import {
   Timer,
   CalendarCheck,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getNextMonthlyPayment } from "@/lib/getNextMonthlyPayment";
 
 type Props = {
   isComputable: boolean;
@@ -28,6 +29,7 @@ export default function TaxesHero({
   taxResult,
 }: Props) {
   const t = useTranslations("taxes");
+  const locale = useLocale();
 
   const status = getStatus(isComputable, pausalSource);
 
@@ -43,6 +45,28 @@ export default function TaxesHero({
     ) : (
       <CalendarCheck className="primary-green" size={20} />
     );
+
+  const monthlyPayment = getNextMonthlyPayment();
+  const monthName = new Intl.DateTimeFormat(
+    locale === "sr" ? "sr-Latn" : locale, // Latin script for Serbian
+    { month: "long" },
+  ).format(monthlyPayment.deadline);
+
+  const pausalUrgency =
+    monthlyPayment.daysUntil < 8
+      ? {
+          color: "primary-red",
+          icon: <AlarmClock className="primary-red" size={20} />,
+        }
+      : monthlyPayment.daysUntil < 21
+        ? {
+            color: "primary-amber",
+            icon: <Timer className="primary-amber" size={20} />,
+          }
+        : {
+            color: "primary-green",
+            icon: <CalendarCheck className="primary-green" size={20} />,
+          };
 
   return (
     <div className="w-full h-full flex flex-col gap-4">
@@ -96,16 +120,53 @@ export default function TaxesHero({
           value={`${taxResult.totalAnnualTax.toLocaleString()} RSD`}
         />
         <div className="background-elevated border background-border rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-zinc-600 transition-colors duration-200 w-full">
-          <p
-            className={`text-2xl font-bold flex items-center gap-2 tabular-nums ${quarterlyPayment.daysUntil < 8 ? "primary-red" : quarterlyPayment.daysUntil > 8 && quarterlyPayment.daysUntil < 21 ? "primary-amber" : quarterlyPayment.daysUntil > 21 && quarterlyPayment.daysUntil < 31 ? "primary-cyan" : "primary-green"}`}
-          >
-            {deadlineIcon} {quarterlyPayment.daysUntil} -{" "}
-            {t("daysUntilDeadline")}
-          </p>
-          <h1 className="text-xl text-primary">
-            {quarterlyPayment.label} -{" "}
-            <span>{quarterlyPayment.deadline.toLocaleDateString()}</span>
-          </h1>
+          {taxResult.regime === "freelancer" ? (
+            <>
+              <p
+                className={`text-2xl font-bold flex items-center gap-2 tabular-nums ${quarterlyPayment.daysUntil < 8 ? "primary-red" : quarterlyPayment.daysUntil > 8 && quarterlyPayment.daysUntil < 21 ? "primary-amber" : quarterlyPayment.daysUntil > 21 && quarterlyPayment.daysUntil < 31 ? "primary-cyan" : "primary-green"}`}
+              >
+                {deadlineIcon} {quarterlyPayment.daysUntil} -{" "}
+                {t("daysUntilDeadline")}
+                <h1 className="text-xl text-primary">
+                  {quarterlyPayment.label} -{" "}
+                  <span>{quarterlyPayment.deadline.toLocaleDateString()}</span>
+                </h1>
+              </p>
+            </>
+          ) : taxResult.regime === "pausal" ? (
+            <>
+              <p
+                className={`text-2xl font-bold flex items-center gap-2 tabular-nums ${pausalUrgency.color}`}
+              >
+                {pausalUrgency.icon} {monthlyPayment.daysUntil} -{" "}
+                {t("daysUntilDeadline")}
+              </p>
+              <div className="text-xl text-primary">
+                {t("monthlyObligation")} -{" "}
+                <span>
+                  {t("nextPayment")}: {monthlyPayment.deadline.getDate()}.{" "}
+                  {monthName}
+                </span>
+              </div>
+            </>
+          ) : (
+            taxResult.regime === "knjigas" && (
+              <>
+                <p
+                  className={`text-2xl font-bold flex items-center gap-2 tabular-nums ${pausalUrgency.color}`}
+                >
+                  {pausalUrgency.icon} {monthlyPayment.daysUntil} -{" "}
+                  {t("daysUntilDeadline")}
+                </p>
+                <div className="text-xl text-primary">
+                  {t("monthlyAdvance")} -{" "}
+                  <span>
+                    {monthlyPayment.deadline.getDate()}. {monthName}
+                  </span>
+                </div>
+              </>
+            )
+          )}
         </div>
       </div>
     </div>

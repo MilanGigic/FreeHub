@@ -40,8 +40,7 @@ export default function AddTransactionModal({
   const { setTransactions, projects } = useDataStore();
   const { clients } = useClientStore();
 
-  const { setSelectedProject, projectFinances, setProjectFinances } =
-    useProjectStore();
+  const { setSelectedProject } = useProjectStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
