@@ -46,34 +46,6 @@ export function getDefaultPeriodForRegime(regime: Regime): TaxPeriod {
 }
 
 /**
- * Periods that make sense to show in the UI for each regime.
- */
-export function getAvailablePeriodsForRegime(regime: Regime): TaxPeriod[] {
-  switch (regime) {
-    case "freelancer":
-      return ["quarter", "year"];
-
-    case "pausal":
-      return ["month", "quarter", "year"];
-
-    case "knjigas":
-      return ["month", "quarter", "year"];
-
-    case "employee":
-      return ["month", "year"];
-
-    case "hybrid":
-      return ["month", "quarter", "year"];
-
-    case "d.o.o.":
-      return ["month", "year"];
-
-    default:
-      return ["month", "year"];
-  }
-}
-
-/**
  * How many months a period covers (for scaling monthly amounts).
  */
 export function monthsInPeriod(period: TaxPeriod): number {

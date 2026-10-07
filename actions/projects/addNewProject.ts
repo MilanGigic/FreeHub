@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { clients, projects } from "@/db/schema/schema";
 import { Client, ProjectForm, ProjectStatus, User } from "@/types/types";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 
 export async function addNewProject(
