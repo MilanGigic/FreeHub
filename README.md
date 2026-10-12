@@ -63,7 +63,7 @@ Freehub is a **smart financial command center for freelancers**. It helps you un
    Create a `.env.local` file in the project root and provide the required variables. Typical values include:
 
    ```bash
-   DATABASE_URL=postgres://user:password@localhost:5432/efficio
+   DATABASE_URL=postgres://user:password@localhost:5432/freehub
    JWT_SECRET=your_jwt_secret
    # Add any other keys used in auth/encryption and external services
    ```
@@ -106,11 +106,3 @@ Freehub is a **smart financial command center for freelancers**. It helps you un
 - **State & UI**: Dashboard overlays (e.g. register window prompts) and cross‑page UI state are driven by Zustand stores in `lib/store/*`.
 - **Data model**: Financial logic is centered on `project_finance`, `transactions`, and `invoices`, linked back to `projects`, `clients`, and `users`. Enums (currency, client status, project status, invoice status, conservativeness) define the permitted values for key fields.
 - **Security**: User records store an encrypted data encryption key (`encryptedDEK`), implying that sensitive financial data is intended to be encrypted at rest beyond simple password hashing.
-
-### Known Issues / TODO
-
-Check `todo.txt` in the project root for current work items. As of this snapshot:
-
-- **Finances page**: “Commit simulate impact” does not update the expenses and transactions state immediately and needs to be fixed.
-
-If you add more TODOs during development, keep `todo.txt` and this section in sync.
