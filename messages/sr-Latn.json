@@ -2,7 +2,7 @@
   "metadata": {
     "title": "FREEHUB",
     "description": "FREEHUB - Poznajte svoje brojeve bez računanja.",
-    "landingTitle": "Efficio - Vaš pametni finansijski centar za frilensere",
+    "landingTitle": "Freehub - Vaš pametni finansijski centar za frilensere",
     "landingDescription": "Znajte koliko možete bezbedno da potrošite — bez razmišljanja kao računovođa."
   },
   "onboarding": {
@@ -22,7 +22,8 @@
       "unitedStates": "US",
       "taxResidentTitle": "Poreski rezident",
       "taxResidentYes": "Da",
-      "taxResidentNo": "Ne"
+      "taxResidentNo": "Ne",
+      "supportOnlySrb": "Trenutno podržavamo samo Srbiju za poreske svrhe. Radimo na dodavanju više država uskoro."
     },
 
     "stepTwo": {

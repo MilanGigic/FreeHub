@@ -36,50 +36,51 @@ export default function SRBStepOne() {
         <p className="text-sm primary-slate">{t("welcomeSubtitle")}</p>
       </div>
 
-    <div className="flex flex-col items-center gap-4 w-full">
-      <div className="flex flex-col gap-2 w-full">
-        <h1 className="text-primary text-2xl font-bold text-center">
-          {tOnboarding("countryTitle")}
-        </h1>
-        <div className="flex flex-col items-center gap-4 w-full border-b-2 p-2">
-          <h1 className="text-xl font-semibold uppercase">{country}</h1>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCountry("SRB")}
-              className={`py-2 px-4 border ${country === "SRB" ? "bg-white/35" : ""}`}
+      <div className="flex flex-col items-center gap-4 w-full">
+        <div className="flex flex-col gap-2 w-full">
+          <h1 className="text-primary text-2xl font-bold text-center">
+            {tOnboarding("countryTitle")}
+          </h1>
+          <div className="flex flex-col items-center gap-4 w-full border-b-2 p-2">
+            <h1 className="text-xl font-semibold uppercase">{country}</h1>
+            <p></p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCountry("SRB")}
+                className={`py-2 px-4 border ${country === "SRB" ? "bg-white/35" : ""}`}
               >
-              SRB
-            </button>
-            <button
+                SRB
+              </button>
+              {/* <button
               onClick={() => setCountry("US")}
               className={`py-2 px-4 border ${country === "US" ? "bg-white/35" : ""}`}
               >
               US
+            </button> */}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 p-2">
+          <h1 className="text-xl font-semibold uppercase">
+            {tOnboarding("taxResidentTitle")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              className={`py-2 px-4 border ${taxResident ? "bg-white/35" : ""}`}
+              onClick={() => setTaxResident(true)}
+            >
+              {tOnboarding("taxResidentYes")}
+            </button>
+            <button
+              className={`py-2 px-4 border ${taxResident !== null && !taxResident ? "bg-white/35" : ""}`}
+              onClick={() => setTaxResident(false)}
+            >
+              {tOnboarding("taxResidentNo")}
             </button>
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col items-center gap-4 p-2">
-        <h1 className="text-xl font-semibold uppercase">
-          {tOnboarding("taxResidentTitle")}
-        </h1>
-        <div className="flex items-center gap-2">
-          <button
-            className={`py-2 px-4 border ${taxResident ? "bg-white/35" : ""}`}
-            onClick={() => setTaxResident(true)}
-            >
-            {tOnboarding("taxResidentYes")}
-          </button>
-          <button
-            className={`py-2 px-4 border ${taxResident !== null && !taxResident ? "bg-white/35" : ""}`}
-            onClick={() => setTaxResident(false)}
-            >
-            {tOnboarding("taxResidentNo")}
-          </button>
-        </div>
-      </div>
-        </div>
 
       <div className="flex flex-col gap-2 max-w-md w-full mx-auto">
         <button
