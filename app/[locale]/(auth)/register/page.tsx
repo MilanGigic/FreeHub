@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [country, setCountry] = useState<string>("United States");
+  const [country, setCountry] = useState<string>("Serbia");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -114,7 +114,7 @@ export default function RegisterPage() {
               value={country}
               onChange={(e) => setCountry(e.target.value)}
             >
-              <option value="United States">{t("unitedStates")}</option>
+              {/* <option value="United States">{t("unitedStates")}</option> */}
               <option value="Serbia">{t("serbia")}</option>
             </select>
             <p className="text-xs primary-slate mt-1">
