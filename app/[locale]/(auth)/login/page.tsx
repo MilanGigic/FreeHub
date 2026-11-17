@@ -47,26 +47,32 @@ export default function LoginPage() {
         setError(result.error || t("loginFailed"));
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t("unexpectedError"),
-      );
+      setError(err instanceof Error ? err.message : t("unexpectedError"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center background">
-      <div className="w-full max-w-md p-8 background-elevated rounded-lg border background-border">
-        <h1 className="text-2xl font-bold text-primary mb-6 text-center">
-          {t("login")}
-        </h1>
+    <div className="min-h-screen flex flex-col items-center justify-between background p-16">
+      <h1 className="text-primary uppercase font-semibold tracking-widest">
+        Freehub
+      </h1>
+      <div className="w-full max-w-md flex-1 flex flex-col h-full justify-center gap-4">
+        <header className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold text-primary">
+            {t("welcomeBack")}
+          </h1>
+          <p className="text-slate-400 font-light tracking-wide">
+            {t("loginDesc")}
+          </p>
+        </header>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium primary-slate mb-2"
+              className="block text-sm font-medium text-tertiary mb-2"
             >
               {t("email")}
             </label>
@@ -76,7 +82,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent"
+              className="w-full px-4 py-2 background-elevated border background-border rounded-md text-primary placeholder:text-tertiary focus:outline-none focus:border-[#EAEAEA] transition"
               placeholder={t("emailPlaceholder")}
             />
           </div>
@@ -84,7 +90,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium primary-slate mb-2"
+              className="block text-sm font-medium text-tertiary mb-2"
             >
               {t("password")}
             </label>
@@ -94,13 +100,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent"
+              className="w-full px-4 py-2 background-elevated border background-border rounded-md text-primary placeholder:text-tertiary focus:outline-none focus:border-[#EAEAEA] transition"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-(--tag-expense-bg) border border-(--accent-red) rounded-lg primary-red text-sm">
+            <div className="p-3 bg-(--tag-expense-bg) border border-(--accent-red) rounded-md primary-red text-sm">
               {error}
             </div>
           )}
@@ -108,7 +114,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 btn-primary"
+            className="w-full p-4 font-semibold tracking-wider cursor-pointer hover:opacity-80 transition bg-[#EAEAEA] rounded-md"
           >
             {loading ? t("loggingIn") : t("login")}
           </button>
@@ -119,7 +125,7 @@ export default function LoginPage() {
             {t("noAccount")}
             <Link
               href="/register"
-              className="primary-cyan hover:opacity-80 underline"
+              className="text-[#EAEAEA] hover:opacity-80 transition"
             >
               {t("register")}
             </Link>

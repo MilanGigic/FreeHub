@@ -3,67 +3,96 @@
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useInvoiceStore } from "@/lib/store/useInvoiceStore";
 import { useAuth } from "@/lib/useAuth";
-import Link from "next/link";
-import { ArrowRightIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Dot } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useRates } from "@/hooks/useRates";
+import { useMemo } from "react";
+import { convertMinor, formatMinor, toMinor } from "@/lib/currency";
 
-export default function ClientsCard() {
+function mostCommon(values: (string | null | undefined)[]): string | null {
+  const counts = new Map<string, number>();
+  for (const v of values) if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
+
+export default function ClientsCard({
+  displayCurrency: preferred,
+}: {
+  displayCurrency?: string;
+}) {
   const { user } = useAuth();
   const t = useTranslations("dashboard");
   const { clients } = useClientStore();
-  const { allOutstandingInvoices, allOverdueInvoices } = useInvoiceStore();
+  const { invoices } = useInvoiceStore();
+
+  const locale = useLocale();
+
+  const invoiceCurrencies = invoices.map((inv) => inv.currency);
+  const displayCurrency = preferred ?? mostCommon(invoiceCurrencies) ?? "USD"; // "USD" only for an empty list
+
+  const rates = useRates([...invoiceCurrencies, displayCurrency]);
+
+  const totals = useMemo(() => {
+    if (!rates) return null;
+    let outstanding = 0;
+    let overdue = 0;
+    for (const inv of invoices) {
+      const minor = convertMinor(
+        toMinor(inv.totalAmount),
+        inv.currency ?? displayCurrency,
+        displayCurrency,
+        rates,
+      );
+
+      if (inv.status === "sent" || inv.status === "overdue")
+        outstanding += minor;
+      if (inv.status === "overdue") overdue += minor;
+    }
+    return { outstanding, overdue };
+  }, [invoices, rates, displayCurrency]);
+
+  const overdueCount = invoices.filter(
+    (inv) => inv.status === "overdue",
+  ).length;
+  const outstandingCount = invoices.filter(
+    (inv) => inv.status === "sent" || inv.status === "overdue",
+  ).length;
+  const fmt = (minor?: number) =>
+    minor === undefined ? "—" : formatMinor(minor, displayCurrency, locale);
 
   if (!user)
     return (
-      <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
-          {t("loginToViewClients")}
-        </div>
+      <div className="border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
+        {t("loginToViewClients")}
       </div>
     );
 
   return (
-    <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
-      <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full">
-        <header className="w-full text-2xl font-bold text-primary text-center uppercase flex flex-col border-b-2 background-border pb-4">
-          <h1>{t("clientsOverview")}</h1>
-        </header>
-        <main className="flex flex-col gap-2 space-y-1.5 text-sm items-center">
-          <p className="text-lg primary-slate font-semibold uppercase">
-            {t("clients")}{" "}
-            <span className="font-bold primary-green">{clients.length}</span>
-          </p>
-          <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
-            {t("outstandingInvoices")}{" "}
-            <span className="font-bold primary-amber flex items-center gap-2">
-              {allOutstandingInvoices.data} RSD -{" "}
-              <span className="text-sm primary-slate">
-                {allOutstandingInvoices.count} {t("invoices")}
-              </span>
-            </span>
-          </p>
-          <p className="flex items-center gap-2 text-lg primary-slate font-semibold uppercase">
-            {t("overdueInvoices")}{" "}
-            <span className="font-bold primary-red flex items-center gap-2">
-              {allOverdueInvoices.data} RSD -{" "}
-              <span className="text-sm primary-slate">
-                {allOverdueInvoices.count} {t("invoices")}
-              </span>
-            </span>
-          </p>
-          <p className="text-lg primary-slate font-semibold uppercase text-center w-full">
-            {t("topClientContributions")}
-          </p>
-        </main>
-
-        <Link
-          href="/clients"
-          className="text-primary underline w-full flex items-center justify-center gap-2 text-2xl font-bold uppercase hover:text-(--accent-cyan) transition-colors duration-300"
-        >
-          {t("goToClients")}
-          <ArrowRightIcon className="w-4 h-4" />
-        </Link>
-      </div>
+    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <p className="text-slate-400 text-sm flex flex-col min-w-0">
+        {t("clients")}{" "}
+        <span className="font-bold text-primary text-lg sm:text-xl">
+          {clients.length}
+        </span>
+      </p>
+      <p className="text-slate-400 text-sm flex flex-col min-w-0">
+        {t("outstandingInvoices")}
+        <span className="font-bold text-primary text-lg sm:text-xl flex flex-wrap items-center gap-x-1">
+          {fmt(totals?.outstanding)}
+          <span className="text-slate-400 text-xs sm:text-sm font-normal flex items-center">
+            <Dot width={16} height={16} /> {outstandingCount} {t("invoices")}
+          </span>
+        </span>
+      </p>
+      <p className="text-slate-400 text-sm flex flex-col min-w-0">
+        {t("overdueInvoices")}{" "}
+        <span className="font-bold text-primary text-lg sm:text-xl flex flex-wrap items-center gap-x-1">
+          {fmt(totals?.overdue)} RSD
+          <span className="text-slate-400 text-xs sm:text-sm font-normal flex items-center">
+            <Dot width={16} height={16} /> {overdueCount} {t("invoices")}
+          </span>
+        </span>
+      </p>
     </div>
   );
 }

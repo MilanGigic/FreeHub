@@ -718,7 +718,9 @@
     "aggressive": "Aggressive",
     "details": "Details",
     "taxes": "Taxes",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "noFinancesTitle": "No financial data yet",
+    "noFinancesDescription": "Add income or expenses to your projects and their profitability will show up here."
   },
   "wizard": {
     "welcomeTitle": "Welcome to Freehub",

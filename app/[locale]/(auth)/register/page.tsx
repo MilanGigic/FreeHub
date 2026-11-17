@@ -76,16 +76,21 @@ export default function RegisterPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-2 background-elevated border background-border rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus-border-accent";
-  const labelClass = "block text-sm font-medium primary-slate mb-2";
+    "w-full px-4 py-2 background-elevated border background-border rounded-md text-primary placeholder:text-tertiary focus:outline-none focus:border-[#EAEAEA] transition";
+  const labelClass = "block text-sm font-medium text-tertiary mb-2";
 
   return (
-    <div className="min-h-screen flex items-center justify-center background">
-      <div className="w-full max-w-md p-8 background-elevated rounded-lg border background-border">
-        <h1 className="text-2xl font-bold text-primary mb-6 text-center">
-          {t("register")}
-        </h1>
-
+    <div className="min-h-screen flex flex-col items-center justify-between background p-16">
+      <h1 className="text-primary uppercase font-semibold tracking-widest">
+        Freehub
+      </h1>
+      <div className="w-full max-w-md flex-1 flex flex-col h-full justify-center gap-4">
+        <header className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold text-primary">{t("welcome")}</h1>
+          <p className="text-slate-400 font-light tracking-wide">
+            {t("registerDesc")}
+          </p>
+        </header>
         <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
@@ -117,7 +122,7 @@ export default function RegisterPage() {
               {/* <option value="United States">{t("unitedStates")}</option> */}
               <option value="Serbia">{t("serbia")}</option>
             </select>
-            <p className="text-xs primary-slate mt-1">
+            <p className="text-xs text-tertiary mt-1">
               {t("countryRestriction")}
               <br />
               {t("countryContactUs")}
@@ -186,7 +191,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 btn-primary"
+            className="w-full py-2 px-4 bg-[#EAEAEA] rounded-md font-semibold tracking-wider hover:opacity-80 transition cursor-pointer"
           >
             {loading ? t("registering") : t("register")}
           </button>
@@ -197,7 +202,7 @@ export default function RegisterPage() {
             {t("haveAccount")}
             <Link
               href="/login"
-              className="primary-cyan hover:opacity-80 underline"
+              className="text-[#EAEAEA] hover:opacity-80 transition"
             >
               {t("login")}
             </Link>

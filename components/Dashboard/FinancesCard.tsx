@@ -5,11 +5,13 @@ import { useDataStore } from "@/lib/store/useDataStore";
 import { useTaxProfileStore } from "@/lib/store/useTaxProfileStore";
 import { useAuth } from "@/lib/useAuth";
 import { useTranslations } from "next-intl";
-import { ArrowRightIcon } from "lucide-react";
-import Link from "next/link";
 import { useEffect } from "react";
 
-export default function FinancesCard() {
+export default function FinancesCard({
+  displayCurrency: preferred,
+}: {
+  displayCurrency?: string;
+}) {
   const { projects } = useDataStore();
   const { user } = useAuth();
 
@@ -62,84 +64,86 @@ export default function FinancesCard() {
 
   if (!user)
     return (
-      <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg h-full">
-        <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
-          {t("loginToViewFinances")}
-        </div>
+      <div className="border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full text-xl font-bold uppercase text-center">
+        {t("loginToViewFinances")}
       </div>
     );
 
   return (
-    <div className="w-full p-px bg-linear-to-b from-[#2dd4bf] via-[#21262d] to-[#0a0e14] rounded-lg primary-slate h-full">
-      <div className="background-elevated border background-border rounded-lg p-4 flex flex-col justify-between items-center gap-2 w-full h-full">
-        <header className="w-full text-2xl font-bold text-primary text-center uppercase flex flex-col border-b-2 background-border pb-4">
-          <h1>{t("financesOverview")}</h1>
-        </header>
-
-        <div className="flex flex-col  gap-4">
-          <h1 className="text-slate-300 font-semibold text-lg uppercase text-center">
-            {numericTotalIncome === 0 &&
-              profitMargin === 0 &&
-              "This data is from your onboarding. Enter real invoices and transactions."}
-          </h1>
-          <main className="space-y-1.5 text-sm flex flex-col items-center">
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("ytdIncome")}{" "}
-              <span className="font-bold primary-green">
-                {numericTotalIncome === 0
-                  ? taxResult.annualRevenue.toLocaleString()
-                  : numericTotalIncome}{" "}
+    <div className="flex flex-col justify-between gap-2 w-full h-full ">
+      <div className="flex flex-col">
+        <h1 className="text-slate-300 font-semibold text-base sm:text-lg uppercase text-center">
+          {numericTotalIncome === 0 &&
+            profitMargin === 0 &&
+            "This data is from your onboarding. Enter real invoices and transactions."}
+        </h1>
+        <main className="text-sm flex flex-col gap-4 sm:gap-8">
+          <div className="w-full flex flex-col z-0 p-px rounded-lg gap-2">
+            <p className="text-sm text-tertiary font-semibold uppercase">
+              {t("netProfit")} <span></span>
+            </p>
+            <p className="font-bold primary-green text-3xl sm:text-5xl lg:text-7xl tracking-wide flex flex-wrap items-end gap-x-2 gap-y-0.5 break-words">
+              {Number(taxResult.netProfit.toFixed(2)).toLocaleString()}
+              <span className="text-tertiary text-xl sm:text-2xl lg:text-3xl font-semibold">
                 RSD
-                {numericTotalIncome === 0 ? (
-                  <span className="text-slate-400 text-sm lowercase tracking-wide text-center">
-                    (From onboarding)
-                  </span>
-                ) : null}
               </span>
             </p>
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("expenses")}{" "}
-              <span className="font-bold primary-red">
-                {numericTotalExpenses.toLocaleString()} RSD
-              </span>
-            </p>
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("netProfit")}{" "}
-              <span className="font-bold primary-green">
-                {Number(taxResult.netProfit).toLocaleString()} RSD
-              </span>
-            </p>
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("profitMargin")}{" "}
-              <span className="font-bold">
-                {(taxResult.annualRevenue > 0
-                  ? taxResult.profitAfterTaxes / taxResult.annualRevenue
-                  : 0
-                ).toFixed(2)}
-                %
-              </span>
-            </p>
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("taxReserved")}{" "}
-              <span className="font-bold primary-amber">
-                {Number(taxResult.monthlyTaxReserve).toLocaleString()} RSD
-              </span>
-            </p>
-            <p className="text-lg primary-slate font-semibold uppercase">
-              {t("safeToSpend")}{" "}
-              <span className="font-bold primary-cyan">
-                {Number(safeToSpend.amount).toLocaleString()} RSD
-              </span>
-            </p>
-          </main>
-        </div>
-        <Link
-          href="/finances"
-          className="text-primary underline w-full flex items-center justify-center gap-2 text-2xl font-bold uppercase hover:text-(--accent-cyan) transition-colors duration-300"
-        >
-          {t("goToFinances")}
-          <ArrowRightIcon className="w-4 h-4" />
-        </Link>
+          </div>
+          <div className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-t background-border">
+            <div className="z-0 rounded-lg min-w-0">
+              <p className="text-slate-400 text-xs sm:text-sm flex flex-col border-r background-border z-10 bg-black/50 backdrop-blur-2xl py-3 sm:py-4 px-2 sm:px-3">
+                {t("ytdIncome")}{" "}
+                <span className="font-bold text-primary text-base sm:text-xl break-words">
+                  {numericTotalIncome === 0
+                    ? taxResult.annualRevenue.toLocaleString()
+                    : numericTotalIncome}{" "}
+                  RSD
+                  {numericTotalIncome === 0 ? (
+                    <span className="text-slate-400 text-xs sm:text-sm lowercase tracking-wide">
+                      (From onboarding)
+                    </span>
+                  ) : null}
+                </span>
+              </p>
+            </div>
+            <div className="z-0 rounded-lg min-w-0">
+              <p className="text-slate-400 text-xs sm:text-sm flex flex-col border-r background-border z-10 bg-black/50 backdrop-blur-2xl py-3 sm:py-4 px-2 sm:px-3">
+                {t("expenses")}{" "}
+                <span className="font-bold text-primary text-base sm:text-xl break-words">
+                  {numericTotalExpenses.toLocaleString()} RSD
+                </span>
+              </p>
+            </div>
+            <div className="z-0 rounded-lg min-w-0">
+              <p className="text-slate-400 text-xs sm:text-sm flex flex-col border-r background-border z-10 bg-black/50 backdrop-blur-2xl py-3 sm:py-4 px-2 sm:px-3">
+                {t("profitMargin")}{" "}
+                <span className="font-bold text-primary text-base sm:text-xl break-words">
+                  {(taxResult.annualRevenue > 0
+                    ? taxResult.profitAfterTaxes / taxResult.annualRevenue
+                    : 0
+                  ).toFixed(2)}
+                  %
+                </span>
+              </p>
+            </div>
+            <div className="z-0 rounded-lg min-w-0">
+              <p className="text-slate-400 text-xs sm:text-sm flex flex-col border-r background-border z-10 py-3 sm:py-4 px-2 sm:px-3">
+                {t("taxReserved")}{" "}
+                <span className="font-bold text-primary text-base sm:text-xl break-words">
+                  {Number(taxResult.monthlyTaxReserve).toLocaleString()} RSD
+                </span>
+              </p>
+            </div>
+            <div className="z-0 rounded-lg min-w-0">
+              <p className="text-slate-400 text-xs sm:text-sm flex flex-col z-10 bg-black/50 backdrop-blur-2xl py-3 sm:py-4 px-2 sm:px-3">
+                {t("safeToSpend")}{" "}
+                <span className="font-bold text-primary text-base sm:text-xl break-words">
+                  {Number(safeToSpend.amount).toLocaleString()} RSD
+                </span>
+              </p>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

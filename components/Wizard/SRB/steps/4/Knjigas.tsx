@@ -72,10 +72,6 @@ export default function Knjigas() {
           </button>
         </div>
       </div>
-      <WizardNavigationButtons
-        handleProceed={handleProceed}
-        currentStep={currentStep}
-      />
     </div>
   );
 }

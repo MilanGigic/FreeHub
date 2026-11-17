@@ -3,7 +3,6 @@
 import { useUIStore } from "@/lib/store/useUIStore";
 import { List, User } from "lucide-react";
 import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/lib/useAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
@@ -21,7 +20,7 @@ export default function Header() {
   const isProfilePage = pathname.includes("profile");
 
   return (
-    <div className="w-full flex px-4 py-2 gap-2 border-b background-border sticky top-0 z-30 background backdrop-blur-sm">
+    <div className="w-full flex px-4 py-2 gap-2 sticky top-0 z-30 background backdrop-blur-sm border-b background-border">
       {!isSidebarOpen ? (
         <div className="flex justify-start items-center sm:hidden">
           <button onClick={() => sidebarOpen()} className="p-2">
@@ -30,14 +29,9 @@ export default function Header() {
         </div>
       ) : null}
 
-      <div className="hidden sm:flex items-center">
-        <h1 className="text-sm font-bold uppercase text-primary tracking-wider px-4 flex items-center gap-2">
-          <Image
-            src="/freehub-symbol.png"
-            alt="Freehub"
-            width={20}
-            height={20}
-          />{" "}
+      <div className="hidden sm:flex sm:items-center sm:justify-center">
+        <h1 className="text-sm font-bold uppercase text-primary text-center tracking-wider px-4 flex items-center justify-center w-full">
+          <Image src="/freehub-logo.png" alt="" width={52} height={52} />
           <span className="text-primary">{t("freehub")}</span>
         </h1>
       </div>
@@ -77,7 +71,7 @@ export default function Header() {
           )}
         </div>
 
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </div>
     </div>
   );

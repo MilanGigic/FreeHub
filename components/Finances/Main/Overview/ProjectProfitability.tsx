@@ -2,7 +2,7 @@
 
 import { useClientStore } from "@/lib/store/useClientStore";
 import { useDataStore } from "@/lib/store/useDataStore";
-import { ChevronDown } from "lucide-react";
+import { BarChart3, ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useProjectStore } from "@/lib/store/useProjectStore";
@@ -91,6 +91,34 @@ export default function ProjectProfitability({
       </h1>
     );
   }
+
+  const hasFinances = !!projectFinances && projectFinances.length > 0;
+
+  if (!hasFinances) {
+    return (
+      <div className="w-full h-full flex flex-col gap-4 items-center border background-border rounded-lg background-elevated p-4">
+        <header className="flex w-full justify-between items-center">
+          <h1 className="text-lg font-semibold tracking-widest text-primary uppercase">
+            {t("projectProfitability")}
+          </h1>
+        </header>
+
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
+          <div className="rounded-full border background-border p-3">
+            <BarChart3 className="w-6 h-6 primary-slate" />
+          </div>
+          <h2 className="text-sm font-semibold text-primary">
+            {t("noFinancesTitle")}
+          </h2>
+          <p className="text-sm primary-slate max-w-xs">
+            {t("noFinancesDescription")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!totalsByProject) return null;
 
   if (!totalsByProject) return null;
 

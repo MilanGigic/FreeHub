@@ -18,6 +18,8 @@ type UIStore = {
   setIsRegisterWindowOpen: (open: boolean) => void;
   isNewProjectModalOpen: boolean;
   setIsNewProjectModalOpen: (open: boolean) => void;
+  preferredCurrency: "RSD" | "USD";
+  setPreferredCurrency: (preferred: "RSD" | "USD") => void;
 };
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -47,4 +49,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isNewProjectModalOpen: false,
   setIsNewProjectModalOpen: (open: boolean) =>
     set({ isNewProjectModalOpen: open }),
+  preferredCurrency: "RSD",
+  setPreferredCurrency: (preferred: "RSD" | "USD") =>
+    set({ preferredCurrency: preferred }),
 }));

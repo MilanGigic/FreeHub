@@ -233,11 +233,17 @@
     "amountRange": "Iznos",
     "client": "Klijent",
     "clients": "Klijenti",
-    "months": "Meseci"
+    "months": "Meseci",
+    "light": "Svetla",
+    "dark": "Tamna"
   },
   "auth": {
     "login": "Prijava",
     "register": "Registracija",
+    "welcome": "Dobrodošli u Freehub",
+    "welcomeBack": "Dobrodošli nazad",
+    "loginDesc": "Prijavite se da nastavite sa Vašim projektima i finansijama.",
+    "registerDesc": "Registrujte se da biste iskoristili punu moć Freehub-a",
     "email": "Email adresa",
     "emailPlaceholder": "vas@email.com",
     "password": "Lozinka",
@@ -267,7 +273,26 @@
     "thankYou": "Hvala Vam na razumevanju."
   },
   "profile": {
-    "logout": "Odjava"
+    "profile": "Profil",
+    "profileDesc": "Podešavanja koja utiču na vaše obračune i izgled aplikacije",
+    "account": "Nalog",
+    "accountDesc": "Kako se prikazujete u aplikaciji",
+    "displayName": "Ime za prikaz",
+    "emailAddress": "Email adresa",
+    "save": "Sačuvaj promene",
+    "saving": "Čuvanje promena...",
+    "saved": "Promene sačuvane!",
+    "settings": "Podešavanja",
+    "settingsDesc": "Izgled i valuta prikaza",
+    "theme": "Tema",
+    "displayCurrency": "Valuta prikaza",
+    "taxes": "Porezi",
+    "taxesDesc": "Najvažnije podešavanje: čita ga stranica Finansije i „Rezervisani porez“ na kontrolnoj tabli.",
+    "taxRegime": "Poreski režim",
+    "credibleFrom": "Važi od",
+    "taxReservePercentage": "Procenat prihoda za rezervu poreza",
+    "regimeChangeDesc": "Promena režima ponovo računa rezervisani porez i iznos „Bezbedno za potrošnju“",
+    "logout": "Odjavi se"
   },
   "clients": {
     "title": "Klijenti",
@@ -718,7 +743,9 @@
     "aggressive": "Agresivno",
     "details": "Detaljno",
     "taxes": "Takse",
-    "transactions": "Transakcije"
+    "transactions": "Transakcije",
+    "noFinancesTitle": "Još nema finansijskih podataka",
+    "noFinancesDescription": "Dodajte prihode ili rashode svojim projektima i njihova profitabilnost će se prikazati ovde."
   },
   "wizard": {
     "welcomeTitle": "Dobrodošli u Freehub",

@@ -45,18 +45,6 @@ export default function SRBStepThree() {
       regime: "knjigas",
       description: "knjigas",
     },
-    {
-      regime: "doo",
-      description: "doo",
-    },
-    {
-      regime: "employment",
-      description: "employment",
-    },
-    {
-      regime: "hybrid",
-      description: "hybrid",
-    },
   ];
 
   return (

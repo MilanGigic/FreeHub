@@ -179,11 +179,6 @@ export default function Pausal() {
           onChange={(e) => setExpectedYearRevenue(Number(e.target.value))}
         />
       </div>
-
-      <WizardNavigationButtons
-        handleProceed={handleProceed}
-        currentStep={currentStep}
-      />
     </div>
   );
 }

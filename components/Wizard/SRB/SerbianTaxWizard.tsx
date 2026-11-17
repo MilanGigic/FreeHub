@@ -18,7 +18,7 @@ export default function SerbianTaxWizard() {
     <SRBStepSix key="6" />,
   ];
 
-  const totalSteps = 7;
+  const totalSteps = 6;
 
   return (
     <div className="h-full w-full">

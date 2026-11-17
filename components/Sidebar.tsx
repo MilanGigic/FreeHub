@@ -8,7 +8,7 @@ export default function Sidebar() {
   const { isSidebarOpen } = useUIStore();
 
   return (
-    <div className="h-full">
+    <div className="flex h-full">
       {isSidebarOpen && <MobileSidebar />}
 
       <DesktopSidebar />

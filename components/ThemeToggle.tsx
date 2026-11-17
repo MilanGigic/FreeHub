@@ -1,79 +1,85 @@
-'use client'
+"use client";
 
-import { Moon, Sun } from 'lucide-react'
-import { useEffect, useSyncExternalStore } from 'react'
-import { useTranslations } from 'next-intl'
+import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 
-function subscribeNoop() {
-  return () => {}
+type Theme = "light" | "dark";
+
+const listeners = new Set<() => void>();
+
+function applyTheme(isDark: boolean) {
+  document.documentElement.classList.toggle("dark", isDark);
 }
 
-function getThemeSnapshot(): boolean {
-  if (typeof window === 'undefined') return false
-  const savedTheme = localStorage.getItem('theme')
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  return savedTheme === 'dark' || (!savedTheme && systemPrefersDark)
+function notify() {
+  listeners.forEach((l) => l());
 }
 
-let themeListeners: Array<() => void> = []
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
 
-function subscribeToTheme(callback: () => void): () => void {
-  themeListeners.push(callback)
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  const handleChange = () => callback()
-  mediaQuery.addEventListener('change', handleChange)
-  window.addEventListener('storage', handleChange)
+  const onSystemChange = () => {
+    // Only follow the system if the user hasn't chosen a theme
+    if (!localStorage.getItem("theme")) {
+      applyTheme(media.matches);
+      notify();
+    }
+  };
+  // Other tabs: re-read the stored theme
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === "theme") {
+      applyTheme(e.newValue === "dark" || (!e.newValue && media.matches));
+      notify();
+    }
+  };
+
+  media.addEventListener("change", onSystemChange);
+  window.addEventListener("storage", onStorage);
   return () => {
-    themeListeners = themeListeners.filter((l) => l !== callback)
-    mediaQuery.removeEventListener('change', handleChange)
-    window.removeEventListener('storage', handleChange)
-  }
+    listeners.delete(callback);
+    media.removeEventListener("change", onSystemChange);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
-function notifyThemeListeners() {
-  themeListeners.forEach((l) => l())
-}
+const getSnapshot = () => document.documentElement.classList.contains("dark");
+const getServerSnapshot = () => false;
 
 export default function ThemeToggle() {
-  const t = useTranslations('common')
-  const isClient = useSyncExternalStore(
-    subscribeNoop,
-    () => true,
-    () => false
-  )
+  const t = useTranslations("common");
   const isDark = useSyncExternalStore(
-    subscribeToTheme,
-    getThemeSnapshot,
-    () => false
-  )
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-  }, [isDark])
-
-  const toggleTheme = () => {
-    const newTheme = !isDark
-    if (newTheme) {
-      localStorage.setItem('theme', 'dark')
-    } else {
-      localStorage.setItem('theme', 'light')
-    }
-    notifyThemeListeners()
-  }
+  const setTheme = (theme: Theme) => {
+    localStorage.setItem("theme", theme);
+    applyTheme(theme === "dark");
+    notify();
+  };
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="p-2 rounded-lg background-elevated border background-border"
-      aria-label={t('toggleTheme')}
-    >
-      {!isClient ? (
-        <Sun size={20} className="text-primary" />
-      ) : isDark ? (
-        <Moon size={20} className="text-primary" />
-      ) : (
-        <Sun size={20} className="text-primary" />
-      )}
-    </button>
-  )
+    <div className="w-full background-elevated border background-border p-1 rounded-lg">
+      <div className="w-full flex" role="group" aria-label={t("toggleTheme")}>
+        <button
+          type="button"
+          onClick={() => setTheme("dark")}
+          aria-pressed={isDark}
+          className={`p-2 rounded-md w-full ${isDark ? "bg-white/5 text-primary" : "text-tertiary"}`}
+        >
+          {t("dark")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTheme("light")}
+          aria-pressed={!isDark}
+          className={`p-2 rounded-md w-full ${!isDark ? "bg-black/5 text-primary" : "text-tertiary"}`}
+        >
+          {t("light")}
+        </button>
+      </div>
+    </div>
+  );
 }

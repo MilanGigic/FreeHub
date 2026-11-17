@@ -2,53 +2,38 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const intlMiddleware = createMiddleware({
-  locales: ["en", "sr-Latn"],
-  defaultLocale: "en",
-});
+const locales = ["en", "sr-Latn"];
+const intlMiddleware = createMiddleware({ locales, defaultLocale: "en" });
 
-const publicRoutes = ["/", "/login", "/register", "/landing", "/dashboard"];
+const publicPaths = ["/", "/login", "/register", "/landing"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get("session")?.value;
-  const locale = pathname.split("/")[1] || "en";
 
-  const intlResponse = intlMiddleware(request);
-  if (intlResponse) return intlResponse;
+  const first = pathname.split("/")[1];
+  const hasLocale = locales.includes(first);
+  const locale = hasLocale ? first : "en";
+  const path = hasLocale ? pathname.slice(first.length + 1) || "/" : pathname;
 
-  const isPublicRoute = publicRoutes.some((route) => pathname.endsWith(route));
+  const isPublic = publicPaths.includes(path);
 
-  if (isPublicRoute) {
-    // Logged in users hitting auth/marketing pages → redirect to dashboard
-    if (
-      sessionToken &&
-      (pathname.endsWith("/login") ||
-        pathname.endsWith("/register") ||
-        pathname.endsWith("/landing") ||
-        pathname === "/")
-    ) {
-      return NextResponse.redirect(
-        new URL(`/${locale}/dashboard`, request.url),
-      );
-    }
-
-    // Unauthenticated users hitting root → redirect to landing
-    if (!sessionToken && pathname === "/") {
-      return NextResponse.redirect(new URL(`/${locale}/landing`, request.url));
-    }
-
-    return NextResponse.next();
+  if (sessionToken && isPublic) {
+    // Logged-in users on auth/marketing pages go to the dashboard
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
 
-  // Protect all other routes
-  if (!sessionToken && !pathname.includes("/landing")) {
+  if (!sessionToken && path === "/") {
+    return NextResponse.redirect(new URL(`/${locale}/landing`, request.url));
+  }
+
+  if (!sessionToken && !isPublic) {
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  return NextResponse.next();
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
 };

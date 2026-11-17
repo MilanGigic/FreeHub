@@ -16,13 +16,13 @@ export default async function DashboardPage() {
         <div className="flex flex-col items-center justify-center gap-2">
           <Link
             href="/login"
-            className="py-2 px-4 text-(--accent-green) text-lg font-bold uppercase border rounded-lg background-elevated hover:background-(--accent-green) hover:bg-(--accent-green)/40 transition-all cursor-pointer text-center w-xs"
+            className="py-2 px-4 text-primary text-lg font-bold uppercase border rounded-lg hover:background-(--accent-green) hover:bg-(--accent-green)/40 transition-all cursor-pointer text-center w-xs"
           >
             {t("login")}
           </Link>
           <Link
             href="/register"
-            className="py-2 px-4 text-(--accent-cyan) text-lg font-bold uppercase border rounded-lg background-elevated hover:background-(--accent-cyan) hover:bg-(--accent-cyan)/40 transition-all cursor-pointer text-center w-xs"
+            className="py-2 px-4 text-primary text-lg font-bold uppercase border rounded-lg hover:background-(--accent-cyan) hover:bg-(--accent-cyan)/40 transition-all cursor-pointer text-center w-xs"
           >
             {t("register")}
           </Link>

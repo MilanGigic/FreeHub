@@ -1,20 +1,27 @@
-"use client";
+"use server";
 
-import { useAuth } from "@/lib/useAuth";
-import { useTranslations } from "next-intl";
+import { getCurrentUser } from "@/actions/auth/getCurrentUser";
+import LogoutCard from "@/components/Profile/LogoutCard";
+import ProfileCard from "@/components/Profile/ProfileCard";
+import ProfilePageHeader from "@/components/Profile/ProfilePageHeader";
+import SettingsCard from "@/components/Profile/SettingsCard";
+import TaxesCard from "@/components/Profile/TaxesCard";
+export default async function ProfilePage() {
+  const user = await getCurrentUser();
 
-export default function ProfilePage() {
-  const { logout } = useAuth();
-  const t = useTranslations("profile");
+  if (!user) return null;
 
   return (
-    <div>
-      <h1
-        onClick={() => logout()}
-        className="text-primary cursor-pointer hover:primary-red transition-all font-semibold uppercase"
-      >
-        {t("logout")}
-      </h1>
+    <div className="flex flex-col gap-16">
+      <ProfilePageHeader />
+
+      <main className="flex flex-col gap-8">
+        <ProfileCard user={user} />
+        <SettingsCard />
+        <TaxesCard />
+      </main>
+
+      <LogoutCard />
     </div>
   );
 }

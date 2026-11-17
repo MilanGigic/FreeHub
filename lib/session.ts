@@ -6,7 +6,8 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const SECRET_KEY = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const SECRET_KEY =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 export interface SessionPayload {
   userId: string;
@@ -20,7 +21,7 @@ export interface SessionPayload {
  */
 export async function createSession(payload: SessionPayload): Promise<string> {
   const secret = new TextEncoder().encode(SECRET_KEY);
-  
+
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -34,11 +35,13 @@ export async function createSession(payload: SessionPayload): Promise<string> {
  * Verify and decode a session token
  */
 export async function verifySession(
-  token: string
+  token: string,
 ): Promise<SessionPayload | null> {
   try {
     const secret = new TextEncoder().encode(SECRET_KEY);
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret, {
+      algorithms: ["HS256"],
+    });
     return payload as unknown as SessionPayload;
   } catch {
     return null;
